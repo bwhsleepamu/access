@@ -27,3 +27,9 @@
 /config/initializers/devise.rb
 /config/initializers/omniauth.rb
 /config/initializers/contour.rb
+
+# Possible Subject Data Ignores
+/lib/etl.rake
+/lib/data/*
+/spec/data/*
+

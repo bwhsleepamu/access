@@ -1,0 +1,31 @@
+<h1>Listing documentations</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Description</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @documentations.each do |documentation| %>
+      <tr>
+        <td><%= documentation.title %></td>
+        <td><%= documentation.author %></td>
+        <td><%= documentation.description %></td>
+        <td><%= link_to 'Show', documentation %></td>
+        <td><%= link_to 'Edit', edit_documentation_path(documentation) %></td>
+        <td><%= link_to 'Destroy', documentation, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Documentation', new_documentation_path %>
