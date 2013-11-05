@@ -5,12 +5,11 @@ Access::Application.routes.draw do
 
   devise_for :users, controllers: { registrations: 'contour/registrations', sessions: 'contour/sessions', passwords: 'contour/passwords', confirmations: 'contour/confirmations', unlocks: 'contour/unlocks' }, path_names: { sign_up: 'register', sign_in: 'login' }
 
-
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root 'subjects#index'
+  root 'documentations#index'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

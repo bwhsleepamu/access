@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131030210853) do
+ActiveRecord::Schema.define(version: 20131104212630) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id",    precision: 38, scale: 0
@@ -144,12 +144,10 @@ ActiveRecord::Schema.define(version: 20131030210853) do
     t.boolean  "deleted",                  precision: 1,  scale: 0, default: false, null: false
     t.datetime "created_at",                                                        null: false
     t.datetime "updated_at",                                                        null: false
-    t.integer  "parent_id",                precision: 38, scale: 0
   end
 
   add_index "documentations", ["author"], name: "index_documentations_on_author"
   add_index "documentations", ["deleted"], name: "i_documentations_deleted"
-  add_index "documentations", ["parent_id"], name: "i_documentations_parent_id"
   add_index "documentations", ["title", "author"], name: "i_documentations_title_author"
   add_index "documentations", ["title"], name: "index_documentations_on_title"
   add_index "documentations", ["user_id"], name: "i_documentations_user_id"
@@ -430,6 +428,14 @@ ActiveRecord::Schema.define(version: 20131030210853) do
   add_index "subjects_subject_groups", ["subject_group_id"], name: "i_sub_sub_tag_sub_tag_id"
   add_index "subjects_subject_groups", ["subject_id"], name: "i_sub_sub_tag_sub_id"
 
+  create_table "supporting_documentations", force: true do |t|
+    t.integer "parent_id", precision: 38, scale: 0
+    t.integer "child_id",  precision: 38, scale: 0
+  end
+
+  add_index "supporting_documentations", ["child_id"], name: "i_sup_doc_chi_id"
+  add_index "supporting_documentations", ["parent_id"], name: "i_sup_doc_par_id"
+
   create_table "users", force: true do |t|
     t.string   "first_name"
     t.string   "last_name"
@@ -482,7 +488,6 @@ ActiveRecord::Schema.define(version: 20131030210853) do
 
   add_foreign_key "documentation_links", "documentations", name: "doc_lin_doc_id_fk"
 
-  add_foreign_key "documentations", "documentations", column: "parent_id", name: "documentations_parent_id_fk", dependent: :nullify
   add_foreign_key "documentations", "users", name: "documentations_user_id_fk"
 
   add_foreign_key "event_dictionary_data_fields", "data_dictionary", name: "eve_dic_dat_fie_dat_dic_id_fk"
@@ -520,5 +525,8 @@ ActiveRecord::Schema.define(version: 20131030210853) do
 
   add_foreign_key "subjects_subject_groups", "subject_groups", name: "sub_sub_gro_sub_gro_id_fk", dependent: :delete
   add_foreign_key "subjects_subject_groups", "subjects", name: "sub_sub_gro_sub_id_fk", dependent: :delete
+
+  add_foreign_key "supporting_documentations", "documentations", column: "child_id", name: "sup_doc_chi_id_fk"
+  add_foreign_key "supporting_documentations", "documentations", column: "parent_id", name: "sup_doc_par_id_fk"
 
 end

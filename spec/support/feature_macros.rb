@@ -1,4 +1,4 @@
-module RequestMacros
+module FeatureMacros
   def show_page(page, name)
     page.driver.render("/home/pwm4/Documents/websites/#{name}.png", :full => true)
   end
