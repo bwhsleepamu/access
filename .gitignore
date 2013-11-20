@@ -13,6 +13,9 @@
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
+/log/extracted/*
+/log/loaded/*
+/log/transformed/*
 /tmp
 
 # Ignore IDE files

@@ -256,4 +256,23 @@ describe Event do
        end
      end
   end
+
+  context "realtimes" do
+
+
+    it "should save utc offset (in seconds) when time with realtime is saved" do
+      realtime = Time.zone.local(2012, 10, 11, 12, 01, 02)
+      s = create(:subject)
+      ed = create(:event_dictionary)
+      e = Event.new(subject_id: s.id, name: ed.name, realtime: realtime)
+
+      e.save
+      MY_LOG.info e.errors.full_messages
+
+      expect(e.save).to be_true
+
+      expect(e.realtime).to eq(realtime)
+      expect(e.realtime_offset_sec).to eq(realtime.utc_offset)
+    end
+  end
 end

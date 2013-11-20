@@ -80,3 +80,4 @@ def init_object_map
           existing_records: {action: :update, find_by: [:number]}
       }
   ]
+end

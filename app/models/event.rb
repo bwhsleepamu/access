@@ -156,12 +156,12 @@ class Event < ActiveRecord::Base
     res = Event.connection.exec_query query
     res.map{|x|
       row_info = {
-        start_realtime: (x["start_realtime"].getlocal.strftime('%FT%H:%M:%S') if x["start_realtime"]),
-        end_realtime: (x["end_realtime"].getlocal.strftime('%FT%H:%M:%S') if x["end_realtime"]),
-        start_labtime: x["start_labtime"],
-        end_labtime: x["end_labtime"],
-        start_year: x["start_year"],
-        end_year: x["end_year"]
+          start_realtime: (x["start_realtime"].getlocal.strftime('%FT%H:%M:%S') if x["start_realtime"]),
+          end_realtime: (x["end_realtime"].getlocal.strftime('%FT%H:%M:%S') if x["end_realtime"]),
+          start_labtime: x["start_labtime"],
+          end_labtime: x["end_labtime"],
+          start_year: x["start_year"],
+          end_year: x["end_year"]
       }
 
       data_titles.each do |t|
@@ -215,29 +215,29 @@ class Event < ActiveRecord::Base
     event_id = conn.next_sequence_value(self.sequence_name)
 
     ## Set Values for columns
-    event_vals = { 
-      id: event_id, 
-      name: params[:name], 
-      subject_id: params[:subject_id], 
-      source_id: params[:source_id], 
-      documentation_id: params[:documentation_id], 
-      quality_flag_id: params[:quality_flag_id],
-      realtime: params[:realtime], 
-      labtime_hour: params[:labtime].hour, 
-      labtime_min: params[:labtime].min, 
-      labtime_sec: params[:labtime].sec, 
-      labtime_year: params[:labtime].year,
-      labtime_timezone: params[:labtime].time_zone.name,
-      created_at: current_time,
-      updated_at: current_time,
-      notes: params[:notes],
-      group_label: params[:group_label],
-      deleted: 0
+    event_vals = {
+        id: event_id,
+        name: params[:name],
+        subject_id: params[:subject_id],
+        source_id: params[:source_id],
+        documentation_id: params[:documentation_id],
+        quality_flag_id: params[:quality_flag_id],
+        realtime: params[:realtime],
+        labtime_hour: params[:labtime].hour,
+        labtime_min: params[:labtime].min,
+        labtime_sec: params[:labtime].sec,
+        labtime_year: params[:labtime].year,
+        labtime_timezone: params[:labtime].time_zone.name,
+        created_at: current_time,
+        updated_at: current_time,
+        notes: params[:notes],
+        group_label: params[:group_label],
+        deleted: 0
     }
     #MY_LOG.info "EV: #{event_vals}"
     event_binds = self.columns.map {|column| [column, event_vals[column.name.to_sym]]}
     conn.exec_insert "insert into events (#{self.column_names.join(", ")}) values (:#{self.column_names.join(", :")})", "SQL", event_binds
-    
+
     ed.data_dictionary.each do |dd|
       #LOAD_LOG.info params[:data_list]
       type = dd.data_type.storage.to_sym
@@ -383,6 +383,8 @@ class Event < ActiveRecord::Base
 
     self.realtime = conv_realtime if realtime.nil? and not conv_realtime.nil?
     self.labtime = conv_labtime if labtime.nil? and not conv_labtime.nil?
+
+    self.realtime_offset_sec = realtime.utc_offset if realtime.present?
   end
 
   def update_realtime
@@ -406,5 +408,4 @@ class Event < ActiveRecord::Base
       errors.add(:labtime, "has to be defined if realtime is not defined.")
     end
   end
-
 end

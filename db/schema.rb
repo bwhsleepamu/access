@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131108190925) do
+ActiveRecord::Schema.define(version: 20131120181040) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id",    precision: 38, scale: 0
@@ -211,25 +211,26 @@ ActiveRecord::Schema.define(version: 20131108190925) do
   create_table "events", force: true do |t|
     t.string   "name"
     t.text     "notes"
-    t.integer  "subject_id",       precision: 38, scale: 0
-    t.integer  "source_id",        precision: 38, scale: 0
-    t.integer  "documentation_id", precision: 38, scale: 0
-    t.integer  "labtime_hour",     precision: 38, scale: 0
-    t.integer  "labtime_min",      precision: 38, scale: 0
-    t.integer  "labtime_sec",      precision: 38, scale: 0
-    t.integer  "labtime_year",     precision: 38, scale: 0
+    t.integer  "subject_id",          precision: 38, scale: 0
+    t.integer  "source_id",           precision: 38, scale: 0
+    t.integer  "documentation_id",    precision: 38, scale: 0
+    t.integer  "labtime_hour",        precision: 38, scale: 0
+    t.integer  "labtime_min",         precision: 38, scale: 0
+    t.integer  "labtime_sec",         precision: 38, scale: 0
+    t.integer  "labtime_year",        precision: 38, scale: 0
     t.datetime "realtime"
-    t.integer  "group_label",      precision: 38, scale: 0
-    t.boolean  "deleted",          precision: 1,  scale: 0, default: false, null: false
-    t.datetime "created_at",                                                null: false
-    t.datetime "updated_at",                                                null: false
+    t.integer  "group_label",         precision: 38, scale: 0
+    t.boolean  "deleted",             precision: 1,  scale: 0, default: false, null: false
+    t.datetime "created_at",                                                   null: false
+    t.datetime "updated_at",                                                   null: false
     t.string   "labtime_timezone"
+    t.integer  "realtime_offset_sec", precision: 38, scale: 0
   end
 
-  add_index "events", ["deleted"], name: "index_events_on_deleted", tablespace: "dsm_index"
+  add_index "events", ["deleted"], name: "index_events_on_deleted"
   add_index "events", ["documentation_id"], name: "i_events_documentation_id"
-  add_index "events", ["group_label"], name: "index_events_on_group_label", tablespace: "dsm_index"
-  add_index "events", ["labtime_hour", "labtime_min", "labtime_sec", "labtime_year"], name: "i8f5fc7b11407564e207f28864a565", tablespace: "dsm_index"
+  add_index "events", ["group_label"], name: "index_events_on_group_label"
+  add_index "events", ["labtime_hour", "labtime_min", "labtime_sec", "labtime_year"], name: "i8f5fc7b11407564e207f28864a565"
   add_index "events", ["name", "id"], name: "index_events_on_id_name"
   add_index "events", ["name"], name: "index_events_on_name"
   add_index "events", ["realtime"], name: "index_events_on_realtime"
@@ -239,14 +240,14 @@ ActiveRecord::Schema.define(version: 20131108190925) do
 
   create_table "irbs", force: true do |t|
     t.string   "title"
-    t.string   "irb_number"
+    t.string   "number"
     t.boolean  "deleted",    precision: 1, scale: 0, default: false, null: false
     t.datetime "created_at",                                         null: false
     t.datetime "updated_at",                                         null: false
   end
 
   add_index "irbs", ["deleted"], name: "index_irbs_on_deleted"
-  add_index "irbs", ["irb_number"], name: "index_irbs_on_number"
+  add_index "irbs", ["number"], name: "index_irbs_on_number"
 
   create_table "publications", force: true do |t|
     t.integer  "pubmed_id",  precision: 38, scale: 0
