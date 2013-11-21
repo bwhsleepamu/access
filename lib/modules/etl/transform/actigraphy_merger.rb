@@ -1,8 +1,9 @@
 module ETL
   class ActigraphyMerger
-    def initialize(master_file_path, output_directory)
+    def initialize(master_file_path, output_directory, subjects = nil)
       @master_file_path = master_file_path
       @output_directory = output_directory
+      @subjects = subjects
     end
 
     def merge_files
@@ -181,6 +182,74 @@ module ETL
       line_info
     end
 
+    def parse_master(master_file_path)
+      # Each subject has awd files
+      # Each subject has subject code
+      # Each file has file name, start time, end time
+
+      subject_info = {}
+      subject_code = nil
+
+      CSV.foreach(master_file_path, :headers => true) do |row|
+        #MY_LOG.info "#{row} #{row.headers}"
+        #MY_LOG.info "sc: #{row.field("SUBJECT_CODE")} fp: #{row.field("FILE_PATH")}"
+        begin
+          unless @subjects.nil? or @subjects.map(&:subject_code).include? row.field("SUBJECT_CODE")
+            raise ValidationError, "Subject #{row.field("SUBJECT_CODE")} not included in authorized subject list."
+          end
+
+          if row.field("SUBJECT_CODE").blank? or row.field("FILE_PATH").blank? or row.field("START_TIME").blank? or row.field("END_TIME").blank? or row.field("CONDITION").blank? or row.field("EPOCH_LENGTH").blank?
+            raise ValidationError, "Missing fields for row in master file: #{row.field("SUBJECT_CODE")}\n sc: #{row.field("SUBJECT_CODE").blank?} or fp: #{row.field("FILE_PATH").blank?} or st: #{row.field("START_TIME").blank?} or et: #{row.field("END_TIME").blank?} or c: #{row.field("CONDITION").blank?} or el: #{row.field("EPOCH_LENGTH").blank?}"
+          end
+
+          if subject_code != row.field("SUBJECT_CODE")
+            # Starting new subject - validate finished subject, set new subject code
+            begin
+              if subject_code.present? and subject_info.has_key?(subject_code)
+                validate_subject(subject_code, subject_info[subject_code])
+              end
+            rescue Exception => ex
+              LOAD_LOG.error "Subject #{subject_code} failed to merge: #{ex.class} | #{ex.message}"
+              subject_info.delete(subject_code)
+            ensure
+              subject_code = row.field("SUBJECT_CODE")
+            end
+          end
+
+          unless subject_info.has_key?(subject_code)
+            subject_info[subject_code] = []
+          end
+
+          file_info = {}
+          file_info[:file_path] = row.field("FILE_PATH")
+          Time.zone = ActiveSupport::TimeZone.new("Eastern Time (US & Canada)")
+          st = Time.strptime(row.field("START_TIME"), "%Y-%m-%d %H:%M:%S")
+          et = Time.strptime(row.field("END_TIME"), "%Y-%m-%d %H:%M:%S")
+          file_info[:start_time] = Time.zone.local(st.year, st.month, st.day, st.hour, st.min, st.sec)
+          file_info[:end_time] = Time.zone.local(et.year, et.month, et.day, et.hour, et.min, et.sec)
+          file_info[:epoch_length] = row.field("EPOCH_LENGTH").to_i
+          file_info[:condition] = row.field("CONDITION")
+          file_info[:notes] = row.field("NOTES")
+
+          utc_diff = file_info[:end_time].utc_offset - file_info[:start_time].utc_offset
+
+          unless utc_diff == 0
+            file_info[:end_time] += utc_diff.seconds
+          end
+
+          check_file_path(subject_code, file_info)
+
+          subject_info[subject_code] << file_info
+        rescue Exception => ex
+          subject_info.delete(row.field("SUBJECT_CODE"))
+          LOAD_LOG.error "Row #{row} failed to load for #{row.field("SUBJECT_CODE")}: #{ex.class} | #{ex.message}"
+        end
+      end
+
+      subject_info
+    end
+
+
     ################################################
     ## Older Validation and Parsing Functions
     ################################################
@@ -289,62 +358,6 @@ module ETL
       master_file.close
     end
 
-    def parse_master(master_file_path)
-      # Each subject has awd files
-      # Each subject has subject code
-      # Each file has file name, start time, end time
-
-      subject_info = {}
-      subject_code = nil
-
-      CSV.foreach(master_file_path, :headers => true) do |row|
-        #MY_LOG.info "#{row} #{row.headers}"
-        #MY_LOG.info "sc: #{row.field("SUBJECT_CODE")} fp: #{row.field("FILE_PATH")}"
-        begin
-          if row.field("SUBJECT_CODE").blank? or row.field("FILE_PATH").blank? or row.field("START_TIME").blank? or row.field("END_TIME").blank? or row.field("CONDITION").blank? or row.field("EPOCH_LENGTH").blank?
-            raise ValidationError, "Missing fields for row in master file: #{row.field("SUBJECT_CODE")}"
-          end
-
-          if subject_code != row.field("SUBJECT_CODE")
-            # Starting new subject - validate finished subject, set new subject code
-            begin
-              if subject_code.present? and subject_info.has_key?(subject_code)
-                validate_subject(subject_code, subject_info[subject_code])
-              end
-            rescue Exception => ex
-              LOAD_LOG.error "Subject #{subject_code} failed to merge: #{ex.class} | #{ex.message}"
-              subject_info.delete(subject_code)
-            ensure
-              subject_code = row.field("SUBJECT_CODE")
-            end
-          end
-
-          unless subject_info.has_key?(subject_code)
-            subject_info[subject_code] = []
-          end
-
-          file_info = {}
-          file_info[:file_path] = row.field("FILE_PATH")
-          Time.zone = ActiveSupport::TimeZone.new("Eastern Time (US & Canada)")
-          st = Time.strptime(row.field("START_TIME"), "'%Y-%m-%d %H:%M:%S")
-          et = Time.strptime(row.field("END_TIME"), "'%Y-%m-%d %H:%M:%S")
-          file_info[:start_time] = Time.zone.local(st.year, st.month, st.day, st.hour, st.min, st.sec)
-          file_info[:end_time] = Time.zone.local(et.year, et.month, et.day, et.hour, et.min, et.sec)
-          file_info[:epoch_length] = row.field("EPOCH_LENGTH").to_i
-          file_info[:condition] = row.field("CONDITION")
-          file_info[:notes] = row.field("NOTES")
-
-          check_file_path(subject_code, file_info)
-
-          subject_info[subject_code] << file_info
-        rescue Exception => ex
-          subject_info.delete(row.field("SUBJECT_CODE"))
-          LOAD_LOG.error "Row #{row} failed to merge for #{row.field("SUBJECT_CODE")}: #{ex.class} | #{ex.message}"
-        end
-      end
-
-      subject_info
-    end
 
 
     def validate_file(file_info)
