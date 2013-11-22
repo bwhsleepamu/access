@@ -5,6 +5,7 @@ class Documentation < ActiveRecord::Base
   has_many :events
   has_many :change_logs
   belongs_to :user
+  has_many :supporting_documentations, foreign_key:
 
   ##
   # Attributes
