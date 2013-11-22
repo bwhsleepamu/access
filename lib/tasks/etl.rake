@@ -129,7 +129,7 @@ namespace :etl do
 
 #      subjects = ["1425MX72", "1637XX", "1684MX", "1691MX", "1736MX", "1772MX", "1776MX", "1795MX", "1834MX", "1873MX", "1888XX", "1889MX", "18B2XX", "18E3XX", "18E4MX", "1903MX", "1963XX", "19A4W", "2072W1T2", "2082W1T2", "2093HM", "20B1HM", "20C1DX", "2109W", "2111W", "2123W", "2150DX", "2195W", "2196W", "2199HM", "21A4DX", "2210W", "2238DX", "2249HM", "22F2W", "22T1W", "2310HM", "2313W", "24B7GXT3", "25R8GXT2", "26N2GXT2", "2709HX", "2760GXT2", "2768X", "2788X", "27B2X", "27D9GX", "27Q9GX", "2819X", "2823GX", "2844GX", "2890X", "2895X", "28B2X", "28G1HX", "28K5X", "28Q6X", "28Q9HX", "2903X", "29D7X", "29N1HX", "3007HX", "3046HX", "3227GX", "3228GX"]
       subject_group = SubjectGroup.find_by_name("sazuka_actigraphy")
-      subjects = subject_group.subjects.select{|s| s.subject_code == "3121V"}
+      subjects = subject_group.subjects
 
       successful_subjects = []
       unsuccessful_subjects = []
@@ -167,10 +167,10 @@ namespace :etl do
   end
 
   namespace :transform do
-    desc "merge fd actigraphy"
-    task :merge_fd_actigraphy => :environment do
+    desc "merge actigraphy"
+    task :merge_actigraphy => :environment do
       subject_group = SubjectGroup.find_by_name("sazuka_actigraphy")
-      subjects = subject_group.subjects.select{|s| s.subject_code == "3121V"}
+      subjects = subject_group.subjects#.select{|s| s.subject_code == "3121V"}
 
       al = ETL::ActigraphyMerger.new("/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Actigraphy/LS-Actigraphy_2012.12.17.csv", "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Actigraphy/Merged Files/", subjects)
       al.merge_files
