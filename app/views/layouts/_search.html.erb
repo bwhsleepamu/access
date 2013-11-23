@@ -1,0 +1,7 @@
+<%= form_tag path, method: :get, remote: true, id: "#{object}_search", class: 'form-search', data: { object: 'form-load' } do %>
+  <%= hidden_field_tag :order, params[:order] %>
+  <%= hidden_field_tag :per_page, params[:per_page] %>
+  <%= hidden_field_tag :one_page, nil %>
+  <%= text_field_tag 'search', params[:search], class: 'search-query' %>
+  <%= link_to 'Search', "#", class: 'btn btn-primary submit-button' %>
+<% end %>

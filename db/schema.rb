@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131120181040) do
+ActiveRecord::Schema.define(version: 20131123002844) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id",    precision: 38, scale: 0
@@ -131,7 +131,8 @@ ActiveRecord::Schema.define(version: 20131120181040) do
 
   create_table "documentation_links", force: true do |t|
     t.integer "documentation_id", precision: 38, scale: 0
-    t.integer "link_path",        precision: 38, scale: 0
+    t.integer "path",             precision: 38, scale: 0
+    t.string  "title"
   end
 
   add_index "documentation_links", ["documentation_id"], name: "i_doc_lin_doc_id"
@@ -140,11 +141,11 @@ ActiveRecord::Schema.define(version: 20131120181040) do
     t.string   "title"
     t.string   "author"
     t.string   "origin_location"
-    t.text     "description_of_procedure"
-    t.integer  "user_id",                  precision: 38, scale: 0
-    t.boolean  "deleted",                  precision: 1,  scale: 0, default: false, null: false
-    t.datetime "created_at",                                                        null: false
-    t.datetime "updated_at",                                                        null: false
+    t.text     "description"
+    t.integer  "user_id",         precision: 38, scale: 0
+    t.boolean  "deleted",         precision: 1,  scale: 0, default: false, null: false
+    t.datetime "created_at",                                               null: false
+    t.datetime "updated_at",                                               null: false
   end
 
   add_index "documentations", ["author"], name: "index_documentations_on_author"
@@ -304,15 +305,16 @@ ActiveRecord::Schema.define(version: 20131120181040) do
   add_index "source_types", ["name"], name: "index_source_types_on_name"
 
   create_table "sources", force: true do |t|
-    t.integer  "source_type_id", precision: 38, scale: 0
-    t.integer  "user_id",        precision: 38, scale: 0
+    t.integer  "source_type_id",    precision: 38, scale: 0
+    t.integer  "user_id",           precision: 38, scale: 0
     t.string   "location"
     t.text     "description"
-    t.boolean  "deleted",        precision: 1,  scale: 0, default: false, null: false
-    t.datetime "created_at",                                              null: false
-    t.datetime "updated_at",                                              null: false
+    t.boolean  "deleted",           precision: 1,  scale: 0, default: false, null: false
+    t.datetime "created_at",                                                 null: false
+    t.datetime "updated_at",                                                 null: false
     t.text     "notes"
-    t.integer  "parent_id",      precision: 38, scale: 0
+    t.integer  "parent_id",         precision: 38, scale: 0
+    t.string   "original_location"
   end
 
   add_index "sources", ["deleted"], name: "index_sources_on_deleted"

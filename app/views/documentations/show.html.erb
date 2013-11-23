@@ -1,19 +1,28 @@
-<p id="notice"><%= notice %></p>
+<%=
+    render partial: "layouts/show_page_header",
+           locals: {
+                   model: @documentation,
+                   title: "Documentation: #{@documentation.title}",
+                   edit_path: edit_documentation_path(@documentation),
+                   index_path: documentations_path,
+                   new_path: new_documentation_path
+           }
+%>
+<dl class="dl-horizontal">
+  <dt>Title</dt>
+  <dd><%= @documentation.title %></dd>
 
-<p>
-  <strong>Title:</strong>
-  <%= @documentation.title %>
-</p>
+  <dt>Author</dt>
+  <dd><%= @documentation.author %></dd>
 
-<p>
-  <strong>Author:</strong>
-  <%= @documentation.author %>
-</p>
+  <dt>Origin Location</dt>
+  <dd><%= @documentation.origin_location %></dd>
 
-<p>
-  <strong>Description:</strong>
-  <%= @documentation.description %>
-</p>
+  <dt>Created By</dt>
+  <dd><%= link_to @documentation.user.name, @documentation.user if @documentation.user %></dd>
 
-<%= link_to 'Edit', edit_documentation_path(@documentation) %> |
-<%= link_to 'Back', documentations_path %>
+</dl>
+
+<strong>Description of Procedure</strong>
+<div class="container"><%= markdown @documentation.description_of_procedure %></div>
+

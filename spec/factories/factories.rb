@@ -245,8 +245,8 @@ FactoryGirl.define do
     user
     author "Doc Author"
     title "Doc Title"
-    description_of_procedure "Some description of how things are done."
-    origin_location "Where more info can be gathered."
+    description "Some description of how things are done."
+    #origin_location "Where more info can be gathered."
   end
 
   factory :quality_flag do

@@ -77,7 +77,7 @@ File Types for loading for now:
 - I8: 
 - I9: 
 - I10: 
-- N1: 
+- N1:           n_1..n_10
 - N2: 
 - N3: 
 - N4: 
@@ -87,7 +87,7 @@ File Types for loading for now:
 - N8: 
 - N9: 
 - N10: 
-- L1: 
+- L1:           l_1..l_10
 - L2: 
 - L3: 
 - L4: 
@@ -97,7 +97,7 @@ File Types for loading for now:
 - L8: 
 - L9: 
 - L10: 
-- PL1: 
+- PL1:          pl_1..pl_10
 - PL2: 
 - PL3: 
 - PL4: 
@@ -107,20 +107,20 @@ File Types for loading for now:
 - PL8: 
 - PL9: 
 - PL10: 
-- SLOPE: 
-- INTERCEPT: 
-- I_INTER: 
-- CORR: 
-- RSQUARE: 
-- T_DURATION: 
-- T_DUR_ACT: 
-- TOT_WARN1: 
-- TOT_WARN2: 
-- TOT_WARN3: 
-- TOT_WRNSTM: 
-- ALERT_TOUT: 
-- PARM_FILE: 
-- ACK_FILE:
+- SLOPE:        slope
+- INTERCEPT:    intercept
+- I_INTER:      i_intercept
+- CORR:         corr
+- RSQUARE:      rsquare
+- T_DURATION:   t_duration
+- T_DUR_ACT:    t_dur_act
+- TOT_WARN1:    tot_warn1 ???
+- TOT_WARN2:    tot_warn2 ???
+- TOT_WARN3:    tot_warn3 ???
+- TOT_WRNSTM:   tot_wrnstm ???
+- ALERT_TOUT:   alert_tout
+- PARM_FILE:    parm_file
+- ACK_FILE:     ack_file
 
 
 - VERSION: 

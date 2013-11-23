@@ -1,29 +1,42 @@
-<%= form_for(@documentation) do |f| %>
-  <% if @documentation.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@documentation.errors.count, "error") %> prohibited this documentation from being saved:</h2>
+<%= form_for @documentation, html: { class: 'form-horizontal' } do |f| %>
+  <%= display_errors @documentation %>
 
-      <ul>
-      <% @documentation.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+  <fieldset>
+
+    <div class="control-group">
+      <%= f.label :title, nil, class: 'control-label' %>
+      <div class="controls">
+        <%= f.text_field :title %>
+      </div>
     </div>
-  <% end %>
 
-  <div class="field">
-    <%= f.label :title %><br>
-    <%= f.text_field :title %>
-  </div>
-  <div class="field">
-    <%= f.label :author %><br>
-    <%= f.text_field :author %>
-  </div>
-  <div class="field">
-    <%= f.label :description %><br>
-    <%= f.text_field :description %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
+    <div class="control-group">
+      <%= f.label :author, nil, class: 'control-label' %>
+      <div class="controls">
+        <%= f.text_field :author %>
+      </div>
+    </div>
+
+
+    <div class="control-group">
+      <%= f.label :description, nil, class: 'control-label' %>
+      <div class="controls">
+        <%= f.text_area :description, rows: 7, style: 'width:95%' %>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Supporting documentations</legend>
+  </fieldset>
+
+  <fieldset>
+    <legend>Links to other resources</legend>
+  </fieldset>
+
+
+  <div class="form-actions">
+    <%= f.submit nil, class: 'btn btn-primary' %>
+    <%= cancel %>
   </div>
 <% end %>
