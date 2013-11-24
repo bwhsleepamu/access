@@ -234,6 +234,10 @@ FactoryGirl.define do
     user
     location "pointer to some place or file"
     description "description of this source"
+
+    factory :full_source do
+      original_location "somewhere else where original file lives"
+    end
   end
 
   factory :source_type do

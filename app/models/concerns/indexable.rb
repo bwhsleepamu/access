@@ -12,7 +12,7 @@ module Indexable
       #
       #search_scope
 
-      scoped.search(search_terms)
+      all.search(search_terms)
     end
 
     def set_order(params, default)

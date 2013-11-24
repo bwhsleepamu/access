@@ -1,42 +1,60 @@
-<%= form_for @documentation, html: { class: 'form-horizontal' } do |f| %>
-  <%= display_errors @documentation %>
+<div class="page-header">
+  <h1><%= @title %></h1>
+</div>
 
-  <fieldset>
+<div id='documentation_form'>
+  <%= form_for @documentation, html: {role: 'form'} do |f| %>
+      <%= display_errors @documentation %>
+      <div class="row">
 
-    <div class="control-group">
-      <%= f.label :title, nil, class: 'control-label' %>
-      <div class="controls">
-        <%= f.text_field :title %>
+        <div class="col-md-6">
+          <fieldset class='form-horizontal container'>
+
+            <div class="form-group">
+              <%= f.label :title, nil, class: 'control-label' %>
+              <%= f.text_field :title, class: 'form-control   ' %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :author, nil, class: 'control-label' %>
+              <%= f.text_field :author, class: 'form-control' %>
+            </div>
+
+
+            <div class="form-group">
+              <%= f.label :description, nil, class: 'control-label' %>
+              <%= f.text_area :description, rows: 7, class: 'form-control description' %>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class='col-md-6 additional'>
+
+          <fieldset class='form-inline container'>
+            <legend>Supporting documentations</legend>
+
+            <div class="form-group">
+              <%= f.collection_select :supporting_documentation_ids, Documentation.current.order(:title), :id, :display_name, {}, {multiple: true, rel: 'chosen', data: {placeholder: "Select supporting documentations (shown as author: title)"}} %>
+            </div>
+
+          </fieldset>
+
+          <fieldset class='form-inline container'>
+            <legend>Links to other resources</legend>
+            <%= f.fields_for :documentation_links    do |link_fields| %>
+                <%= render 'documentation_link_fields', f: link_fields %>
+            <% end %>
+
+            <%= link_to_add_fields " add new link", f, :documentation_links %>
+          </fieldset>
+
+        </div>
       </div>
-    </div>
-
-    <div class="control-group">
-      <%= f.label :author, nil, class: 'control-label' %>
-      <div class="controls">
-        <%= f.text_field :author %>
+      <div class="form-actions">
+        <%= f.submit nil, class: 'btn btn-primary' %>
+        <%= cancel %>
       </div>
-    </div>
 
+  <% end %>
 
-    <div class="control-group">
-      <%= f.label :description, nil, class: 'control-label' %>
-      <div class="controls">
-        <%= f.text_area :description, rows: 7, style: 'width:95%' %>
-      </div>
-    </div>
-  </fieldset>
-
-  <fieldset>
-    <legend>Supporting documentations</legend>
-  </fieldset>
-
-  <fieldset>
-    <legend>Links to other resources</legend>
-  </fieldset>
-
-
-  <div class="form-actions">
-    <%= f.submit nil, class: 'btn btn-primary' %>
-    <%= cancel %>
-  </div>
-<% end %>
+</div>

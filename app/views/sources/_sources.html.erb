@@ -1,0 +1,34 @@
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th><%= sort_field_helper(params[:order], 'id', 'Source Id', 'sources_search') %></th>
+      <th>Source Type</th>
+      <th>User</th>
+      <th><%= sort_field_helper(params[:order], 'location', 'Location', 'sources_search') %></th>
+      <th><%= sort_field_helper(params[:order], 'description', 'Description', 'sources_search') %></th>
+      <th><%= sort_field_helper(params[:order], 'created_at', 'Created At', 'sources_search') %></th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <% @sources.each do |source| %>
+    <tr>
+      <td><%= link_to source.id, source %></td>
+      <td><%= link_to source.source_type.name, source.source_type if source.source_type %></td>
+      <td><%= link_to source.user.name, source.user if source.user %></td>
+      <td><%= source.location %></td>
+      <td><%= source.description %></td>
+      <td><%= simple_date(source.created_at) %></td>
+      <td>
+        <div class="btn-group">
+          <%= link_to 'Edit', edit_source_path(source), class: 'btn btn-mini' %>
+          <%= link_to 'Delete', source, method: :delete, class: 'btn btn-mini btn-danger', data: { confirm: "Are you sure you want to delete Source #{source.location}?" } %>
+        </div>
+      </td>
+
+    </tr>
+  <% end %>
+</table>
+
+<div class="center"><%= paginate @sources, theme: 'contour' %></div>
+

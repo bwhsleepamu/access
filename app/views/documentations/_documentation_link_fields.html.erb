@@ -1,0 +1,17 @@
+<fieldset class="documentation-links">
+  <div class="form-group">
+    <%= f.label :title, nil, class: 'sr-only' %>
+    <%= f.text_field :title, class: 'form-control', placeholder: 'Title' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :path, nil, class: 'sr-only' %>
+    <%= f.text_field :path , class: 'form-control', placeholder: 'Path' %>
+  </div>
+
+  <%= f.hidden_field :_destroy %>
+
+  <button type="button" class="btn btn-danger remove-link">
+    <span class="glyphicon glyphicon-remove"></span> remove
+  </button>
+</fieldset>

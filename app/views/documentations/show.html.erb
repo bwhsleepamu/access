@@ -15,14 +15,11 @@
   <dt>Author</dt>
   <dd><%= @documentation.author %></dd>
 
-  <dt>Origin Location</dt>
-  <dd><%= @documentation.origin_location %></dd>
-
   <dt>Created By</dt>
-  <dd><%= link_to @documentation.user.name, @documentation.user if @documentation.user %></dd>
+  <dd><%= link_to @documentation.user.name if @documentation.user %></dd>
 
 </dl>
 
-<strong>Description of Procedure</strong>
-<div class="container"><%= markdown @documentation.description_of_procedure %></div>
+<strong>Description</strong>
+<div class="container"><%= markdown @documentation.description %></div>
 

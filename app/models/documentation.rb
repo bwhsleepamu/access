@@ -46,6 +46,10 @@ class Documentation < ActiveRecord::Base
 
   ##
   # Instance Methods
+  def display_name
+    "#{author}: #{title}"
+  end
+
 
   private
 

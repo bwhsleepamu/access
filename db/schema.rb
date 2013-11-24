@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131123002844) do
+ActiveRecord::Schema.define(version: 20131124032825) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id",    precision: 38, scale: 0
@@ -114,7 +114,7 @@ ActiveRecord::Schema.define(version: 20131123002844) do
   add_index "data_types", ["name"], name: "index_data_types_on_name"
 
   create_table "data_values", force: true do |t|
-    t.decimal  "num_value"
+    t.integer  "num_value",       precision: 38, scale: 0
     t.string   "text_value"
     t.datetime "time_value"
     t.string   "type_flag"
@@ -131,8 +131,8 @@ ActiveRecord::Schema.define(version: 20131123002844) do
 
   create_table "documentation_links", force: true do |t|
     t.integer "documentation_id", precision: 38, scale: 0
-    t.integer "path",             precision: 38, scale: 0
     t.string  "title"
+    t.string  "path"
   end
 
   add_index "documentation_links", ["documentation_id"], name: "i_doc_lin_doc_id"

@@ -1,0 +1,13 @@
+<% @title = 'Sources' %>
+<div class="page-header">
+  <h1>
+    <%= @title %>
+    <%= link_to "Create Source", new_source_path, class: 'btn btn-mini btn-primary' %>
+  </h1>
+</div>
+
+<%= render :partial => "layouts/search", locals: { object: :sources, path: sources_path } %>
+<%= render partial: 'layouts/per_page', locals: { object: :sources, per_page: 25 } %>
+
+<div class="center" id="ajax_loader"><%= image_tag "contour/ajax-loader.gif" %></div>
+<div id="sources" class="index-content"></div>

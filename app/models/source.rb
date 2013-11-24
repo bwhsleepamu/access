@@ -7,7 +7,7 @@ class Source < ActiveRecord::Base
   belongs_to :source_type
   belongs_to :user
   has_many :child_sources, class_name: "Source", foreign_key: "parent_id"
-  belongs_to :parent, class_name: "Source"
+  belongs_to :parent_source, class_name: "Source", foreign_key: "parent_id"
 
   ##
   # Attributes
@@ -25,7 +25,7 @@ class Source < ActiveRecord::Base
 
   ##
   # Scopes
-  scope :search, lambda { |term| search_scope([:id, :location, :description, :notes], term) }
+  scope :search, lambda { |term| search_scope([:id, :location, :original_location, :description, :notes], term) }
 
   ##
   # Validations
@@ -43,6 +43,7 @@ class Source < ActiveRecord::Base
   def source_user=(user_params)
     set_immutable(User, user_params)
   end
+
 
   private
 

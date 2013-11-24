@@ -10,5 +10,7 @@
  *
  *= require_self
  *= require contour
+ *= require chosen
+ *= require PageDown/index
  *= require_tree .
  */

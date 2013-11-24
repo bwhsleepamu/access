@@ -5,9 +5,9 @@ class DocumentationsController < ApplicationController
   # GET /documentations
   # GET /documentations.json
   def index
-    @documentations = Documentation.all
+    documentations_scope = Documentation.current
+    @documentations = documentations_scope.search_by_terms(parse_search_terms(params[:search])).set_order(params[:order], "title asc").page_per(params) #.page(params[:page] ? params[:page] : 1).per(params[:per_page] == "all" ? nil : params[:per_page])
   end
-
 
   # GET /documentations/1
   # GET /documentations/1.json
@@ -44,7 +44,7 @@ class DocumentationsController < ApplicationController
   # PATCH/PUT /documentations/1.json
   def update
     respond_to do |format|
-      if @documentation.update(documentation_params)
+      if @documentation.logged_update(documentation_params)
         format.html { redirect_to @documentation, notice: 'Documentation was successfully updated.' }
         format.json { head :no_content }
       else
@@ -72,6 +72,7 @@ class DocumentationsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def documentation_params
-      params.require(:documentation).permit(:title, :author, :description, documentation_link_attributes: [:link_path] )
+      MY_LOG.info params
+      params.require(:documentation).permit(:title, :author, :description, supporting_documentation_ids: [], documentation_links_attributes: [:id, :title, :path, :_destroy ])
     end
 end

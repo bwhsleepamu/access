@@ -1,0 +1,24 @@
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th><%= sort_field_helper(params[:order], 'name', 'Name', 'source_types_search') %></th>
+      <th><%= sort_field_helper(params[:order], 'description', 'Description', 'source_types_search') %></th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <% @source_types.each do |source_type| %>
+    <tr>
+      <td><%= link_to source_type.name, source_type %></td>
+      <td><%= source_type.description %></td>
+      <td>
+        <div class="btn-group">
+          <%= link_to 'Edit', edit_source_type_path(source_type), class: 'btn btn-mini' %>
+          <%= link_to 'Delete', source_type, method: :delete, class: 'btn btn-mini btn-danger', data: { confirm: "Are you sure you want to delete Source Type #{source_type.name}?" } %>
+        </div>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
+<div class="center"><%= paginate @source_types, theme: 'contour' %></div>

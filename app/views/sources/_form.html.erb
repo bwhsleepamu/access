@@ -1,0 +1,69 @@
+<div class="page-header">
+  <h1><%= @title %></h1>
+</div>
+
+<div id="source_form">
+<%= form_for @source, html: { role: 'form' } do |f| %>
+  <%= display_errors @source %>
+
+  <div class="row">
+    <div class='col-md-6'>
+      <fieldset class='container form-horizontal'>
+
+        <div class="form-group">
+          <%= f.label :source_type_id, nil, class: 'control-label' %>
+          <%= f.select :source_type_id, [['---', nil]] + SourceType.current.collect{|s| [s.name, s.id]}, {}, {rel: :chosen, data: {placeholder: "Chose one..."}} %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :location, nil, class: 'control-label' %>
+          <%= f.text_field :location, class: 'form-control' %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :original_location, nil, class: 'control-label' %>
+          <%= f.text_field :original_location, class: 'form-control' %>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class='col-md-6'>
+      <fieldset class='container source-hierarchy'>
+        <legend>Source hierarchy</legend>
+
+        <div class="form-group">
+          <%= f.label :parent_id, 'Parent source', class: 'control-label' %>
+          <%= f.select :parent_id, [['---', nil]] + Source.current.collect{|s| [s.location, s.id]}, {}, {rel: :chosen, data: {placeholder: "Select parent source"}} %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :child_source_ids, 'Child sources', class: 'control-label' %>
+          <%= f.collection_select :child_source_ids, Source.current.order(:location), :id, :location, {}, {multiple: true, rel: 'chosen', data: {placeholder: "Select sources that contributed to this source"}} %>
+        </div>
+
+      </fieldset>
+    </div>
+
+  </div>
+
+  <div class='row'>
+    <fieldset class='container'>
+      <div class="form-group">
+        <%= f.label :description, nil, class: 'control-label' %>
+        <%= f.text_area :description, rows: 7, class: 'form-control description' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :notes, nil, class: 'control-label' %>
+        <%= f.text_area :notes, rows: 2, class: 'form-control notes' %>
+      </div>
+
+    </fieldset>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit nil, class: 'btn btn-primary' %>
+    <%= cancel %>
+  </div>
+<% end %>
+</div>

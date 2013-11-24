@@ -1,0 +1,19 @@
+<%=
+    render partial: "layouts/show_page_header",
+           locals: {
+                   model: @source_type,
+                   title: "Source Type: #{@source_type.name}",
+                   edit_path: edit_source_type_path(@source_type),
+                   index_path: source_types_path,
+                   new_path: new_source_type_path
+           }
+%>
+
+<dl class="dl-horizontal">
+  <dt>Name</dt>
+  <dd><%= @source_type.name %></dd>
+
+  <dt>Description</dt>
+  <dd><%= simple_format @source_type.description %></dd>
+
+</dl>
