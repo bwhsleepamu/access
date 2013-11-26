@@ -1,9 +1,0 @@
-<div class="pagination pagination-right">
-  <ul>
-    <li class="disabled"><a href="#">Per Page</a></li>
-    <% [5,10,25,50,:all].each do |count| %>
-      <li class="<%= 'active' if false %> per_page"><%= link_to count, "#", 'data-object' => object, 'data-per-page' => count, 'data-form' => "##{object}_search", id: "count_#{count}" %></li>
-    <% end %>
-    <% if defined?(object_count) and object_count %><li class="disabled"><a href="#">out of <%= object_count %></a></li><% end %>
-  </ul>
-</div>

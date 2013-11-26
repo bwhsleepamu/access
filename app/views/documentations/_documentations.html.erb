@@ -1,4 +1,5 @@
-<table class="table table-striped table-bordered">
+<p class='text-info object-info'><%= page_entries_info @documentations %></p>
+<table class="table table-striped table-bordered" id='documentations'>
   <thead>
   <tr>
     <th><%= sort_field_helper(params[:order], 'title', 'Title', 'documentations_search') %></th>
@@ -12,22 +13,32 @@
   </tr>
   </thead>
 
-  <% @documentations.each do |documentation| %>
-    <tr>
-      <td><%= link_to documentation.title, documentation %></td>
-      <td><%= documentation.author %></td>
-      <td><%= documentation.description %></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>
-        <div class="btn-group">
-          <%= link_to 'Edit', edit_documentation_path(documentation), class: 'btn btn-mini' %>
-          <%= link_to 'Delete', documentation, method: :delete, class: 'btn btn-mini btn-danger', data: { confirm: "Are you sure you want to delete Documentation #{documentation.title}?" } %>
-        </div>
-      </td>
-    </tr>
-  <% end %>
+  <tbody class='page'>
+    <% @documentations.each do |documentation| %>
+      <tr>
+        <td><%= link_to documentation.title, documentation %></td>
+        <td><%= documentation.author %></td>
+        <td><%= documentation.description %></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+          <div class="btn-group">
+            <button type="button" class="btn btn-xs btn-danger dropdown-toggle" data-toggle="dropdown">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <%= link_to 'Edit', edit_documentation_path(documentation), class: 'btn btn-xs btn-default btn-block' %>
+              <%= link_to 'Delete', documentation, method: :delete, class: 'btn btn-xs btn-danger btn-block', data: { confirm: "Are you sure you want to delete Documentation #{documentation.title}?" } %>
+            </ul>
+          </div>
+
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
 </table>
 
-<div class="center"><%= paginate @documentations, theme: 'contour' %></div>
+<div class="center navigation"><%= paginate @documentations, theme: 'contour' %></div>
