@@ -1,0 +1,36 @@
+<div class="page-header">
+  <h1><%= @title %></h1>
+</div>
+
+<%= form_for @event_dictionary, html: { class: 'form-horizontal', role: 'form' } do |f| %>
+  <%= display_errors @event_dictionary %>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <%= f.label :name, nil, class: 'control-label' %>
+          <%= f.text_field :name, class: 'form-control' %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :description, nil, class: 'control-label' %>
+          <%= f.text_area :description, rows: 7, class: 'form-control' %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :event_tag_ids, "Event Tags", class: 'control-label' %><br/>
+          <%= f.collection_select :event_tag_ids, EventTag.current.order(:name), :id, :name, {}, {multiple:true, rel: 'chosen', class: 'form-control'} %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :data_dictionary_ids, "Data Records", class: 'control-label' %><br/>
+          <%= f.collection_select :data_dictionary_ids, DataDictionary.current.order(:title), :id, :title, {}, {multiple:true, rel: 'chosen', class: 'form-control', data: {placeholder: "Choose associated Data Dictionary variables..."}} %>
+        </div>
+      </div>
+    </div>
+
+
+  <div class="form-actions">
+    <%= f.submit "Create Event Dictionary", class: 'btn btn-primary' %>
+    <%= cancel %>
+  </div>
+<% end %>

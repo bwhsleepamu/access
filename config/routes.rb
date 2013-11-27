@@ -5,6 +5,12 @@ Access::Application.routes.draw do
   resources :documentations
   resources :sources
   resources :source_types
+  resources :event_dictionary
+  resources :data_types
+
+  resources :data_dictionary do
+    post 'data_attribute_form', :on => :collection
+  end
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

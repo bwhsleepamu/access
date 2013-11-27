@@ -1,0 +1,26 @@
+<table class="table table-striped table-bordered" style="width:100%">
+  <thead>
+    <tr>
+      <th><%= sort_field_helper(params[:order], 'name', 'Name', 'event_dictionary_search') %></th>
+      <th>Event Tags</th>
+      <th>Data Records</th>
+      <th><%= sort_field_helper(params[:order], 'description', 'Description', 'event_dictionary_search') %></th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <% @event_dictionary.each do |event_dictionary| %>
+    <tr>
+      <td><%= link_to event_dictionary.name, event_dictionary %></td>
+      <td><%= event_dictionary.event_tags.map(&:name).join(", ") %></td>
+      <td><%= event_dictionary.data_dictionary.map(&:title).join(", ") %></td>
+      <td><%= event_dictionary.description %></td>
+      <td>
+        <%= link_to 'Edit', edit_event_dictionary_path(event_dictionary), class: 'btn btn-mini' %>
+        <%= link_to 'Delete', event_dictionary, method: :delete, class: 'btn btn-mini btn-danger', data: { confirm: "Are you sure you want to delete Event Dictionary #{event_dictionary.name}?" } %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
+<div class="center"><%= paginate @event_dictionary, theme: 'contour' %></div>

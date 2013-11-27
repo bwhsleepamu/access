@@ -1,0 +1,13 @@
+<% @title = 'Data Dictionaries' %>
+<div class="page-header">
+  <h1>
+    <%= @title %>
+    <%= link_to "Create Data Dictionary", new_data_dictionary_path, class: 'btn btn-mini btn-primary' %>
+  </h1>
+</div>
+
+<%= render :partial => "layouts/search", locals: { object: :data_dictionary, path: data_dictionary_index_path } %>
+<%= render partial: 'layouts/per_page', locals: { object: :data_dictionary, per_page: 25 } %>
+
+<div class="center" id="ajax_loader"><%= image_tag "contour/ajax-loader.gif" %></div>
+<div id="data_dictionary" class="index-content"></div>

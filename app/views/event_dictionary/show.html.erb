@@ -1,0 +1,37 @@
+<%=
+    render partial: "layouts/show_page_header",
+           locals: {
+                   model: @event_dictionary,
+                   title: "Event Dictionary: #{@event_dictionary.name}",
+                   edit_path: edit_event_dictionary_path(@event_dictionary),
+                   index_path: event_dictionary_index_path,
+                   new_path: new_event_dictionary_path
+           }
+%>
+
+<dl class="dl-horizontal">
+  <dt>Name</dt>
+  <dd><%= @event_dictionary.name %></dd>
+
+  <dt>Description</dt>
+  <dd><%= simple_format @event_dictionary.description %></dd>
+
+  <dt>Event Tags</dt>
+  <dd>
+    <ul>
+      <% @event_dictionary.event_tags.each do |event_tag| %>
+        <li><%= event_tag.name %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Data Records</dt>
+  <dd>
+    <ul>
+      <% @event_dictionary.data_dictionary.each do |data_record| %>
+        <li><%= link_to data_record.title, data_record %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+</dl>

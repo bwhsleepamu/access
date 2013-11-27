@@ -1,0 +1,58 @@
+<%=
+  render partial: "layouts/show_page_header",
+         locals: {
+              model: @data_dictionary,
+              title: "Data Dictionary: #{@data_dictionary.title}",
+              edit_path: edit_data_dictionary_path(@data_dictionary),
+              index_path: data_dictionary_index_path,
+              new_path: new_data_dictionary_path
+         }
+%>
+
+<dl class="dl-horizontal">
+  <dt>Title</dt>
+  <dd><%= @data_dictionary.title %></dd>
+
+  <dt>Description</dt>
+  <dd><%= simple_format @data_dictionary.description %></dd>
+
+  <dt>Data Type</dt>
+  <dd><%= link_to @data_dictionary.data_type.name, @data_dictionary.data_type if @data_dictionary.data_type %></dd>
+
+  <% if %w(integer_type numeric_type).include? @data_dictionary.data_type.name %>
+    <dt>Unit</dt>
+    <dd><%= @data_dictionary.unit %></dd>
+  <% end %>
+
+  <% if @data_dictionary.data_type.range? %>
+    <dt>Min Value</dt>
+    <dd id="min_val"><%= @data_dictionary.min_value %><span><%= " (inclusive)" if @data_dictionary.min_value_inclusive %></span></dd>
+
+    <dt>Max Value</dt>
+    <dd id="max_val"><%= @data_dictionary.max_value %><span><%= " (inclusive)" if @data_dictionary.min_value_inclusive %></span></dd>
+  <% end %>
+
+  <% if @data_dictionary.data_type.multiple? %>
+    <dt>Multiple Values Allowed</dt>
+    <dd><%= @data_dictionary.multivalue %></dd>
+  <% end %>
+
+  <% if @data_dictionary.data_type.length? %>
+    <dt>Min Length</dt>
+    <dd id="min_length"><%= @data_dictionary.min_length %></dd>
+
+    <dt>Max Length</dt>
+    <dd id="max_length"><%= @data_dictionary.max_length %></dd>
+  <% end %>
+
+  <% if @data_dictionary.data_type.values? and @data_dictionary.allowed_values? %>
+    <dt>Allowed Values</dt>
+    <dd id="allowed_values">
+      <ul>
+        <% @data_dictionary.allowed_values.each do |val| %>
+          <li><%= val %></li>
+        <% end %>
+      </ul>
+    </dd>
+  <% end %>
+</dl>

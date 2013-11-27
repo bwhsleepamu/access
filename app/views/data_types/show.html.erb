@@ -1,0 +1,33 @@
+<% @title = "Data Type: #{@data_type.name}" %>
+<div class="page-header">
+  <h1>
+    <%= @title %>
+    <%= link_to "Edit Data Type", edit_data_type_path(@data_type), class: 'btn btn-mini' %>
+    <%= link_to "Delete Data Type", @data_type, method: :delete, class: 'btn btn-mini btn-danger', data: { confirm: "Are you sure you want to delete Data Type #{@data_type.name}?" } %>
+    <%= link_to "View Data Types", data_types_path, class: 'btn btn-mini' %>
+  </h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt>Name</dt>
+  <dd><%= @data_type.name %></dd>
+
+  <dt>Storage</dt>
+  <dd><%= @data_type.storage %></dd>
+
+  <dt>Range</dt>
+  <dd><%= @data_type.range %></dd>
+
+  <dt>Length</dt>
+  <dd><%= @data_type.length %></dd>
+
+  <dt>Values</dt>
+  <dd><%= @data_type.values %></dd>
+
+  <dt>Multiple</dt>
+  <dd><%= @data_type.multiple %></dd>
+
+  <dt>Deleted</dt>
+  <dd><%= @data_type.deleted %></dd>
+
+</dl>

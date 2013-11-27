@@ -43,24 +43,24 @@ describe DocumentationsController do
         expect {
           post :create, {:documentation => valid_template.attributes}
         }.to change(Documentation, :count).by(1)
-        assigns(:documentation).should be_a(Documentation)
-        assigns(:documentation).should be_persisted
-        response.should redirect_to(Documentation.last)
+        expect(assigns(:documentation)).to be_a(Documentation)
+        expect(assigns(:documentation)).to be_persisted
+        expect(response).to redirect_to(Documentation.last)
       end
     end
 
     describe "with invalid params" do
       it "assigns a newly created but unsaved documentation as @documentation and re-renders the 'new' template" do
         post :create, {:documentation => invalid_template.attributes}
-        assigns(:documentation).should be_a_new(Documentation)
-        response.should render_template("new")
+        expect(assigns(:documentation)).to be_a_new(Documentation)
+        expect(response).to render_template("new")
       end
 
       it "re-renders the 'new' template" do
         # Trigger the behavior that occurs when invalid params are submitted
         #Documentation.any_instance.stub(:save).and_return(false)
         post :create, {:documentation => invalid_template.attributes}
-        response.should render_template("new")
+        expect(response).to render_template("new")
       end
 
     end
@@ -70,16 +70,16 @@ describe DocumentationsController do
     describe "with valid params" do
       it "updates the requested documentation, assigns it as @documentation, and redirects to show page" do
         put :update, {:id => documentation.to_param, :documentation => valid_template.attributes}
-        assigns(:documentation).should eq(documentation)
-        response.should redirect_to(documentation)
+        expect(assigns(:documentation)).to eq(documentation)
+        expect(response).to redirect_to(documentation)
       end
     end
 
     describe "with invalid params" do
       it "assigns the documentation as @documentation and re-renders the 'edit' template" do
         put :update, {:id => documentation.to_param, :documentation => invalid_template.attributes}
-        assigns(:documentation).should eq(documentation)
-        response.should render_template("edit")
+        expect(assigns(:documentation)).to eq(documentation)
+        expect(response).to render_template("edit")
       end
     end
   end
@@ -94,7 +94,7 @@ describe DocumentationsController do
 
     it "redirects to the documentations list" do
       delete :destroy, {:id => documentation.to_param}
-      response.should redirect_to(documentations_url)
+      expect(response).to redirect_to(documentations_url)
     end
   end
 end

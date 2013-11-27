@@ -1,0 +1,87 @@
+<%=
+    # Params:
+    # Data Dictionary
+    # Data Type
+%>
+<%= fields_for data_dictionary do |f| %>
+  <% if data_type.storage == "num_value" || data_type.range? || data_type.length? %>
+      <% if data_type.multiple? %>
+        <div id="multiple_field" class="attribute_field">
+          <div class="form-group">
+            <%= f.label :multivalue, "Can data have more than one value?", class: 'control-label' %>
+            <%= f.select :multivalue, [["No", 0], ["Yes", 1]], {}, { class: 'form-control'} %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if data_type.storage == "num_value" %>
+        <div id="unit_field" class="attribute_field">
+          <div class="form-group">
+            <%= f.label :unit, nil, class: 'control-label' %>
+            <%= f.text_field :unit, class: 'form-control' %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if data_type.range? %>
+        <div id="range_fields" class="attribute_field">
+          <div class="form-group">
+            <%= f.label :min_value, "Min Value", class: 'control-label' %>
+            <div class="controls">
+              <%= value_field(f, data_type, data_dictionary.min_value, "min_value") %>
+              <div class="nested_checkbox">
+                <%= f.check_box :min_value_inclusive %>
+                <%= f.label :min_value_inclusive, "Inclusive?" %>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :max_value, "Max Value ", class: 'control-label' %>
+            <div class="controls">
+              <%= value_field(f, data_type, data_dictionary.max_value, "max_value") %>
+
+              <div class="nested_checkbox">
+                <%= f.check_box :max_value_inclusive %>
+                <%= f.label :max_value_inclusive, "Inclusive?"%>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <% if data_type.length? %>
+        <div id="length_fields" class="attribute_field">
+          <div class="form-group">
+            <%= f.label :min_length, nil, class: 'control-label' %>
+            <%= f.number_field :min_length, class: 'form-control' %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :max_length, nil, class: 'control-label' %>
+            <%= f.number_field :max_length, class: 'form-control' %>
+          </div>
+        </div>
+      <% end %>
+  <% end %>
+
+  <% if data_type.values? %>
+    <fieldset>
+      <legend>Allowed Values</legend>
+      <div id="value_fields" class="attribute_field">
+
+        <ol>
+          <% data_dictionary.allowed_data_values.each do |allowed_value| %>
+            <li>
+              <%= f.fields_for "allowed_values" do |val_f| %>
+                <%= value_field(val_f, data_type, allowed_value.value, "", false, true) %>
+              <% end %>
+              <%= link_to 'Remove', '#', class: 'btn btn-mini btn-danger remove' %>
+            </li>
+          <% end %>
+        </ol>
+        <%= link_to "Add Another Allowed Value", "#", class: 'btn btn-mini', id: "add_value_field" %>
+      </div>
+    </fieldset>
+  <% end %>
+<% end %>
