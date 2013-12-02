@@ -6,7 +6,7 @@ class DataTypesController < ApplicationController
   # GET /data_types.json
   def index
     data_types_scope = DataType.current
-    @data_types = data_types_scope.search_by_terms(parse_search_terms(params[:search])).set_order(params[:order], "title asc").page_per(params) #.page(params[:page] ? params[:page] : 1).per(params[:per_page] == "all" ? nil : params[:per_page])
+    @data_types = data_types_scope.search_by_terms(parse_search_terms(params[:search])).set_order(params[:order], "name asc").page_per(params) #.page(params[:page] ? params[:page] : 1).per(params[:per_page] == "all" ? nil : params[:per_page])
   end
 
   # GET /data_types/1

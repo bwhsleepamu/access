@@ -13,7 +13,7 @@ class EventTag < ActiveRecord::Base
 
   ##
   # Concerns
-  include Loggable
+  include Loggable, Indexable, Deletable
 
   ##
   # Database Settings

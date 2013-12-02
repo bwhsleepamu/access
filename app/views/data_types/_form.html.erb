@@ -2,63 +2,44 @@
   <h1><%= @title %></h1>
 </div>
 
-<%= form_for @data_type, html: { class: 'form-horizontal' } do |f| %>
-  <% if @data_type.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@data_type.errors.count, "error") %> prohibited this data_type from being saved:</h2>
 
-      <ul>
-      <% @data_type.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
+<div id="data_type_form">
+  <%= form_for @data_types, html: {role: 'form', class: 'form-horizontal'} do |f| %>
+      <%= display_errors @data_types %>
+
+      <div class="form-group">
+        <%= f.label :name, nil, class: 'control-label' %>
+        <%= f.text_field :name, class: 'form-control' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :storage, nil, class: 'control-label' %>
+        <%= f.select :storage, DataValue::VALUE_FIELDS, class: 'form-control' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :range, nil, class: 'control-label' %>
+        <%= f.check_box :range, class: 'form-control' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :length, nil, class: 'control-label' %>
+        <%= f.check_box :length, class: 'form-control' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :values, nil, class: 'control-label' %>
+        <%= f.check_box :values, class: 'form-control' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :multiple, nil, class: 'control-label' %>
+        <%= f.check_box :multiple, class: 'form-control' %>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit nil, class: 'btn btn-primary' %>
+        <%= cancel %>
+      </div>
   <% end %>
-
-  <div class="control-group">
-    <%= f.label :name, nil, class: 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :name %>
-    </div>
-  </div>
-
-  <div class="control-group">
-    <%= f.label :storage, nil, class: 'control-label' %>
-    <div class="controls">
-      <%= f.select :storage, DataValue::VALUE_FIELDS %>
-    </div>
-  </div>
-
-  <div class="control-group">
-    <%= f.label :range, nil, class: 'control-label' %>
-    <div class="controls">
-      <%= f.check_box :range %>
-    </div>
-  </div>
-
-  <div class="control-group">
-    <%= f.label :length, nil, class: 'control-label' %>
-    <div class="controls">
-      <%= f.check_box :length %>
-    </div>
-  </div>
-
-  <div class="control-group">
-    <%= f.label :values, nil, class: 'control-label' %>
-    <div class="controls">
-      <%= f.check_box :values %>
-    </div>
-  </div>
-
-  <div class="control-group">
-    <%= f.label :multiple, nil, class: 'control-label' %>
-    <div class="controls">
-      <%= f.check_box :multiple %>
-    </div>
-  </div>
-
-  <div class="form-actions">
-    <%= f.submit nil, class: 'btn btn-primary' %>
-    <%= cancel %>
-  </div>
-<% end %>
+</div>
