@@ -6,9 +6,12 @@ module ETL
   # Extract
   require 'etl/extract/dbf_reader'
   require 'etl/extract/t_drive_crawler'
+
   # Transform
   require 'etl/transform/actigraphy_merger'
   require 'etl/transform/dbf_file_merger'
+  require 'etl/transform/psq_merger'
+
   # Load
   require 'etl/load/database_loader'
   require 'etl/load/sleep_stage_loader'
