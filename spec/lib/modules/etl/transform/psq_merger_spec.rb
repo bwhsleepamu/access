@@ -19,11 +19,13 @@ require 'csv'
 describe ETL::PsqMerger do
   let(:destination_file_path) {"/usr/local/htdocs/access/spec/data/merged_psq/merged_d.csv"}
   describe "Merging of Jeanne Duffy files" do
-    let(:source_file_list) {["/usr/local/htdocs/access/spec/data/psq_merger_d.xls"]}
+    let(:source_file_list) {["/usr/local/htdocs/access/spec/data/merged_psq/psq_merger_d.xls"]}
 
     it "should merge all tabs in the template source into a master xls (csv?) file" do
       # 8 subjects * 23 SP + 1 subject * 12 SP
-      File.delete destination_file_path
+      subject_group = create(:subject_group_with_subjects, subject_code_list: ["29U2X0T1", "2701X0T4", "3017X", "3018X", "3038X", "3075X", "3098X", "30C6X", "30E1X"])
+
+      File.delete destination_file_path if File.exists? destination_file_path
 
       psq_merger = ETL::PsqMerger.new subject_group, source_file_list, destination_file_path
 

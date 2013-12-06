@@ -225,9 +225,7 @@ FactoryGirl.define do
 
   end
 
-  factory :subject_group do
-    sequence(:name) {|n| "subject_group_#{n}"}
-  end
+
 
   factory :source do
     source_type

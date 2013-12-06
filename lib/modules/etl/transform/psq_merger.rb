@@ -26,23 +26,22 @@ module ETL
     #    Merged PSQ files
 
     def initialize(subject_group, input_file_list, output_file_path)
-      @file_list = file_list
+      @input_file_list = input_file_list
       @output_file_path = output_file_path
       @subject_group = subject_group
-
-
     end
 
     def merge_files
       begin
         CSV.open(@output_file_path, "wb") do |csv|
-          input_file_list.each do |input_file_path|
+          csv << ["subject_code", "sleep_period", "labtime"]
+          @input_file_list.each do |input_file_path|
             xls = Roo::Spreadsheet.open(input_file_path)
             xls.each_with_pagename do |subject_tab, sheet|
               subject_code = subject_tab.upcase
               if @subject_group.subjects.map(&:subject_code).include? subject_code
-                sheet.first_row+1..sheet.last_row.each do |row_num|
-                  sheet.row(row_num)
+                (sheet.first_row+1..sheet.last_row).each do |row_num|
+                  csv << sheet.row(row_num)
 
                 end
               end
