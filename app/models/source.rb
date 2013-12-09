@@ -6,7 +6,7 @@ class Source < ActiveRecord::Base
   has_many :change_logs
   belongs_to :source_type
   belongs_to :user
-  has_many :child_sources, class_name: "Source", foreign_key: "parent_id"
+  has_many :child_sources, class_name: "Source", foreign_key: "parent_id", autosave: true
   belongs_to :parent_source, class_name: "Source", foreign_key: "parent_id"
 
   ##

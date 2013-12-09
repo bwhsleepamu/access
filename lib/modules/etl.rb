@@ -21,4 +21,5 @@ module ETL
   require 'etl/load/fd_nosa_information_loader'
   require 'etl/load/dbf_loader'
   require 'etl/load/new_forms_loader'
+  require 'etl/load/psq_loader'
 end
