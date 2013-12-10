@@ -1,7 +1,7 @@
 class Event < ActiveRecord::Base
   ##
   # Associations
-  has_many :data, :autosave => true
+  has_many :data, autosave: true, dependent: :delete_all
   has_many :quality_flags, :through => :event_quality_flags
   has_many :event_quality_flags
   belongs_to :documentation

@@ -321,6 +321,26 @@ class Subject < ActiveRecord::Base
     r.plot_raster(data)
   end
 
+  def admit_date
+    Date.new(admit_year, admit_month, admit_day)
+  end
+
+  def admit_date=(date)
+    self[:admit_year] = date.year
+    self[:admit_month] = date.month
+    self[:admit_day] = date.day
+  end
+
+  def discharge_date
+    Date.new(discharge_year, discharge_month, discharge_day)
+  end
+
+  def discharge_date=(date)
+    self[:discharge_year] = date.year
+    self[:discharge_month] = date.month
+    self[:discharge_day] = date.day
+  end
+
   private
 
   def select_timescale(row, timescale)

@@ -33,50 +33,50 @@ namespace :etl do
     end
 
     desc "load subject information"
-    task :load_subject_information => :environment do
+    task :subject_information => :environment do
       subject_info_files = [
         {
-          source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Forced Desynchrony Subject Information/DSMDB_FD_Study-Info_05.22.2013.xls",
+          source_path: "/I/Projects/Database Project/Data Sources/Forced Desynchrony Subject Information/DSMDB_FD_Study_Info_2013_12_09.xls",
           subject_type: :forced_desynchrony,
-          source: Source.find_by_id(10210),
+          source: Source.find_by_id(92806902),
           documentation: Documentation.find_by_id(10040)
-        },
-        {
-          source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/joshua_gooley_subject_information/subject_information.xls",
-          subject_type: :light,
-          source: Source.find_by_id(10001),
-          documentation: Documentation.find_by_id(10000)
-        },
-        {
-          source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/melanie_rueger_subject_information/subject_information.xls",
-          subject_type: :light,
-          source: Source.find_by_id(10002),
-          documentation: Documentation.find_by_id(10000)
-        },
-        {
-          source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/melissa_st_hilaire_subject_information/subject_information.xls",
-          subject_type: :light,
-          source: Source.find_by_id(10003),
-          documentation: Documentation.find_by_id(10000)
-        },
-        {
-          source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/shadab_rahman_subject_information/subject_information.xls",
-          subject_type: :light,
-          source: Source.find_by_id(10004),
-          documentation: Documentation.find_by_id(10000)
-        },
-        {
-          source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/steve_lockley_subject_information/subject_information.xls",
-          subject_type: :light,
-          source: Source.find_by_id(10005),
-          documentation: Documentation.find_by_id(10000)
-        },
-        {
-          source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/anne_marie_chang_subject_information/subject_information.xls",
-          subject_type: :light,
-          source: Source.find_by_id(10000),
-          documentation: Documentation.find_by_id(10000)
         }
+        #{
+        #  source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/joshua_gooley_subject_information/subject_information.xls",
+        #  subject_type: :light,
+        #  source: Source.find_by_id(10001),
+        #  documentation: Documentation.find_by_id(10000)
+        #},
+        #{
+        #  source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/melanie_rueger_subject_information/subject_information.xls",
+        #  subject_type: :light,
+        #  source: Source.find_by_id(10002),
+        #  documentation: Documentation.find_by_id(10000)
+        #},
+        #{
+        #  source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/melissa_st_hilaire_subject_information/subject_information.xls",
+        #  subject_type: :light,
+        #  source: Source.find_by_id(10003),
+        #  documentation: Documentation.find_by_id(10000)
+        #},
+        #{
+        #  source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/shadab_rahman_subject_information/subject_information.xls",
+        #  subject_type: :light,
+        #  source: Source.find_by_id(10004),
+        #  documentation: Documentation.find_by_id(10000)
+        #},
+        #{
+        #  source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/steve_lockley_subject_information/subject_information.xls",
+        #  subject_type: :light,
+        #  source: Source.find_by_id(10005),
+        #  documentation: Documentation.find_by_id(10000)
+        #},
+        #{
+        #  source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/anne_marie_chang_subject_information/subject_information.xls",
+        #  subject_type: :light,
+        #  source: Source.find_by_id(10000),
+        #  documentation: Documentation.find_by_id(10000)
+        #}
       ]
 
       subject_info_files.each do |si_file|
@@ -163,6 +163,45 @@ namespace :etl do
       new_forms_loader.search_root
       new_forms_loader.merge_files
       new_forms_loader.load_events
+    end
+
+    desc "load scored PVT data (CSR_32d_FD_20h)"
+    task :pvt_all => :environment do
+      successful_subjects = []
+      unsuccessful_subjects = []
+
+
+      description = "Cleaned Visual PVT-All file created by Joe Hull"
+      documentation = Documentation.find(10181)
+
+      inputs =
+      [
+        { subject_code: "3227GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3227GX/Neurobehavioral_3227GX/VPVTALL_3227GX.xls" },
+        { subject_code: "3228GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3228GX/Neurobehavioral_3228GX/VPVTALL_3228GX.xls" },
+        { subject_code: "3232GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3232GX/Neurobehavioral_3232GX/VPVTALL_3232GX.xls" },
+        { subject_code: "3233GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3233GX/Neurobehavioral_3233GX/VPVTALL_3233GX.xls" },
+        { subject_code: "3237GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3237GX_D/Neurobehavioural_3237GX/VPVTALL_3237GX.xls" },
+        { subject_code: "3315GX32", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3315GX32/Neurobehavioral_3315GX32/VPVTALL_3315GX32.xls" },
+        { subject_code: "3319GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3319GX/Neurobehavioral_3319GX/VPVTALL_3319GX.xls" },
+        { subject_code: "3335GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3335GX/Neurobehavioral_3335GX/VPVTALL_3335GX.xls" },
+        { subject_code: "3339GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3339GX/Neurobehavioral_3339GX/VPVTALL_3339GX.xls" }
+      ]
+
+      inputs.each do |input|
+        subject = Subject.find_by_subject_code(input[:subject_code])
+        raise StandardError unless subject
+        source = Source.find_by_location input[:path]
+        source = Source.create(location: input[:path], source_type_id: SourceType.find_by_name("Excel File").id, user_id: User.find_by_email("pmankowski@partners.org").id, description: description ) unless source
+
+        @pvt_loader = ETL::PvtLoader.new(subject, source, documentation)
+        if @pvt_loader.load_subject
+          successful_subjects << subject
+        else
+          unsuccessful_subjects << subject
+        end
+      end
+
+      LOAD_LOG.info "\n################################\nFinished Loading PVT ALL DATA for all Subjects!\nsuccessful: #{successful_subjects.map(&:subject_code)}\nunsuccessful: #{unsuccessful_subjects.map(&:subject_code)}\n################################\n\n\n"
     end
   end
 

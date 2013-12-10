@@ -1,7 +1,7 @@
 class Datum < ActiveRecord::Base
   ##
   # Associations
-  has_many :data_values, :autosave => true
+  has_many :data_values, autosave: true, dependent: :delete_all
   has_many :quality_flags, :through => :data_quality_flags
   has_many :data_quality_flags
   belongs_to :documentation

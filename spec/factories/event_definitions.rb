@@ -204,4 +204,68 @@ FactoryGirl.define do
     end
   end
 
+  factory :scored_pvt, class: EventDictionary do
+    name "cleaned_pvt_all"
+    after(:create) do |event_dictionary|
+      it = DataType.find_by_name("integer_type")
+      nt = DataType.find_by_name("numeric_type")
+      st = DataType.find_by_name("string_type")
+      dt = DataType.find_by_name("date_type")
+
+      it = create(:integer_type) if it.blank?
+      nt = create(:numeric_type) if nt.blank?
+      st = create(:string_type) if st.blank?
+      dt = create(:date_type) if dt.blank?
+
+      create(:data_dictionary, title: "wake_period", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "section_of_protocol", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "test_type_identifier", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "session_number", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "handedness", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "interstimulus_interval_min", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "interstimulus_interval_max", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_wrong", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_timeouts", data_type: it, multivalue: true, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "all_mean", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "all_median", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "all_std", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "fast_mean", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "fast_std", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "slow_mean", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "slow_std", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_correct", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "lapse_definition", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_lapses", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "lapse_transformation", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_lapses_in_slow", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "bin_length", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "slope", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "intercept", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "correlation", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "test_duration_scheduled", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "test_duration_actual", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "version", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "pvt_type", data_type: st, event_dictionary: [event_dictionary])
+    end
+  end
+
+  factory :scheduled_pvt, class: EventDictionary do
+    name "scheduled_pvt_all"
+
+    after(:create) do |event_dictionary|
+      st = DataType.find_by_name("string_type")
+      st = create(:string_type) if st.blank?
+
+      dd = DataDictionary.find_by_title "pvt_type"
+      if dd
+        event_dictionary.data_dictionary << dd
+      else
+        create(:data_dictionary, title: "pvt_type", data_type: st, event_dictionary: [event_dictionary])
+      end
+      event_dictionary.save
+
+    end
+  end
+
+
 end

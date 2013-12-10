@@ -10,7 +10,7 @@ describe ETL::SubjectInformationLoader do
   let(:user) {create(:user)}
 
   describe "main use case - light subjects" do
-    let(:input_file_path) {"/usr/local/htdocs/access/spec/data/subject_info_test.xls"}
+    let(:input_file_path) {"/usr/local/htdocs/access/spec/data/subject_information_loader/subject_info_test.xls"}
 
     before do
       create(:polychromatic_light_intervention)
@@ -51,18 +51,19 @@ describe ETL::SubjectInformationLoader do
       Subject.count.should == 8
       Study.count.should == 6
 
-      before_counts = {subjects: Subject.count, studies: Study.count, publications: Publication.count, irbs: Irb.count, researchers: Researcher.count, events: Event.count, data: Datum.count, data_values: DataValue.count}
+      before_counts = { subjects: Subject.count, studies: Study.count, publications: Publication.count, irbs: Irb.count, researchers: Researcher.count, events: Event.count }
 
       si_loader = ETL::SubjectInformationLoader.new(input_file_path, :light, source, documentation)
       si_loader.load
-      after_counts = {subjects: Subject.count, studies: Study.count, publications: Publication.count, irbs: Irb.count, researchers: Researcher.count, events: Event.count, data: Datum.count, data_values: DataValue.count}
 
-      before_counts.should == after_counts
+      after_counts = { subjects: Subject.count, studies: Study.count, publications: Publication.count, irbs: Irb.count, researchers: Researcher.count, events: Event.count }
+
+      expect(after_counts).to eq before_counts
     end
   end
 
   describe "main use case - fd subjects" do
-    let(:input_file_path) {"/usr/local/htdocs/access/spec/data/fd_subjects_test.xlsx"}
+    let(:input_file_path) {"/usr/local/htdocs/access/spec/data/subject_information_loader/fd_subjects_test.xlsx"}
 
     before do
       create(:forced_desynchrony_subject_information)
@@ -112,3 +113,6 @@ describe ETL::SubjectInformationLoader do
     end
   end
 end
+
+
+

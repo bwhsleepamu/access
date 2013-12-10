@@ -257,7 +257,7 @@ FactoryGirl.define do
   end
 
   factory :irb do
-    sequence(:number) {|n| "12P1234#{n}"}
+    sequence(:irb_number) {|n| "12P1234#{n}"}
     title "Irb Title"
   end
 

@@ -19,6 +19,7 @@ module ETL
     def load_data
       unique_subjects = []
       #MY_LOG.info "In load_data"
+
       ActiveRecord::Base.transaction do
         #MY_LOG.info "In load_data transaction"
         # Process Existing Records that need to be destroyed
@@ -33,10 +34,13 @@ module ETL
           #MY_LOG.info "##loader_map:\n#{@loader_map.to_yaml}"
           row = @source_file.row(i)
           next if skip_row?(row)
+         #MY_LOG.info "ROW: #{row}"
           row_subject = ensure_subject_available
           LOAD_LOG.info "###### LOADING ROW #{i}: #{(Time.zone.now() - start_time)/60} minutes elapsed" if i % 1000 == @first_row
           #MY_LOG.info "#{@loader_map}"
           @loader_map.each do |mapping|
+           #MY_LOG.info "MAPPING: #{mapping}"
+
             col_values = {}
             data_values = {}
 
@@ -47,13 +51,15 @@ module ETL
             mapping[:column_fields].each{|field, index| col_values[field] = cell_value(row, index)}
             mapping[:data_fields].each{|field,index| data_values[field.to_s] = cell_value(row, index)} if mapping[:data_fields]
 
+           #MY_LOG.info "\nCVS: #{col_values}\nDVS: #{data_values}"
+
             ## Determine number of objects to create
             attrs_list = determine_object_number(mapping, col_values, data_values)
-            #MY_LOG.info "attrs_list: #{attrs_list}"
+           #MY_LOG.info "attrs_list: #{attrs_list}"
 
             ## Create all objects
             attrs_list.each do |attr_array|
-              #MY_LOG.info "attr_array: #{attr_array}"
+             #MY_LOG.info "attr_array: #{attr_array}"
 
               col_attrs = attr_array[0]
               data_attrs = attr_array[1]
@@ -64,8 +70,8 @@ module ETL
               ## Build Attributes
               obj_attrs = build_attributes(mapping, col_attrs, data_attrs, row_subject)
 
-              # Clean Time Attributes if object is an event
-              obj_attrs = clean_time_params(obj_attrs) if mapping[:class] == Event
+              ## Clean Time Attributes if object is an event
+              #obj_attrs = clean_time_params(obj_attrs, mapping) if mapping[:class] == Event
               #MY_LOG.info "class: #{mapping[:class]} col: #{col_attrs} d: #{data_attrs} obj: #{obj_attrs} row_subject: #{row_subject}"
 
               ## Create Object
@@ -83,6 +89,7 @@ module ETL
                   #MY_LOG.info "\n#OBJ_ATTRS:\n#{obj_attrs}"
                   Event.direct_create(obj_attrs)
                 else # Normal route for other classes
+                  LOAD_LOG.info "Creating #{mapping[:class]}"
                   obj = mapping[:class].logged_new(obj_attrs, @source.user, @source, @documentation)
                   LOAD_LOG.error "##### WARNING!! Object failed to save: #{obj} | #{obj.errors.full_messages}" unless obj.save
                 end
@@ -97,6 +104,7 @@ module ETL
             row_subject.touch
             unique_subjects << row_subject.subject_code unless unique_subjects.include? row_subject.subject_code
           end
+         #MY_LOG.info "\n"
         end # rows
         LOAD_LOG.info "TIME: #{(Time.zone.now() - start_time)/60} minutes"
 
@@ -121,7 +129,7 @@ module ETL
 
     def destroy_existing_record?(mapping, subject)
       if mapping[:existing_records][:action] == :destroy and mapping[:class] == Event and subject.present?
-        LOAD_LOG.error "DESTROYING!!!!"
+        LOAD_LOG.error "DESTROYING!!!! #{subject.subject_code} #{mapping[:event_name]}"
         Event.hard_delete(subject, mapping[:event_name])
       else
         false
@@ -199,18 +207,43 @@ module ETL
     end
 
     def set_event_time(obj_attrs, mapping)
+     #MY_LOG.info obj_attrs
       Time.zone = ActiveSupport::TimeZone.new("Eastern Time (US & Canada)")
 
-      if obj_attrs[:labtime].present?
-        fn_name = mapping[:labtime_fn].present? ? mapping[:labtime_fn] : "from_s"
+      # LABTIME
+      raw_labtime_fields = [:labtime_year, :labtime_min, :labtime_sec, :labtime_hour]
+      decimal_labtime_fields = [:labtime_year, :labtime_decimal]
+      formatted_labtime_fields = [:labtime]
 
-        if fn_name == "from_s"
-          obj_attrs[:labtime] = Labtime.send(fn_name, obj_attrs[:labtime], { year: obj_attrs[:labtime_year] })
-        end
+
+      if (obj_attrs.keys & formatted_labtime_fields).sort == formatted_labtime_fields.sort
+        fn_name = mapping[:labtime_fn].present? ? mapping[:labtime_fn] : "from_s"
+        obj_attrs[:labtime] = Labtime.send(fn_name, obj_attrs[:labtime], { year: obj_attrs[:labtime_year] })
+      elsif (obj_attrs.keys & raw_labtime_fields).sort == raw_labtime_fields.sort
+        obj_attrs[:labtime] = Labtime.new(obj_attrs.delete(:labtime_year), obj_attrs.delete(:labtime_hour), obj_attrs.delete(:labtime_min), obj_attrs.delete(:labtime_sec))
+      elsif (obj_attrs.keys & decimal_labtime_fields).sort == decimal_labtime_fields.sort
+        obj_attrs[:labtime] = Labtime.from_decimal(obj_attrs.delete(:labtime_decimal).to_f, obj_attrs.delete(:labtime_year))
+      end
+
+      # REALTIME
+      if obj_attrs[:realtime].present? and mapping[:realtime_format].present?
+        t = Time.strptime(obj_attrs[:realtime], mapping[:realtime_format])
+        obj_attrs[:realtime] = Time.zone.local(t.year, t.month, t.day, t.hour, t.min, t.sec)
+      end
+
+
+      if obj_attrs[:labtime].present?
       elsif obj_attrs[:realtime].present? and mapping[:realtime_format].present?
         # if format not present, just use default loading of dates (excel-format cells seem to work)
         t = Time.strptime(mapping[:realtime], mapping[:realtime_format])
         obj_attrs[:realtime] = Time.zone.local(t.year, t.month, t.day, t.hour, t.min, t.sec)
+      end
+
+      # COMPARE
+      if obj_attrs.keys.include?(:labtime) and obj_attrs.keys.include?(:realtime)
+        raise StandardError, "Both realtime and labtime supplied, but values do not match: #{obj_attrs}" unless Labtime.parse(obj_attrs[:realtime]) == obj_attrs[:labtime]
+      elsif !obj_attrs.keys.include?(:labtime) and !obj_attrs.keys.include?(:realtime)
+        raise StandardError, "Event params are missing a time field: #{obj_attrs}"
       end
 
       obj_attrs
@@ -308,21 +341,31 @@ module ETL
 
     end
 
-    def clean_time_params(event_params)
+    def clean_time_params(event_params, mapping)
+      ## MERGED INTO set_event_time
+
       # Input: ready-to-go params
-      # Output: cleaned of all other time fields except :labtime xor :realtime
-      raw_labtime_fields = [:labtime_year, :labtime_min, :labtime_sec, :labtime_hour]
-      decimal_labtime_fields = [:labtime_year, :labtime_decimal]
-
-      if (event_params.keys & raw_labtime_fields).sort == raw_labtime_fields.sort
-        event_params[:labtime] = Labtime.new(event_params.delete(:labtime_year), event_params.delete(:labtime_hour), event_params.delete(:labtime_min), event_params.delete(:labtime_sec))
-      elsif (event_params.keys & decimal_labtime_fields).sort == decimal_labtime_fields.sort
-        event_params[:labtime] = Labtime.from_decimal(event_params.delete(:labtime_decimal).to_f, event_params.delete(:labtime_year))
-      end
-
-      raise StandardError, "Event params are missing a time field or have both realtime and labtime: #{event_params}" unless (event_params.keys.include?(:labtime) ^ event_params.keys.include?(:realtime))
-
-      event_params
+      # Output: cleaned of all other time fields except :labtime and/or :realtime
+      #raw_labtime_fields = [:labtime_year, :labtime_min, :labtime_sec, :labtime_hour]
+      #decimal_labtime_fields = [:labtime_year, :labtime_decimal]
+      #
+      #if (event_params.keys & raw_labtime_fields).sort == raw_labtime_fields.sort
+      #  event_params[:labtime] = Labtime.new(event_params.delete(:labtime_year), event_params.delete(:labtime_hour), event_params.delete(:labtime_min), event_params.delete(:labtime_sec))
+      #elsif (event_params.keys & decimal_labtime_fields).sort == decimal_labtime_fields.sort
+      #  event_params[:labtime] = Labtime.from_decimal(event_params.delete(:labtime_decimal).to_f, event_params.delete(:labtime_year))
+      #end
+      #
+      #if event_params.keys.include?(:labtime) and event_params.keys.include?(:realtime)
+      #
+      #  realtime = Time.zone.local(t.year, t.month, t.day, t.hour, t.min, t.sec)
+      #
+      #
+      #  raise StandardError, "Both realtime and labtime supplied, but values do not match: #{event_params}" unless Labtime.parse(Time.strptime(event_params[:realtime], mapping[:realtime_format])) == event_params[:labtime]
+      #elsif !event_params.keys.include?(:labtime) and !event_params.keys.include?(:realtime)
+      #  raise StandardError, "Event params are missing a time field: #{event_params}"
+      #end
+      #
+      #event_params
     end
 
     def generate_loader_map(object_map, column_map)
@@ -330,12 +373,14 @@ module ETL
         class_sym = obj[:class].name.underscore.to_sym
         column_map = column_map.each_with_index.map {|col, i| col.merge({:col_index => i})}
 
+       #MY_LOG.info "COLUMN MAP: #{column_map}"
         # Multiple entries!!!
 
         # column fields
         column_fields = column_map.select do |col| 
           col[:target] == class_sym and col[:researcher_type] == obj[:researcher_type] and col[:event_name] == obj[:event_name] and col[:role] == obj[:role]
         end
+       #MY_LOG.info "COLUMN FIELDS: #{column_fields}"
 
         # Get Labtime Function
         labtime_fn = column_fields.select{ |col| col[:labtime_fn].present? }
@@ -354,7 +399,11 @@ module ETL
           data_fields = column_map.select do |col|
             col[:target] == :datum and col[:event_name] == obj[:event_name]
           end.map{|col| [col[:field], col[:col_index]]}
+
           data_fields = Hash[data_fields]
+
+         #MY_LOG.info "DATA FIELDS: #{data_fields}"
+
         end
 
         ## Build Loader Map Params
@@ -390,7 +439,11 @@ module ETL
           load_params[:role] = obj[:role].to_s
         end
 
+       #MY_LOG.info "LOAD PARAMS: #{load_params}"
+
+
         load_params
+
       end
     end
   end

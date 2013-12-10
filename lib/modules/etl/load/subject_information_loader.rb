@@ -91,12 +91,16 @@ module ETL
         { target: :study, field: :official_name },
         { target: :study, field: :nicknames },
         { target: :irb, field: :title, multiple: true },
-        { target: :irb, field: :number, multiple: true },
+        { target: :irb, field: :irb_number, multiple: true },
         { target: :researcher, field: :full_name, researcher_type: :pi, multiple: true },
         { target: :researcher, field: :full_name, researcher_type: :pl, role: :original },
         { target: :researcher, field: :full_name, researcher_type: :pl, role: :current },
-        { target: :subject, field: :admit_date },
-        { target: :subject, field: :discharge_date },
+        { target: :subject, field: :admit_year },
+        { target: :subject, field: :admit_month },
+        { target: :subject, field: :admit_day },
+        { target: :subject, field: :discharge_year },
+        { target: :subject, field: :discharge_month },
+        { target: :subject, field: :discharge_day },
         { target: :subject, field: :disempanelled },
         { target: :subject, field: :notes }
       ]
@@ -131,7 +135,7 @@ module ETL
         },
         {
           class: Irb,
-          existing_records: {action: :update, find_by: [:number]}
+          existing_records: {action: :update, find_by: [:irb_number]}
         }
       ]    
     end

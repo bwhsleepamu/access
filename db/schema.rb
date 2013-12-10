@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131124032825) do
+ActiveRecord::Schema.define(version: 20131209231433) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id",    precision: 38, scale: 0
@@ -241,14 +241,14 @@ ActiveRecord::Schema.define(version: 20131124032825) do
 
   create_table "irbs", force: true do |t|
     t.string   "title"
-    t.string   "number"
+    t.string   "irb_number"
     t.boolean  "deleted",    precision: 1, scale: 0, default: false, null: false
     t.datetime "created_at",                                         null: false
     t.datetime "updated_at",                                         null: false
   end
 
   add_index "irbs", ["deleted"], name: "index_irbs_on_deleted"
-  add_index "irbs", ["number"], name: "index_irbs_on_number"
+  add_index "irbs", ["irb_number"], name: "index_irbs_on_irb_number"
 
   create_table "publications", force: true do |t|
     t.integer  "pubmed_id",  precision: 38, scale: 0

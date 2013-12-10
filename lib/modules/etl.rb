@@ -22,4 +22,5 @@ module ETL
   require 'etl/load/dbf_loader'
   require 'etl/load/new_forms_loader'
   require 'etl/load/psq_loader'
+  require 'etl/load/pvt_loader'
 end

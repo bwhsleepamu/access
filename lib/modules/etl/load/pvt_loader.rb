@@ -5,25 +5,6 @@
 
 
 
-
-module ETL
-  class PvtLoader
-    EVENT_NAME = 'scored_pvt'
-    SCHEDULED_EVENT_NAME = 'scheduled_pvt'
-
-
-    def initialize(subject_group, source, documentation)
-
-
-    end
-
-
-
-
-
-    private
-
-    def init_column_map
 =begin
 
 ### Main
@@ -146,123 +127,201 @@ module ETL
 
 =end
 
+module ETL
+  class PvtLoader
+    EVENT_NAME = 'cleaned_pvt_all'
+    SCHEDULED_EVENT_NAME = 'scheduled_pvt_all'
+    SOURCE_SHEET = "FEV"
 
 
+    def initialize(subject, source, documentation)
+      begin
+        @subject = subject
+        admit_year = find_admit_year(subject, source)
+        input_file_info = { path: source.location, sheet: SOURCE_SHEET, skip_lines: 1 }
 
-      @column_map = [
+        @db_loader = ETL::DatabaseLoader.new(input_file_info, object_map(admit_year), column_map, source, documentation, @subject)
+        LOAD_LOG.info "#### PVT Loader: Successfully initialized #{@subject.subject_code} for loading of PVT data"
+        @valid = true
+      rescue => error
+        LOAD_LOG.info "#### PVT Loader: Setup Error: #{error.message}\n\nBacktrace:\n#{error.backtrace}"
+        @valid = false
+      end
+    end
+
+    def valid?
+      @valid
+    end
+
+    def load_subject
+      if @valid
+        loaded = false
+        begin
+          LOAD_LOG.info "######################             PVT LOADER            #######################"
+          LOAD_LOG.info "###################### Starting #{@subject.subject_code} #######################"
+          loaded = @db_loader.load_data
+        rescue => error
+          LOAD_LOG.info "#### Load Error: #{error.message}\n\nBacktrace:\n#{error.backtrace}\n\n"
+        end
+        loaded
+      else
+        false
+      end
+    end
+
+    private
+
+    def column_map
+      [
           { target: :subject, field: :subject_code },
-          { target: :event, field: :realtime, event_name: EVENT_NAME },
+          { target: :none },
           { target: :event, field: :labtime, event_name: EVENT_NAME },
           { target: :none },
-          { target: :event, field: :labtime, event_name: SCHEDULED_EVENT_NAME },
-          { taget: :datum, field: :wake_period, event_name: EVENT_NAME},
-          { taget: :datum, field: :section_of_protocol, event_name: EVENT_NAME},
-          { taget: :datum, field: :test_number, event_name: EVENT_NAME},
-          { taget: :datum, field: :session_number, event_name: EVENT_NAME},
-          { taget: :datum, field: :hand, event_name: EVENT_NAME},
-          { taget: :datum, field: :wake_period, event_name: EVENT_NAME},
-          { taget: :datum, field: :wake_period, event_name: EVENT_NAME},
-
-          { target: :event, field: :labtime },
-          { target: :irb, field: :title, multiple: true },
-          { target: :irb, field: :number, multiple: true },
-          { target: :researcher, field: :full_name, researcher_type: :pi, multiple: true },
-          { target: :researcher, field: :full_name, researcher_type: :pl, role: :original },
-          { target: :researcher, field: :full_name, researcher_type: :pl, role: :current },
-          { target: :subject, field: :admit_date },
-          { target: :subject, field: :discharge_date },
-          { target: :subject, field: :disempanelled },
-          { target: :subject, field: :notes }
-      ]
-
-
-
-      column_map = [
+          { target: :event, field: :labtime_decimal, event_name: SCHEDULED_EVENT_NAME },
+          { target: :datum, field: :wake_period, event_name: EVENT_NAME},
+          { target: :datum, field: :section_of_protocol, event_name: EVENT_NAME},
+          { target: :datum, field: :test_type_identifier, event_name: EVENT_NAME},
+          { target: :datum, field: :session_number, event_name: EVENT_NAME},
+          { target: :datum, field: :handedness, event_name: EVENT_NAME},
+          { target: :datum, field: :interstimulus_interval_min, event_name: EVENT_NAME},
+          { target: :datum, field: :interstimulus_interval_max, event_name: EVENT_NAME},
+          { target: :none },
+          { target: :datum, field: :n_wrong, event_name: EVENT_NAME},
           { target: :none },
           { target: :none },
-          { target: :event, field: :labtime_year, event_name: EVENT_NAME.to_sym },
-          { target: :event, field: :labtime_hour, event_name: EVENT_NAME.to_sym },
-          { target: :event, field: :labtime_min, event_name: EVENT_NAME.to_sym },
-          { target: :event, field: :labtime_sec, event_name: EVENT_NAME.to_sym },
-          { target: :datum, field: :activity_count, event_name: EVENT_NAME.to_sym },
-          { target: :datum, field: :light_level, event_name: EVENT_NAME.to_sym },
-          { target: :datum, field: :epoch_length, event_name: EVENT_NAME.to_sym }
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :datum, field: :n_timeouts, event_name: EVENT_NAME},
+          { target: :datum, field: :all_mean, event_name: EVENT_NAME},
+          { target: :datum, field: :all_median, event_name: EVENT_NAME},
+          { target: :datum, field: :all_std, event_name: EVENT_NAME},
+          { target: :datum, field: :slow_mean, event_name: EVENT_NAME},
+          { target: :datum, field: :slow_std, event_name: EVENT_NAME},
+          { target: :datum, field: :fast_mean, event_name: EVENT_NAME},
+          { target: :datum, field: :fast_std, event_name: EVENT_NAME},
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :datum, field: :n_correct, event_name: EVENT_NAME},
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :datum, field: :lapse_definition, event_name: EVENT_NAME},
+          { target: :datum, field: :n_lapses, event_name: EVENT_NAME},
+          { target: :datum, field: :lapse_transformation, event_name: EVENT_NAME},
+          { target: :datum, field: :n_lapses_in_slow, event_name: EVENT_NAME},
+          { target: :none },
+          { target: :datum, field: :bin_length, event_name: EVENT_NAME},
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :datum, field: :slope, event_name: EVENT_NAME},
+          { target: :datum, field: :intercept, event_name: EVENT_NAME},
+          { target: :none },
+          { target: :datum, field: :correlation, event_name: EVENT_NAME},
+          { target: :none },
+          { target: :datum, field: :test_duration_scheduled, event_name: EVENT_NAME},
+          { target: :datum, field: :test_duration_actual, event_name: EVENT_NAME},
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :datum, field: :version, event_name: EVENT_NAME},
+          { target: :event, field: :notes, event_name: EVENT_NAME}
       ]
+    end
 
-      object_map = [
+    def object_map(patient_year)
+      [
+          {
+              class: Subject,
+              existing_records: {action: :ignore, find_by: [:subject_code]}
+          },
           {
               class: Event,
               existing_records: {action: :destroy, find_by: [:name, :subject_id]},
-              event_name: EVENT_NAME.to_sym
-          }
-      ]
-
-
-
-
-    end
-
-    def init_object_map
-      @object_map = [
-          {
-              class: Subject,
-              existing_records: {action: :update, find_by: [:subject_code]}
+              event_name: EVENT_NAME,
+              static_fields: { labtime_year: patient_year },
+              static_data_fields: { pvt_type: "visual pvt" }
           },
           {
-              class: Study,
-              existing_records: {action: :update, find_by: [:official_name]}
-          },
-          {
-              class: Researcher,
-              existing_records: {action: :update, find_by: [:full_name]},
-              researcher_type: :pi
-          },
-          {
-              class: Researcher,
-              existing_records: {action: :update, find_by: [:full_name]},
-              researcher_type: :pl,
-              role: :original
-          },
-          {
-              class: Researcher,
-              existing_records: {action: :update, find_by: [:full_name]},
-              researcher_type: :pl,
-              role: :current
-          },
-          {
-              class: Irb,
-              existing_records: {action: :update, find_by: [:number]}
+              class: Event,
+              existing_records: { action: :destroy, find_by: [:name, :subject_id]},
+              event_name: SCHEDULED_EVENT_NAME,
+              static_fields: { labtime_year: patient_year },
+              static_data_fields: { pvt_type: "visual pvt" }
           }
       ]
     end
-
-
 
   end
 end
 
-
-
-
-
-def init_fd_subjects
-  @column_map += [
-      { target: :datum, field: :age_group, event_name: :forced_desynchrony_subject_information },
-      { target: :datum, field: :t_cycle, event_name: :forced_desynchrony_subject_information },
-      { target: :datum, field: :sleep_period_duration, event_name: :forced_desynchrony_subject_information },
-      { target: :datum, field: :wake_period_duration, event_name: :forced_desynchrony_subject_information },
-      { target: :datum, field: :analysis_start_time, event_name: :forced_desynchrony_subject_information },
-      { target: :datum, field: :analysis_end_time, event_name: :forced_desynchrony_subject_information },
-      { target: :datum, field: :intervention, event_name: :forced_desynchrony_subject_information }
-  ]
-
-  @object_map += [
-      {
-          class: Event,
-          existing_records: {action: :destroy, find_by: [:name, :subject_id]},
-          event_name: :forced_desynchrony_subject_information,
-          static_fields: {realtime: Time.zone.now}
-      }
-  ]
+def find_admit_year(subject, source)
+  if subject.admit_year.present?
+    subject.admit_year
+  else
+    xls = Roo::Spreadsheet.open(source.location)
+    m = /\d+\/\d+\/(\d+) \d+\:\d+/.match xls.sheet("FEV").row(2)[1]
+    m[1].to_i
+  end
 end
-

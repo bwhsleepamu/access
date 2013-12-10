@@ -23,8 +23,8 @@ class Irb < ActiveRecord::Base
 
   ##
   # Validations
-  validates_presence_of :number, :title
-  validates_uniqueness_of :number
+  validates_presence_of :irb_number, :title
+  validates_uniqueness_of :irb_number
 
   ##
   # Class Methods
