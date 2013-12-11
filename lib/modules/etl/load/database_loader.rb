@@ -30,81 +30,85 @@ module ETL
         LOAD_LOG.info "##########  Starting at row #{@first_row}   ##########"
 
         (@first_row..@source_file.last_row).each do |i|
+          begin
+            #MY_LOG.info "##loader_map:\n#{@loader_map.to_yaml}"
+            row = @source_file.row(i)
+            next if skip_row?(row)
+           #MY_LOG.info "ROW: #{row}"
+            row_subject = ensure_subject_available
+            LOAD_LOG.info "###### LOADING ROW #{i}: #{(Time.zone.now() - start_time)/60} minutes elapsed" if i % 1000 == @first_row
+            #MY_LOG.info "#{@loader_map}"
+            @loader_map.each do |mapping|
+             #MY_LOG.info "MAPPING: #{mapping}"
 
-          #MY_LOG.info "##loader_map:\n#{@loader_map.to_yaml}"
-          row = @source_file.row(i)
-          next if skip_row?(row)
-         #MY_LOG.info "ROW: #{row}"
-          row_subject = ensure_subject_available
-          LOAD_LOG.info "###### LOADING ROW #{i}: #{(Time.zone.now() - start_time)/60} minutes elapsed" if i % 1000 == @first_row
-          #MY_LOG.info "#{@loader_map}"
-          @loader_map.each do |mapping|
-           #MY_LOG.info "MAPPING: #{mapping}"
+              col_values = {}
+              data_values = {}
 
-            col_values = {}
-            data_values = {}
+              ## Destroy existing records if required, and only for single-row-per-subject files (aka subject cannot be supplied)
+              destroy_existing_record?(mapping, row_subject) unless @subject.present?
 
-            ## Destroy existing records if required, and only for single-row-per-subject files (aka subject cannot be supplied)
-            destroy_existing_record?(mapping, row_subject) unless @subject.present?
+              ## Map spreadsheet cell values to object fields
+              mapping[:column_fields].each{|field, index| col_values[field] = cell_value(row, index)}
+              mapping[:data_fields].each{|field,index| data_values[field.to_s] = cell_value(row, index)} if mapping[:data_fields]
 
-            ## Map spreadsheet cell values to object fields
-            mapping[:column_fields].each{|field, index| col_values[field] = cell_value(row, index)}
-            mapping[:data_fields].each{|field,index| data_values[field.to_s] = cell_value(row, index)} if mapping[:data_fields]
+             #MY_LOG.info "\nCVS: #{col_values}\nDVS: #{data_values}"
 
-           #MY_LOG.info "\nCVS: #{col_values}\nDVS: #{data_values}"
+              ## Determine number of objects to create
+              attrs_list = determine_object_number(mapping, col_values, data_values)
+             #MY_LOG.info "attrs_list: #{attrs_list}"
 
-            ## Determine number of objects to create
-            attrs_list = determine_object_number(mapping, col_values, data_values)
-           #MY_LOG.info "attrs_list: #{attrs_list}"
+              ## Create all objects
+              attrs_list.each do |attr_array|
+               #MY_LOG.info "attr_array: #{attr_array}"
 
-            ## Create all objects
-            attrs_list.each do |attr_array|
-             #MY_LOG.info "attr_array: #{attr_array}"
+                col_attrs = attr_array[0]
+                data_attrs = attr_array[1]
 
-              col_attrs = attr_array[0]
-              data_attrs = attr_array[1]
+                # skip this object if all fields are nil
+                next unless col_attrs.values.any? or data_attrs.values.any?
 
-              # skip this object if all fields are nil
-              next unless col_attrs.values.any? or data_attrs.values.any?
+                ## Build Attributes
+                obj_attrs = build_attributes(mapping, col_attrs, data_attrs, row_subject)
 
-              ## Build Attributes
-              obj_attrs = build_attributes(mapping, col_attrs, data_attrs, row_subject)
+                ## Clean Time Attributes if object is an event
+                #obj_attrs = clean_time_params(obj_attrs, mapping) if mapping[:class] == Event
+                #MY_LOG.info "class: #{mapping[:class]} col: #{col_attrs} d: #{data_attrs} obj: #{obj_attrs} row_subject: #{row_subject}"
 
-              ## Clean Time Attributes if object is an event
-              #obj_attrs = clean_time_params(obj_attrs, mapping) if mapping[:class] == Event
-              #MY_LOG.info "class: #{mapping[:class]} col: #{col_attrs} d: #{data_attrs} obj: #{obj_attrs} row_subject: #{row_subject}"
+                ## Create Object
 
-              ## Create Object
+                # For existing records: update -
+                obj = get_existing_object(mapping, obj_attrs) if mapping[:existing_records][:action] == :update or mapping[:existing_records][:action] == :ignore
 
-              # For existing records: update -
-              obj = get_existing_object(mapping, obj_attrs) if mapping[:existing_records][:action] == :update or mapping[:existing_records][:action] == :ignore
+                if obj
 
-              if obj
-
-                ## Update - use logged update
-                obj.logged_update(obj_attrs, @source.user, @source, @documentation) unless mapping[:existing_records][:action] == :ignore
-              else
-                ## Create
-                if mapping[:class] == Event # Direct Create for Events to speed up load
-                  #MY_LOG.info "\n#OBJ_ATTRS:\n#{obj_attrs}"
-                  Event.direct_create(obj_attrs)
-                else # Normal route for other classes
-                  LOAD_LOG.info "Creating #{mapping[:class]}"
-                  obj = mapping[:class].logged_new(obj_attrs, @source.user, @source, @documentation)
-                  LOAD_LOG.error "##### WARNING!! Object failed to save: #{obj} | #{obj.errors.full_messages}" unless obj.save
+                  ## Update - use logged update
+                  obj.logged_update(obj_attrs, @source.user, @source, @documentation) unless mapping[:existing_records][:action] == :ignore
+                else
+                  ## Create
+                  if mapping[:class] == Event # Direct Create for Events to speed up load
+                    #MY_LOG.info "\n#OBJ_ATTRS:\n#{obj_attrs}"
+                    Event.direct_create(obj_attrs)
+                  else # Normal route for other classes
+                    LOAD_LOG.info "Creating #{mapping[:class]}"
+                    obj = mapping[:class].logged_new(obj_attrs, @source.user, @source, @documentation)
+                    LOAD_LOG.error "##### WARNING!! Object failed to save: #{obj} | #{obj.errors.full_messages}" unless obj.save
+                  end
                 end
+
+                # Set Subject Association
+                set_subject_association(obj, mapping, row_subject)
+
+                # Set loaded subject as row subject
+                row_subject = obj if mapping[:class] == Subject
               end
-
-              # Set Subject Association              
-              set_subject_association(obj, mapping, row_subject)
-
-              # Set loaded subject as row subject
-              row_subject = obj if mapping[:class] == Subject
+              row_subject.touch
+              unique_subjects << row_subject.subject_code unless unique_subjects.include? row_subject.subject_code
             end
-            row_subject.touch
-            unique_subjects << row_subject.subject_code unless unique_subjects.include? row_subject.subject_code
+           #MY_LOG.info "\n"
+          rescue => error
+            LOAD_LOG.info "## Database Loader: #{@source.location} | Row failed to load: #{error.message}\nRow: #{row}\nBacktrace:\n#{error.backtrace}"
           end
-         #MY_LOG.info "\n"
+
         end # rows
         LOAD_LOG.info "TIME: #{(Time.zone.now() - start_time)/60} minutes"
 
@@ -218,7 +222,7 @@ module ETL
 
       if (obj_attrs.keys & formatted_labtime_fields).sort == formatted_labtime_fields.sort
         fn_name = mapping[:labtime_fn].present? ? mapping[:labtime_fn] : "from_s"
-        obj_attrs[:labtime] = Labtime.send(fn_name, obj_attrs[:labtime], { year: obj_attrs[:labtime_year] })
+        obj_attrs[:labtime] = Labtime.send(fn_name, obj_attrs[:labtime], { year: obj_attrs[:labtime_year], sec: obj_attrs[:labtime_sec] })
       elsif (obj_attrs.keys & raw_labtime_fields).sort == raw_labtime_fields.sort
         obj_attrs[:labtime] = Labtime.new(obj_attrs.delete(:labtime_year), obj_attrs.delete(:labtime_hour), obj_attrs.delete(:labtime_min), obj_attrs.delete(:labtime_sec))
       elsif (obj_attrs.keys & decimal_labtime_fields).sort == decimal_labtime_fields.sort
