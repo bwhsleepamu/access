@@ -3,13 +3,23 @@
     # Data Dictionary
     # Data Type
 %>
+
 <%= fields_for data_dictionary do |f| %>
   <% if data_type.storage == "num_value" || data_type.range? || data_type.length? %>
       <% if data_type.multiple? %>
         <div id="multiple_field" class="attribute_field">
           <div class="form-group">
             <%= f.label :multivalue, "Can data have more than one value?", class: 'control-label' %>
-            <%= f.select :multivalue, [["No", 0], ["Yes", 1]], {}, { class: 'form-control'} %>
+            <div class="radio">
+              <label>
+                <%= f.radio_button :multivalue, 0, checked: true %> No
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <%= f.radio_button :multivalue, 1 %> Yes
+              </label>
+            </div>
           </div>
         </div>
       <% end %>
@@ -69,7 +79,6 @@
     <fieldset>
       <legend>Allowed Values</legend>
       <div id="value_fields" class="attribute_field">
-
         <ol>
           <% data_dictionary.allowed_data_values.each do |allowed_value| %>
             <li>

@@ -27,7 +27,6 @@ class DataDictionaryController < ApplicationController
   # POST /data_dictionary.json
   def create
     @data_dictionary = DataDictionary.logged_new(data_dictionary_params, current_user)
-    @data_dictionary.user_id = current_user.id
 
     respond_to do |format|
       if @data_dictionary.save
@@ -64,6 +63,17 @@ class DataDictionaryController < ApplicationController
     end
   end
 
+
+  def data_attribute_form
+    data_dictionary = params[:data_dictionary_id].empty? ? DataDictionary.new : DataDictionary.find(params[:data_dictionary_id])
+
+    data_dictionary.min_data_value = DataValue.new if data_dictionary.min_data_value.nil?
+    data_dictionary.max_data_value = DataValue.new if data_dictionary.max_data_value.nil?
+    data_dictionary.allowed_data_values.build #if data_dictionary.allowed_values.blank? (might be needed for blank template)
+
+    render :partial => "data_attributes", :locals => {data_type: DataType.find(params[:data_type_id]), data_dictionary: data_dictionary }
+  end
+
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_data_dictionary
@@ -72,6 +82,6 @@ class DataDictionaryController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def data_dictionary_params
-    params.require(:data_dictionary).permit(:title, :description, :data_type_id, :data_unit_id, :min_value, :min_value_inclusive, :max_value, :max_value_inclusive, :multivalue, :min_length, :max_length_integer, :unit, :allowed_values)
+    params.require(:data_dictionary).permit(:title, :description, :data_type_id, :data_unit_id, :min_value, :min_value_inclusive, :max_value, :max_value_inclusive, :multivalue, :min_length, :max_length_integer, :unit, allowed_values: [])
   end
 end

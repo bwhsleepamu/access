@@ -27,7 +27,6 @@ class DataTypesController < ApplicationController
   # POST /data_types.json
   def create
     @data_type = DataType.logged_new(data_type_params, current_user)
-    @data_type.user_id = current_user.id
 
     respond_to do |format|
       if @data_type.save

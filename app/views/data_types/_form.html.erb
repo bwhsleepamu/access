@@ -4,39 +4,48 @@
 
 
 <div id="data_type_form">
-  <%= form_for @data_types, html: {role: 'form', class: 'form-horizontal'} do |f| %>
-      <%= display_errors @data_types %>
+  <%= form_for @data_type, html: {role: 'form' } do |f| %>
+      <%= display_errors @data_type %>
+      <div class="row">
+          <div class="col-md-6">
+            <fieldset>
+              <div class="form-group">
+                <%= f.label :name, nil, class: 'control-label' %>
+                <%= f.text_field :name, class: 'form-control' %>
+              </div>
 
-      <div class="form-group">
-        <%= f.label :name, nil, class: 'control-label' %>
-        <%= f.text_field :name, class: 'form-control' %>
+              <div class="form-group">
+                <%= f.label :storage, "Storage type", class: 'control-label' %>
+                <%= f.select :storage, DataValue::VALUE_FIELDS, class: 'form-control' %>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="col-md-6">
+            <fieldset>
+              <div class="form-group">
+                <label class="checkbox-inline">
+                  <%= f.check_box :range %> Enable <strong>range</strong> restrictions?
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="checkbox-inline">
+                  <%= f.check_box :length %> Enable <strong>length</strong> restrictions?
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="checkbox-inline">
+                  <%= f.check_box :values %> Enable restricting <strong>allowed values</strong>?
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="checkbox-inline">
+                  <%= f.check_box :multiple %> Enable <strong>multiple values?</strong>
+                </label>
+              </div>
+            </fieldset>
+          </div>
       </div>
-
-      <div class="form-group">
-        <%= f.label :storage, nil, class: 'control-label' %>
-        <%= f.select :storage, DataValue::VALUE_FIELDS, class: 'form-control' %>
-      </div>
-
-      <div class="form-group">
-        <%= f.label :range, nil, class: 'control-label' %>
-        <%= f.check_box :range, class: 'form-control' %>
-      </div>
-
-      <div class="form-group">
-        <%= f.label :length, nil, class: 'control-label' %>
-        <%= f.check_box :length, class: 'form-control' %>
-      </div>
-
-      <div class="form-group">
-        <%= f.label :values, nil, class: 'control-label' %>
-        <%= f.check_box :values, class: 'form-control' %>
-      </div>
-
-      <div class="form-group">
-        <%= f.label :multiple, nil, class: 'control-label' %>
-        <%= f.check_box :multiple, class: 'form-control' %>
-      </div>
-
       <div class="form-actions">
         <%= f.submit nil, class: 'btn btn-primary' %>
         <%= cancel %>

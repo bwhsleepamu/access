@@ -2,12 +2,12 @@
   <h1><%= @title %></h1>
 </div>
 
-<%= form_for @data_dictionary, html: { role: 'form', class: 'form-horizontal', id: "data_dictionary", data: {data_dictionary_id: @data_dictionary.id, form_path: data_attribute_form_data_dictionary_index_path}  } do |f| %>
+<%= form_for @data_dictionary, html: { role: 'form', id: "data_dictionary", data: {data_dictionary_id: @data_dictionary.id, form_path: data_attribute_form_data_dictionary_index_path}  } do |f| %>
     <%= display_errors @data_dictionary %>
     <div class="row">
 
       <div class="col-md-6">
-        <fieldset class='form-horizontal container'>
+        <fieldset class='container'>
           <legend>Main Information</legend>
 
           <div class="form-group">
@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="form-actions">
-        <%= f.submit nil, class: 'btn btn-primary' %>
+        <%= f.submit "Create Data Dictionary entry", class: 'btn btn-primary' %>
         <%= cancel %>
     </div>
 <% end %>

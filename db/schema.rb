@@ -114,7 +114,7 @@ ActiveRecord::Schema.define(version: 20131209231433) do
   add_index "data_types", ["name"], name: "index_data_types_on_name"
 
   create_table "data_values", force: true do |t|
-    t.decimal  "num_value"
+    t.integer  "num_value",       precision: 38, scale: 0
     t.string   "text_value"
     t.datetime "time_value"
     t.string   "type_flag"

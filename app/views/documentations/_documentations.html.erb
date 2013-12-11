@@ -16,7 +16,7 @@
   <tbody class='page'>
     <% @documentations.each do |documentation| %>
       <tr>
-        <td><%= link_to documentation.title, documentation %></td>
+        <td><%= link_to documentation.title, documentation_path(documentation) %></td>
         <td><%= documentation.author %></td>
         <td><%= documentation.description %></td>
         <td></td>

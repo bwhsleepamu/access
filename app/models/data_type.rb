@@ -12,10 +12,11 @@ class DataType < ActiveRecord::Base
 
   ##
   # Concerns
-  include Loggable, Deletable
+  include Loggable, Deletable, Indexable
 
   ##
   # Scopes
+  scope :search, lambda { |term| search_scope([:name], term) }
 
   ##
   # Validations

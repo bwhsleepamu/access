@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe DocumentationsController do
+describe DataTypesController do
   login_user
 
   let(:data_type) { create(:data_type) }
   let(:valid_template) { build(:data_type) }
-  let(:invalid_template) { build(:data_type, title: nil) }
+  let(:invalid_template) { build(:data_type, name: nil) }
 
 
   describe "GET index" do

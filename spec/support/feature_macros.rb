@@ -1,6 +1,7 @@
 module FeatureMacros
-  def show_page(page, name)
-    page.driver.render("/home/pwm4/Documents/websites/#{name}.png", :full => true)
+  def show_page(name)
+    save_screenshot("/usr/local/htdocs/access/spec/screenshots/#{name}.png", full: true)
+    #page.driver.render("/home/pwm4/Documents/websites/#{name}.png", :full => true)
   end
 
   def login_user
