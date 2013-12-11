@@ -23,4 +23,5 @@ module ETL
   require 'etl/load/new_forms_loader'
   require 'etl/load/psq_loader'
   require 'etl/load/pvt_loader'
+  require 'etl/load/vas_loader'
 end

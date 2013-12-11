@@ -268,4 +268,72 @@ FactoryGirl.define do
   end
 
 
+  factory :vas_scalesad_cleaned, class: EventDictionary do
+    name "vas_scalesad_cleaned"
+
+    after(:create) do |event_dictionary|
+      it = DataType.find_by_name("integer_type")
+      nt = DataType.find_by_name("numeric_type")
+      st = DataType.find_by_name("string_type")
+
+      it = create(:integer_type) if it.blank?
+      nt = create(:numeric_type) if nt.blank?
+      st = create(:string_type) if st.blank?
+
+      create(:data_dictionary, title: "wake_period", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "section_of_protocol", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "test_type_identifier", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "session_number", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "sleepy_alert", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "excited_calm", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "weak_strong", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "groggy_clearheaded", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "clumsy_wellcoordinated", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "sluggish_energetic", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "discontented_contented", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "troubled_tranquil", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "mentallyslow_quickwitted", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "tense_relaxed", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "dreamy_attentive", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "incompetent_competent", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "happy_sad", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "hostile_friendly", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "bored_interested", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "withdrawn_sociable", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "cold_warm", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "version", data_type: st, event_dictionary: [event_dictionary])
+    end
+  end
+
+  factory :vas_shtscale_cleaned, class: EventDictionary do
+    name "vas_shtscale_cleaned"
+
+    after(:create) do |event_dictionary|
+      it = DataType.find_by_name("integer_type")
+      nt = DataType.find_by_name("numeric_type")
+      st = DataType.find_by_name("string_type")
+
+      it = create(:integer_type) if it.blank?
+      nt = create(:numeric_type) if nt.blank?
+      st = create(:string_type) if st.blank?
+
+      create(:data_dictionary, title: "wake_period", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "section_of_protocol", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "test_type_identifier", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "session_number", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "sleepy_alert", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "happy_sad", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "excited_calm", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "version", data_type: st, event_dictionary: [event_dictionary])
+    end
+
+  end
+
+  factory :vas_scalesad_scheduled, class: EventDictionary do
+    name "vas_scalesad_scheduled"
+  end
+
+  factory :vas_shtscale_scheduled, class: EventDictionary do
+    name "vas_shtscale_scheduled"
+  end
 end
