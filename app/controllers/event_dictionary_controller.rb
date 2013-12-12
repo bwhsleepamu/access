@@ -6,7 +6,7 @@ class EventDictionaryController < ApplicationController
   # GET /event_dictionary.json
   def index
     event_dictionary_scope = EventDictionary.current
-    @event_dictionary = event_dictionary_scope.search_by_terms(parse_search_terms(params[:search])).set_order(params[:order], "title asc").page_per(params) #.page(params[:page] ? params[:page] : 1).per(params[:per_page] == "all" ? nil : params[:per_page])
+    @event_dictionary = event_dictionary_scope.search_by_terms(parse_search_terms(params[:search])).set_order(params[:order], "name asc").page_per(params) #.page(params[:page] ? params[:page] : 1).per(params[:per_page] == "all" ? nil : params[:per_page])
   end
 
   # GET /event_dictionary/1
