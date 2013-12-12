@@ -1,0 +1,12 @@
+<% @title = 'Documentations' %>
+<div class="page-header">
+  <h1>
+    <%= @title %>
+    <%= link_to "Create Documentation", new_documentation_path, class: 'btn btn-mini btn-primary' %>
+  </h1>
+</div>
+
+<%= render partial: 'layouts/index_functionality', locals: { object: :documentations, per_page: params[:per_page], path: documentations_path } %>
+
+
+<div id="documentations" class="index-content"></div>

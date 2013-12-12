@@ -7,6 +7,9 @@ Access::Application.routes.draw do
   resources :source_types
   resources :event_dictionary
   resources :data_types
+  resources :events do
+    get ':name', action: :new, on: :new
+  end
 
   resources :data_dictionary do
     post 'data_attribute_form', :on => :collection

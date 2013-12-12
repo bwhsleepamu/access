@@ -18,7 +18,7 @@ class Event < ActiveRecord::Base
 
   ##
   # Concerns
-  include Loggable, Deletable
+  include Loggable, Deletable, Indexable
 
   ##
   # Database Settings
@@ -26,6 +26,7 @@ class Event < ActiveRecord::Base
 
   ##
   # Scopes
+  scope :search, lambda { |term| search_scope([:name], term) }
 
   ##
   # Validations

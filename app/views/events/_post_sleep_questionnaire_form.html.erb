@@ -1,0 +1,39 @@
+<div class="page-header">
+  <h1>New Form <small>Post-Sleep Questionnaire</small></h1>
+</div>
+<%= form_for @event, html: {role: 'form'} do |f| %>
+    <%=
+        # subject_code
+        # sleep_period
+        # labtime (which kind?)
+        # (Study)
+
+        # question_1
+
+    %>
+    <%= f.hidden_field :name, value: @event.name %>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <input type="text" name="subject_code" id="subject_code" placeholder="Subject Code" class="form-control">
+        </div>
+
+        <% @event.event_dictionary.data_dictionary.each do |dd_record| %>
+          <div class="'form-group">
+            <input type="hidden" name=event[data_list][title]" value="<%= dd_record.title %>">
+            <label for="event[data_list][value]"><%= dd_record.title.titleize %></label>
+            <input type="text" class="form-control" class="form-control" name="event[data_list][value]">
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <div class="form-actions">
+      <%= f.submit "Create #{@event.name.titleize}", class: 'btn btn-primary' %>
+      <%= cancel %>
+    </div>
+
+
+
+
+
+<% end %>
