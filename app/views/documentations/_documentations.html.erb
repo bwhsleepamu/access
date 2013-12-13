@@ -7,22 +7,20 @@
     <th><%= sort_field_helper(params[:order], 'description', 'Description', 'documentations_search') %></th>
     <th>Supporting Docs</th>
     <th>Links</th>
-    <th>User</th>
     <th><%= sort_field_helper(params[:order], 'created_at', 'Created At', 'sources_search') %></th>
     <th>Actions</th>
   </tr>
   </thead>
 
-  <tbody class='page'>
+  <tbody>
     <% @documentations.each do |documentation| %>
       <tr>
-        <td><%= link_to documentation.title, documentation_path(documentation) %></td>
+        <td><%= link_to documentation.title, documentation %></td>
         <td><%= documentation.author %></td>
-        <td><%= documentation.description %></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><%= truncate(documentation.description, length: 100) %></td>
+        <td><%= documentation.supporting_documentations.length %></td>
+        <td><%= documentation.documentation_links.length %></td>
+        <td><%= simple_date(documentation.created_at) %></td>
         <td>
           <div class="btn-group">
             <button type="button" class="btn btn-xs btn-danger dropdown-toggle" data-toggle="dropdown">

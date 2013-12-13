@@ -6,9 +6,7 @@
   </h1>
 </div>
 
-<%= render :partial => "layouts/search", locals: { object: :event_dictionary, path: event_dictionary_index_path } %>
-<%= render partial: 'layouts/per_page', locals: { object: :event_dictionary, per_page: 25 } %>
+<%= render partial: 'layouts/index_functionality', locals: { object: :event_dictionary, per_page: params[:per_page], path: event_dictionary_index_path } %>
 
-<div class="center" id="ajax_loader"><%= image_tag "contour/ajax-loader.gif" %></div>
 <div id="event_dictionary" class="index-content"></div>
 
