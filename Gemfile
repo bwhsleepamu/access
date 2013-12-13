@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.0.0'
+gem 'rails', '4.0.2'
 
 # Use oracle as the database for Active Record
 gem 'ruby-oci8'
@@ -31,10 +31,10 @@ gem 'jquery-rails'
 gem 'jbuilder', '~> 1.2'
 
 # Authentication and Styles
-gem 'contour',        '2.2.0.beta2'
+gem 'contour',        '~> 2.2.0'
 gem 'kaminari',       '~> 0.14.1'
 gem 'chosen-rails'
-gem 'compass-rails', '~> 2.0.alpha.0' # Required by chosen-rails for Rails 4 apps
+gem 'compass-rails' # Required by chosen-rails for Rails 4 apps
 
 # Observers
 gem 'rails-observers'
@@ -49,7 +49,7 @@ gem 'redcarpet'
 gem "therubyracer", :require => 'v8'
 
 # R and Raster Plots
-gem 'rsruby'
+#gem 'rsruby'
 
 # Testing
 group :test do
