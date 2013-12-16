@@ -22,17 +22,7 @@
         <td><%= documentation.documentation_links.length %></td>
         <td><%= simple_date(documentation.created_at) %></td>
         <td>
-          <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-danger dropdown-toggle" data-toggle="dropdown">
-              <span class="caret"></span>
-              <span class="sr-only">Toggle Dropdown</span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-              <%= link_to 'Edit', edit_documentation_path(documentation), class: 'btn btn-xs btn-default btn-block' %>
-              <%= link_to 'Delete', documentation, method: :delete, class: 'btn btn-xs btn-danger btn-block', data: { confirm: "Are you sure you want to delete Documentation #{documentation.title}?" } %>
-            </ul>
-          </div>
-
+          <%= render partial: 'layouts/index_actions', locals: {object: documentation, edit_path: edit_documentation_path(documentation)} %>
         </td>
       </tr>
     <% end %>

@@ -20,10 +20,13 @@ Contour.setup do |config|
   config.menu_items =
       [
           {
-              name: 'Documentation', display: 'always', path: '', position: 'right', condition: 'true', image: '', image_options: {},
+              name: 'Resources', display: 'always', path: '', position: 'right', condition: 'true', image: '', image_options: {},
               links: [
                   {name: "Documentations", path: "documentations_path"},
-#                  {name: "Sources", path: "sources_path"},
+                  {name: "Sources", path: "sources_path"},
+                  {divider: true},
+                  {name: "Data Dictionary", path: "data_dictionary_index_path"},
+                  {name: "Event Dictionary", path: "event_dictionary_index_path"}
 #                  {name: "Source Types", path: "source_types_path"}
               ]
           },

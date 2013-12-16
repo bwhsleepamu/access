@@ -1,3 +1,4 @@
+<p class='text-info object-info'><%= page_entries_info @sources %></p>
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
@@ -9,7 +10,7 @@
       <th>Parent Source</th>
       <th>Child Sources</th>
       <th><%= sort_field_helper(params[:order], 'created_at', 'Created At', 'sources_search') %></th>
-      <th>Actions</th>
+      <th></th>
     </tr>
   </thead>
 
@@ -17,15 +18,14 @@
     <tr>
       <td><%= link_to source.id, source %></td>
       <td><%= link_to source.source_type.name, source.source_type if source.source_type %></td>
-      <td><%= link_to source.user.name, source.user if source.user %></td>
-      <td><%= source.location %></td>
-      <td><%= source.description %></td>
+      <td><%= source.user.name %></td>
+      <td><%= truncate(source.location, length: 30) %></td>
+      <td><%= truncate(source.description, length: 50) %></td>
+      <td><%= link_to(source.parent_source.id, source.parent_source) if source.parent_source %></td>
+      <td><%= source.child_sources.length %></td>
       <td><%= simple_date(source.created_at) %></td>
       <td>
-        <div class="btn-group">
-          <%= link_to 'Edit', edit_source_path(source), class: 'btn btn-mini' %>
-          <%= link_to 'Delete', source, method: :delete, class: 'btn btn-mini btn-danger', data: { confirm: "Are you sure you want to delete Source #{source.location}?" } %>
-        </div>
+        <%= render partial: 'layouts/index_actions', locals: {object: source, edit_path: edit_source_path(source) } %>
       </td>
 
     </tr>
