@@ -215,24 +215,24 @@ namespace :etl do
 
       inputs =
       [
-          #{ subject_code: "3227GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3227GX/Neurobehavioral_3227GX/SCALES_3227GX.xls", event_name_base: 'vas_scalesad'},
-          { subject_code: "3227GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3227GX/Neurobehavioral_3227GX/Sscales_3227GX.xls", event_name_base: 'vas_shtscale'}
-          #{ subject_code: "3228GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3228GX/Neurobehavioral_3228GX/SCALES_3228GX.xls", event_name_base: 'vas_scalesad'},
-          #{ subject_code: "3228GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3228GX/Neurobehavioral_3228GX/Sscales_3228GX.xls", event_name_base: 'vas_shtscale'},
-          #{ subject_code: "3232GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3232GX/Neurobehavioral_3232GX/SCALES_3232GX.xls", event_name_base: 'vas_scalesad'},
-          #{ subject_code: "3232GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3232GX/Neurobehavioral_3232GX/Sscales_3232GX.xls", event_name_base: 'vas_shtscale'},
-          #{ subject_code: "3233GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3233GX/Neurobehavioral_3233GX/SCALES_3233GX.xls", event_name_base: 'vas_scalesad'},
-          #{ subject_code: "3233GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3233GX/Neurobehavioral_3233GX/Sscales_3233GX.xls", event_name_base: 'vas_shtscale'},
-          #{ subject_code: "3237GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3237GX_D/Neurobehavioural_3237GX/SCALES_3237GX.xls", event_name_base: 'vas_scalesad'},
-          #{ subject_code: "3237GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3237GX_D/Neurobehavioural_3237GX/Sscales_3237GX.xls", event_name_base: 'vas_shtscale'},
-          #{ subject_code: "3315GX32", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3315GX32/Neurobehavioral_3315GX32/SCALES_3315GX32.xls", event_name_base: 'vas_scalesad'},
-          #{ subject_code: "3315GX32", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3315GX32/Neurobehavioral_3315GX32/Sscales_3315GX32.xls", event_name_base: 'vas_shtscale'},
-          #{ subject_code: "3319GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3319GX/Neurobehavioral_3319GX/SCALES_3319GX.xls", event_name_base: 'vas_scalesad'},
-          #{ subject_code: "3319GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3319GX/Neurobehavioral_3319GX/Sscales_3319GX.xls", event_name_base: 'vas_shtscale'},
-          #{ subject_code: "3335GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3335GX/Neurobehavioral_3335GX/SCALES_3335GX.xls", event_name_base: 'vas_scalesad'},
-          #{ subject_code: "3335GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3335GX/Neurobehavioral_3335GX/Sscales_3335GX.xls", event_name_base: 'vas_shtscale'},
-          #{ subject_code: "3339GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3339GX/Neurobehavioral_3339GX/SCALES_3339GX.xls", event_name_base: 'vas_scalesad'},
-          #{ subject_code: "3339GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3339GX/Neurobehavioral_3339GX/Sscales_3339GX.xls", event_name_base: 'vas_shtscale'}
+          { subject_code: "3227GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3227GX/Neurobehavioral_3227GX/SCALES_3227GX.xls", event_name_base: 'vas_scalesad'},
+          { subject_code: "3227GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3227GX/Neurobehavioral_3227GX/Sscales_3227GX.xls", event_name_base: 'vas_shtscale'},
+          { subject_code: "3228GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3228GX/Neurobehavioral_3228GX/SCALES_3228GX.xls", event_name_base: 'vas_scalesad'},
+          { subject_code: "3228GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3228GX/Neurobehavioral_3228GX/Sscales_3228GX.xls", event_name_base: 'vas_shtscale'},
+          { subject_code: "3232GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3232GX/Neurobehavioral_3232GX/SCALES_3232GX.xls", event_name_base: 'vas_scalesad'},
+          { subject_code: "3232GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3232GX/Neurobehavioral_3232GX/Sscales_3232GX.xls", event_name_base: 'vas_shtscale'},
+          { subject_code: "3233GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3233GX/Neurobehavioral_3233GX/SCALES_3233GX.xls", event_name_base: 'vas_scalesad'},
+          { subject_code: "3233GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3233GX/Neurobehavioral_3233GX/Sscales_3233GX.xls", event_name_base: 'vas_shtscale'},
+          { subject_code: "3237GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3237GX_D/Neurobehavioural_3237GX/SCALES_3237GX.xls", event_name_base: 'vas_scalesad'},
+          { subject_code: "3237GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3237GX_D/Neurobehavioural_3237GX/Sscales_3237GX.xls", event_name_base: 'vas_shtscale'},
+          { subject_code: "3315GX32", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3315GX32/Neurobehavioral_3315GX32/SCALES_3315GX32.xls", event_name_base: 'vas_scalesad'},
+          { subject_code: "3315GX32", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3315GX32/Neurobehavioral_3315GX32/Sscales_3315GX32.xls", event_name_base: 'vas_shtscale'},
+          { subject_code: "3319GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3319GX/Neurobehavioral_3319GX/SCALES_3319GX.xls", event_name_base: 'vas_scalesad'},
+          { subject_code: "3319GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3319GX/Neurobehavioral_3319GX/Sscales_3319GX.xls", event_name_base: 'vas_shtscale'},
+          { subject_code: "3335GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3335GX/Neurobehavioral_3335GX/SCALES_3335GX.xls", event_name_base: 'vas_scalesad'},
+          { subject_code: "3335GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3335GX/Neurobehavioral_3335GX/Sscales_3335GX.xls", event_name_base: 'vas_shtscale'},
+          { subject_code: "3339GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3339GX/Neurobehavioral_3339GX/SCALES_3339GX.xls", event_name_base: 'vas_scalesad'},
+          { subject_code: "3339GX", path: "/X/Studies/Analyses/CSR_32d_FD_20h/3339GX/Neurobehavioral_3339GX/Sscales_3339GX.xls", event_name_base: 'vas_shtscale'}
       ]
 
 
@@ -255,6 +255,44 @@ namespace :etl do
       LOAD_LOG.info "\n################################\nFinished Loading VAS DATA for all Subjects!\nsuccessful: #{successful_subjects.map(&:subject_code)}\nunsuccessful: #{unsuccessful_subjects.map(&:subject_code)}\n################################\n\n\n"
 
 
+    end
+
+
+    desc "load Sleep Data"
+    task :sleep_data => :environment do
+      successful_subjects = []
+      unsuccessful_subjects = []
+
+      description = "Sleep Data File created by Elizabeth Klerman"
+      documentation = Documentation.find(93232402)
+
+      subject_group = SubjectGroup.find_by_name("beth_raster_plots")
+
+      subject_group.subjects.each do |subject|
+        file_path = File.join("/I/AMU Cleaned Data Sets/", subject.subject_code, "Sleep", "#{subject.subject_code}Sleep.xls")
+        unless File.exists? file_path
+          LOAD_LOG.info "ERROR: #{file_path} does not exist!"
+          unsuccessful_subjects << subject.subject_code
+          next
+        end
+
+        source = Source.find_by_location(file_path)
+        source ||= Source.create(location: file_path,
+                                 source_type_id: SourceType.find_by_name("Excel File").id,
+                                 user_id: User.find_by_email("pmankowski@partners.org").id,
+                                 description: description )
+        loader = ETL::SleepDataLoader.new(subject, source, documentation)
+
+        if loader.load_subject
+          successful_subjects << subject.subject_code
+        else
+          unsuccessful_subjects << subject.subject_code
+        end
+
+
+      end
+
+      LOAD_LOG.info "\n################################\nFinished Loading Sleep Data for all Subjects!\nsuccessful: #{successful_subjects}\nunsuccessful: #{unsuccessful_subjects}\n################################\n\n\n"
     end
   end
 

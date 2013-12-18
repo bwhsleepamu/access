@@ -24,4 +24,6 @@ module ETL
   require 'etl/load/psq_loader'
   require 'etl/load/pvt_loader'
   require 'etl/load/vas_loader'
+  require 'etl/load/sleep_data_loader'
+
 end

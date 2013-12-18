@@ -38,6 +38,9 @@ module ETL
             row_subject = ensure_subject_available
             LOAD_LOG.info "###### LOADING ROW #{i}: #{(Time.zone.now() - start_time)/60} minutes elapsed" if i % 1000 == @first_row
             #MY_LOG.info "#{@loader_map}"
+
+            group_labels = set_group_labels
+
             @loader_map.each do |mapping|
              #MY_LOG.info "MAPPING: #{mapping}"
 
@@ -68,7 +71,7 @@ module ETL
                 next unless col_attrs.values.any? or data_attrs.values.any?
 
                 ## Build Attributes
-                obj_attrs = build_attributes(mapping, col_attrs, data_attrs, row_subject)
+                obj_attrs = build_attributes(mapping, col_attrs, data_attrs, row_subject, group_labels)
 
                 ## Clean Time Attributes if object is an event
                 #obj_attrs = clean_time_params(obj_attrs, mapping) if mapping[:class] == Event
@@ -181,7 +184,20 @@ module ETL
       end        
     end
 
-    def build_attributes(mapping, col_attrs, data_attrs, row_subject)
+    def set_group_labels
+      label_map = {}
+
+      @event_groups.each_pair do |group, events|
+        label = ActiveRecord::Base.connection.next_sequence_value "object_id_seq"
+        events.each do |event_name|
+          label_map[event_name] = label
+        end
+      end
+
+      label_map
+    end
+
+    def build_attributes(mapping, col_attrs, data_attrs, row_subject, group_labels)
       # Deal with missing hashes
       mapping[:static_fields] ||= {}
 
@@ -202,6 +218,7 @@ module ETL
         obj_attrs[:data_list] = build_data_list data_attrs, static_data_fields
         obj_attrs[:subject_id] = row_subject.id
 
+        obj_attrs[:group_label] = group_labels[mapping[:event_name]]
         #MY_LOG.info "Attributes: #{obj_attrs}\nMapping: #{mapping}"
 
         # Labtime and Realtime ==> a :labtime or :realtime key
@@ -345,31 +362,14 @@ module ETL
 
     end
 
-    def clean_time_params(event_params, mapping)
-      ## MERGED INTO set_event_time
+    def add_group(group_name, event_name)
+      @event_groups ||= {}
 
-      # Input: ready-to-go params
-      # Output: cleaned of all other time fields except :labtime and/or :realtime
-      #raw_labtime_fields = [:labtime_year, :labtime_min, :labtime_sec, :labtime_hour]
-      #decimal_labtime_fields = [:labtime_year, :labtime_decimal]
-      #
-      #if (event_params.keys & raw_labtime_fields).sort == raw_labtime_fields.sort
-      #  event_params[:labtime] = Labtime.new(event_params.delete(:labtime_year), event_params.delete(:labtime_hour), event_params.delete(:labtime_min), event_params.delete(:labtime_sec))
-      #elsif (event_params.keys & decimal_labtime_fields).sort == decimal_labtime_fields.sort
-      #  event_params[:labtime] = Labtime.from_decimal(event_params.delete(:labtime_decimal).to_f, event_params.delete(:labtime_year))
-      #end
-      #
-      #if event_params.keys.include?(:labtime) and event_params.keys.include?(:realtime)
-      #
-      #  realtime = Time.zone.local(t.year, t.month, t.day, t.hour, t.min, t.sec)
-      #
-      #
-      #  raise StandardError, "Both realtime and labtime supplied, but values do not match: #{event_params}" unless Labtime.parse(Time.strptime(event_params[:realtime], mapping[:realtime_format])) == event_params[:labtime]
-      #elsif !event_params.keys.include?(:labtime) and !event_params.keys.include?(:realtime)
-      #  raise StandardError, "Event params are missing a time field: #{event_params}"
-      #end
-      #
-      #event_params
+      if @event_groups.has_key? group_name
+        @event_groups[group_name] << event_name
+      else
+        @event_groups[group_name] = [event_name]
+      end
     end
 
     def generate_loader_map(object_map, column_map)
@@ -435,6 +435,8 @@ module ETL
           load_params[:static_data_fields] = obj[:static_data_fields] if obj[:static_data_fields].present?
           load_params[:labtime_fn] = labtime_fn
           load_params[:realtime_format] = realtime_format
+
+          add_group(obj[:group], obj[:event_name]) if obj[:group]
         end
 
         # Researcher-specific

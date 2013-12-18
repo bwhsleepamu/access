@@ -49,7 +49,7 @@ gem 'redcarpet'
 gem "therubyracer", :require => 'v8'
 
 # R and Raster Plots
-#gem 'rsruby'
+gem 'rsruby'
 
 # Testing
 group :test do
