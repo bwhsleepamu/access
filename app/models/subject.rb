@@ -172,8 +172,8 @@ class Subject < ActiveRecord::Base
 
   def main_raster(json, timescale = :labtime)
     json.title subject_code
-    json.save_path File.join(Rails.root, "app", "assets", "images", "rasters")
-    json.filename "#{subject_code}.png"
+    json.save_path "/home/pwm4/Desktop/rasters" #File.join(Rails.root, "app", "assets", "images", "rasters")
+    json.filename "#{subject_code}.pdf"
     json.t_cyle 24
     json.timescale timescale.to_s
     json.day_height 0.5
@@ -242,9 +242,16 @@ class Subject < ActiveRecord::Base
     end
   end
 
+  def json_rep
+    Jbuilder.encode do |json|
+      main_raster(json, :realtime)
+    end
+  end
+
+  
 
   def light_episodes(timescale = :labtime)
-    eds = {start: EventDictionary.find_by_name("lighting_block_start_scheduled"), end: EventDictionary.find_by_name("lighting_block_end_scheduled")}
+    eds = {start: EventDictionary.find_by_name("light_episode_start"), end: EventDictionary.find_by_name("light_episode_end")}
 
     res = Event.interval_list self, eds[:start], eds[:end]
 
@@ -266,7 +273,7 @@ class Subject < ActiveRecord::Base
   end
 
   def sleep_episodes(timescale = :labtime)
-    eds = {start: EventDictionary.find_by_name("sleep_start_scheduled"), end: EventDictionary.find_by_name("sleep_end_scheduled")}
+    eds = {start: EventDictionary.find_by_name("sleep_period_start"), end: EventDictionary.find_by_name("sleep_period_end")}
 
     res = Event.interval_list self, eds[:start], eds[:end]
 

@@ -11,6 +11,7 @@ module ETL
   require 'etl/transform/actigraphy_merger'
   require 'etl/transform/dbf_file_merger'
   require 'etl/transform/psq_merger'
+  require 'etl/transform/sh_file_merger'
 
   # Load
   require 'etl/load/database_loader'
@@ -25,5 +26,6 @@ module ETL
   require 'etl/load/pvt_loader'
   require 'etl/load/vas_loader'
   require 'etl/load/sleep_data_loader'
+  require 'etl/load/light_data_loader'
 
 end

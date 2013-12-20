@@ -1,0 +1,29 @@
+#### Sleep Data Loader: Successfully initialized for loading of Sleep data
+#### Light Data Loader: Successfully initialized for loading of Light data
+######################    Sleep Data LOADER  #######################
+###################### Starting  #######################
+########## Database Loader: Loading Data ##########
+##########  Starting at row 2   ##########
+###### LOADING ROW 2: 0.001198422908782959 minutes elapsed
+###### LOADING ROW 1002: 1.0346254428227744 minutes elapsed
+TIME: 1.1512335022290547 minutes
+######################################################
+SUBJECTS LOADED IN TRANSACTION: ["1793W", "1812W", "1814W", "1839W", "1842W", "18G1W", "18G6W", "18J5W", "1911W", "1916W", "1916W0T2", "1922W", "1947W", "1953W", "1953W9T2", "1983W", "19A4W", "19A9W", "19D6W", "19E4W", "19G1W", "19G2W", "2000W"]
+23 IN TOTAL
+########## Database Loader: END TRANSACTION ##########
+
+
+######################    Light Data LOADER:   #######################
+###################### Starting  #######################
+########## Database Loader: Loading Data ##########
+##########  Starting at row 2   ##########
+###### LOADING ROW 2: 0.0038164297739664713 minutes elapsed
+###### LOADING ROW 1002: 1.074384073416392 minutes elapsed
+###### LOADING ROW 2002: 2.139346130688985 minutes elapsed
+TIME: 2.429359785715739 minutes
+######################################################
+SUBJECTS LOADED IN TRANSACTION: ["1793W", "1812W", "1814W", "1839W", "1842W", "18G1W", "18G6W", "18J5W", "1911W", "1916W", "1916W0T2", "1922W", "1947W", "1953W", "1953W9T2", "1983W", "19A4W", "19A9W", "19D6W", "19E4W", "19G1W", "19G2W", "2000W"]
+23 IN TOTAL
+########## Database Loader: END TRANSACTION ##########
+
+

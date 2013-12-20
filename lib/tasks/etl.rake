@@ -294,17 +294,26 @@ namespace :etl do
 
       LOAD_LOG.info "\n################################\nFinished Loading Sleep Data for all Subjects!\nsuccessful: #{successful_subjects}\nunsuccessful: #{unsuccessful_subjects}\n################################\n\n\n"
     end
+
+
   end
 
   namespace :transform do
     desc "merge actigraphy"
-    task :merge_actigraphy => :environment do
+    task :actigraphy => :environment do
       subject_group = SubjectGroup.find_by_name("sazuka_actigraphy")
       subjects = subject_group.subjects#.select{|s| s.subject_code == "3121V"}
 
       al = ETL::ActigraphyMerger.new("/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Actigraphy/LS-Actigraphy_2012.12.17.csv", "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Actigraphy/Merged Files/", subjects)
       al.merge_files
     end
+
+    desc "merge sh files"
+    task :sh_files => :environment do
+      shm = ETL::ShFileMerger.new("/home/pwm4/Desktop/GRRRR/Vacation Data/NSBRI_55d_Entrainment", "/home/pwm4/Desktop/GRRRR/Vacation Data/Merged", SubjectGroup.find_by_name("beth_raster_plots"))
+      shm.merge
+    end
+
   end
 
 end
