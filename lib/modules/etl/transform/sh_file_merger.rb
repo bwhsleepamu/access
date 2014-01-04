@@ -70,6 +70,27 @@ module ETL
         end
       end
     end
+
+
+    private
+
+
+
+
+
+    def find_subject_directory(subject, source_dir)
+      subject_dir = nil
+      if subject.t_drive_location.present?
+        if File.basename(subject.t_drive_location).upcase == subject.subject_code
+          subject_dir = subject.t_drive_location
+        else
+          subject_dir = File.join(subject.t_drive_location)
+        end
+      else
+
+      end
+
+    end
   end
 
 end

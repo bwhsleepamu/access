@@ -12,7 +12,7 @@
 
         <div class="form-group">
           <%= f.label :source_type_id, nil, class: 'control-label' %>
-          <%= f.select :source_type_id, [['---', nil]] + SourceType.current.collect{|s| [s.name, s.id]}, {}, {rel: :chosen, data: {placeholder: "Chose one..."}} %>
+          <%= f.select :source_type_id, [['---', nil]] + SourceType.current.collect{|s| [s.name, s.id]}, {}, {rel: :chosen, class: 'form-control',  data: {placeholder: "Chose one..."}} %>
         </div>
 
         <div class="form-group">
@@ -30,24 +30,14 @@
     <div class='col-md-6'>
       <fieldset class='source-hierarchy'>
         <legend>Source hierarchy</legend>
-
-        <div class="form-group">
-          <%= f.label :parent_id, 'Parent source', class: 'control-label' %>
-          <%= f.select :parent_id, [['---', nil]] + Source.current.collect{|s| [s.location, s.id]}, {}, {rel: :chosen, data: {placeholder: "Select parent source"}} %>
-        </div>
-
-        <div class="form-group">
-          <%= f.label :child_source_ids, 'Child sources', class: 'control-label' %>
-          <%= f.collection_select :child_source_ids, Source.current.order(:location), :id, :location, {}, {multiple: true, rel: 'chosen', data: {placeholder: "Select sources that contributed to this source"}} %>
-        </div>
-
+        <div class="fields"><div class="center" id="ajax_loader"><%= image_tag "contour/ajax-loader.gif" %></div></div>
       </fieldset>
     </div>
 
   </div>
 
   <div class='row'>
-    <fieldset class='container'>
+    <fieldset>
       <div class="form-group">
         <%= f.label :description, nil, class: 'control-label' %>
         <%= f.text_area :description, rows: 7, class: 'form-control description' %>

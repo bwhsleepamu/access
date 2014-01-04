@@ -34,7 +34,7 @@
             <legend>Supporting documentations</legend>
 
             <div class="form-group">
-              <%= f.collection_select :supporting_documentation_ids, Documentation.current.order(:title), :id, :display_name, {}, {multiple: true, rel: 'chosen', data: {placeholder: "Select supporting documentations (shown as author: title)"}} %>
+              <%= f.collection_select :supporting_documentation_ids, Documentation.current.order(:title), :id, :display_name, {}, {multiple: true, rel: 'chosen', class: 'form-control', data: {placeholder: "Select supporting documentations (shown as author: title)"}} %>
             </div>
 
           </fieldset>

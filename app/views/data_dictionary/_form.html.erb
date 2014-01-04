@@ -7,7 +7,7 @@
     <div class="row">
 
       <div class="col-md-6">
-        <fieldset class='container'>
+        <fieldset>
           <legend>Main Information</legend>
 
           <div class="form-group">
@@ -26,7 +26,7 @@
           <legend>Data Attributes</legend>
           <div class="form-group">
             <%= f.label :data_type_id, nil, class: 'control-label' %>
-            <%= f.select :data_type_id, [['---', nil]] + DataType.current.collect{|d| [d.name, d.id]}, {}, {rel: :chosen, data: {placeholder: "Select the data type of this variable..."}} %>
+            <%= f.select :data_type_id, [['---', nil]] + DataType.current.collect{|d| [d.name, d.id]}, {}, {rel: :chosen, class: 'form-control', data: {placeholder: "Select the data type of this variable..."}} %>
           </div>
           <div id="data_attributes"></div>
         </fieldset>

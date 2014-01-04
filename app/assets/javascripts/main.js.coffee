@@ -1,14 +1,20 @@
+# Page Load Actions
+@mainReady = () ->
+  $("select[rel=chosen]").chosen
+    allow_single_deselect: true
+    no_results_text: 'No results matched'
+    width: '100%'
+  $(".chosen").chosen
+    allow_single_deselect: true
+    no_results_text: 'No results matched'
+    width: '100%'
 
-$("select[rel=chosen]").parent().addClass("chosen-width-fix")
-$(".chosen").parent().addClass("chosen-width-fix")
-$("select[rel=chosen]").chosen
-  allow_single_deselect: true
-  no_results_text: 'No results matched'
-  width: '400px'
-$(".chosen").chosen
-  allow_single_deselect: true
-  no_results_text: 'No results matched'
-  width: '400px'
+
+# Event Handler Definitions
+
+
+
+@
 
 
 

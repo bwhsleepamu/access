@@ -248,6 +248,10 @@ class Subject < ActiveRecord::Base
     end
   end
 
+  def t_drive_location
+    # Always return UNIX-style paths
+    self[:t_drive_location].gsub /\\+/, '/' if self[:t_drive_location]
+  end
   
 
   def light_episodes(timescale = :labtime)

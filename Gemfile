@@ -5,8 +5,7 @@ gem 'rails', '4.0.2'
 
 # Use oracle as the database for Active Record
 gem 'ruby-oci8'
-#gem 'activerecord-oracle_enhanced-adapter'
-gem 'activerecord-oracle_enhanced-adapter', github: 'rsim/oracle-enhanced', branch: 'rails4'
+gem "activerecord-oracle_enhanced-adapter", "~> 1.5.0"
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
@@ -25,7 +24,7 @@ gem 'therubyracer', platforms: :ruby
 gem 'jquery-rails'
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
-#gem 'turbolinks'
+gem 'turbolinks'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 1.2'
@@ -33,8 +32,6 @@ gem 'jbuilder', '~> 1.2'
 # Authentication and Styles
 gem 'contour',        '~> 2.2.0'
 gem 'kaminari',       '~> 0.14.1'
-gem 'chosen-rails'
-gem 'compass-rails' # Required by chosen-rails for Rails 4 apps
 
 # Observers
 gem 'rails-observers'
