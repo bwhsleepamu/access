@@ -66,10 +66,10 @@ module ETL
           csv << COLUMN_LIST
           @input_file_list.each do |input_file_path, columns|
             merged_source.child_sources.build(location: input_file_path)
-            xls = Roo::Spreadsheet.open(input_file_path)
+            xls = Roo::Excel.new(input_file_path)
             xls.each_with_pagename do |subject_tab, sheet|
               subject_code = subject_tab.upcase
-              if @subject_group.subjects.map(&:subject_code).include? subject_code
+              if subject_tab_valid? subject_code, @subject_group
                 (sheet.first_row+1..sheet.last_row).each do |row_num|
                   row = columns.include?("q_2a") ? merge_question_2(columns, sheet.row(row_num)) : sheet.row(row_num)
                   mapped_row = map_row(columns, row, subject_code)
@@ -144,6 +144,14 @@ module ETL
       MY_LOG.info finalized_row
 
       valid_row?(finalized_row) ? finalized_row : nil
+    end
+
+    def subject_tab_valid?(subject_code, subject_group)
+      if subject_group.nil?
+        (Subject::SUBJECT_CODE_REGEX =~ subject_code).present?
+      else
+        subject_group.subjects.map(&:subject_code).include? subject_code
+      end
     end
   end
 end

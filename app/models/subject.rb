@@ -30,7 +30,7 @@ class Subject < ActiveRecord::Base
 
   ##
   # Pattern
-  SUBJECT_CODE_REGEX = /(\d[0-9a-z]*[a-z][0-9a-z]*)/
+  SUBJECT_CODE_REGEX = /(\d[0-9a-z]*[a-z][0-9a-z]*)/i
 
   ##
   # Scopes

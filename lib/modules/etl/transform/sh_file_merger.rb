@@ -2,17 +2,22 @@ require 'find'
 
 module ETL
   class ShFileMerger
-    attr_reader :source_directory, :subject_group, :output_directory
+    attr_reader :source_directory, :subject_group, :output_directory, :sp_output_name, :lt_output_name
 
-    def initialize(source_directory, output_directory, subject_group)
-      @source_directory = source_directory
-      @output_directory = output_directory
-      @subject_group = subject_group
+    DEFAULT_SP_NAME = 'sleep_periods.csv'
+    DEFAULT_LT_NAME = 'light_events.csv'
+
+    def initialize(attrs)
+      @source_directory = attrs[:source_dir]
+      @output_directory = attrs[:output_dir]
+      @subject_group = attrs[:subject_group]
+      @sp_output_name = attrs[:sp_output_name] || DEFAULT_SP_NAME
+      @lt_output_name = attrs[:lt_output_name] || DEFAULT_LT_NAME
     end
 
     def merge
-      ibob_output = CSV.open(File.join(output_directory, "sleep_periods.csv"), 'w')
-      lt_output = CSV.open(File.join(output_directory, "light_events.csv"), 'w')
+      ibob_output = CSV.open(File.join(output_directory, @sp_output_name), 'w')
+      lt_output = CSV.open(File.join(output_directory, @lt_output_name), 'w')
 
       ibob_output << ['subject_code', 'sleep_period_number', 'start_labtime_hour', 'start_labtime_min', 'start_labtime_year', 'end_labtime_hour', 'end_labtime_min', 'end_labtime_year']
       lt_output << ['subject_code', 'light_level', 'start_labtime_hour', 'start_labtime_min', 'start_labtime_year', 'end_labtime_hour', 'end_labtime_min', 'end_labtime_year']
@@ -42,6 +47,9 @@ module ETL
           unsuccessful << subject.subject_code
         end
       end
+
+      ibob_output.close
+      lt_output.close
     end
 
 

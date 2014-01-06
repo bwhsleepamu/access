@@ -38,5 +38,15 @@ describe ETL::PsqMerger do
 
       expect(Source.all.count).to eq(3)
     end
+
+    it "should work without a subject group" do
+      psq_merger = ETL::PsqMerger.new nil, source_file_list, destination_file_path
+
+      expect(psq_merger.merge_files).to be_true
+
+      expect(File.exists? destination_file_path).to be_true
+      expect(Source.all.count).to eq(3)
+    end
+
   end
 end

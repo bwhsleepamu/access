@@ -130,18 +130,18 @@ module ETL
 
       # Add all possible variations of t drive location
       if subject.t_drive_location.present?
-        t_drive_dir_transformed = subject.t_drive_location.gsub(/^/, '/').gsub(':', '')
+        t_drive_dir_transformed = subject.t_drive_location.gsub(/(^\w)/, '/\1').gsub(':', '')
         if File.basename(subject.t_drive_location).upcase == subject.subject_code
           subject_dirs << subject.t_drive_location
           subject_dirs << t_drive_dir_transformed
         else
           subject_dirs << File.join(subject.t_drive_location, subject.subject_code)
           subject_dirs << File.join(subject.t_drive_location, subject.subject_code.downcase)
-          subject_dirs << File.join(subject.t_drive_dir_transformed, subject.subject_code)
-          subject_dirs << File.join(subject.t_drive_dir_transformed, subject.subject_code.downcase)
+          subject_dirs << File.join(t_drive_dir_transformed, subject.subject_code)
+          subject_dirs << File.join(t_drive_dir_transformed, subject.subject_code.downcase)
         end
 
-        subject_dirs.keep_if { |d| File.directory? d }
+        subject_dirs.uniq!.keep_if { |d| File.directory? d }
       end
 
       # If folder cannot be found using t drive location, search T drive
