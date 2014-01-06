@@ -18,7 +18,7 @@
     <tr>
       <td><%= link_to source.id, source %></td>
       <td><%= link_to source.source_type.name, source.source_type if source.source_type %></td>
-      <td><%= source.user.name %></td>
+      <td><%= source.user.name if source.user %></td>
       <td><%= truncate(source.location, length: 30) %></td>
       <td><%= truncate(source.description, length: 50) %></td>
       <td><%= link_to(source.parent_source.id, source.parent_source) if source.parent_source %></td>

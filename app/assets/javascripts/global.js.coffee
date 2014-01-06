@@ -6,6 +6,7 @@
   documentationsReady()
   sourcesReady()
   studiesReady()
+  subjectGroupsReady()
 
 
 ## The two options (turbolinks, full page refresh) are adressed here

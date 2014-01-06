@@ -10,7 +10,11 @@ module ETL
     FILE_TYPE_LIST = {
         dbf: {
             new_forms: {source_type_id: 10022, pattern: /.*NewForms.*\.dbf\z/i}
+        },
+        sh: {
+
         }
+
     }
 
     ## TEST FUNCTION
@@ -46,7 +50,7 @@ module ETL
       MY_LOG.info "number of bad sc: #{bad_sc.length}"
     end
 
-    def self.get_file_list(type, name, subject_group, root_path)
+    def self.get_file_list(type, name, subject_group = nil, root_path = T_DRIVE_ROOT)
       file_list = {}
       subjects_rejected = []
       bad_subject_code = []
@@ -119,6 +123,44 @@ module ETL
       end
 
       details
+    end
+
+    def self.find_subject_directory(subject, root_path = T_DRIVE_ROOT)
+      subject_dirs = []
+
+      # Add all possible variations of t drive location
+      if subject.t_drive_location.present?
+        t_drive_dir_transformed = subject.t_drive_location.gsub(/^/, '/').gsub(':', '')
+        if File.basename(subject.t_drive_location).upcase == subject.subject_code
+          subject_dirs << subject.t_drive_location
+          subject_dirs << t_drive_dir_transformed
+        else
+          subject_dirs << File.join(subject.t_drive_location, subject.subject_code)
+          subject_dirs << File.join(subject.t_drive_location, subject.subject_code.downcase)
+          subject_dirs << File.join(subject.t_drive_dir_transformed, subject.subject_code)
+          subject_dirs << File.join(subject.t_drive_dir_transformed, subject.subject_code.downcase)
+        end
+
+        subject_dirs.keep_if { |d| File.directory? d }
+      end
+
+      # If folder cannot be found using t drive location, search T drive
+      if subject_dirs.empty?
+        Find.find(root_path) do |path|
+          if FileTest.directory?(path)
+            if File.basename(path).upcase == subject.subject_code
+              subject_dirs << path
+              Find.prune
+            end
+          end
+        end
+      end
+
+      # What if more than one folder is found?
+      raise StandardError if subject_dirs.length > 1
+
+      subject_dirs.first
+
     end
 
   end

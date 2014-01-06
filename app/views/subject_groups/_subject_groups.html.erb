@@ -1,0 +1,35 @@
+<p class='text-info object-info'><%= page_entries_info @subject_groups %></p>
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th><%= sort_field_helper(params[:order], 'name', 'Name', 'subject_group_search') %></th>
+      <th><%= sort_field_helper(params[:order], 'description', 'Description', 'subject_group_search') %></th>
+      <th>Member Subjects</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+
+
+  <tbody>
+    <% @subject_groups.each do |subject_group| %>
+      <tr>
+        <td><%= link_to subject_group.name, subject_group %></td>
+        <td><%= truncate(subject_group.description, length: 100) %></td>
+        <td>
+          <p>
+            <% subject_group.subjects.each do |subject| %>
+              <%= link_to subject.subject_code, subject %>
+              <span>&nbsp;</span>
+            <% end %>
+          </p>
+          <p class="text-muted">Count: <%= subject_group.subjects.count %></p>
+        </td>
+        <td>
+          <%= render partial: 'layouts/index_actions', locals: {object: subject_group, edit_path: edit_subject_group_path(subject_group)} %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<div class="center navigation"><%= paginate @subject_groups, theme: 'contour' %></div>

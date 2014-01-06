@@ -36,20 +36,18 @@
 
   </div>
 
-  <div class='row'>
-    <fieldset>
-      <div class="form-group">
-        <%= f.label :description, nil, class: 'control-label' %>
-        <%= f.text_area :description, rows: 7, class: 'form-control description' %>
-      </div>
+  <fieldset>
+    <div class="form-group">
+    <%= f.label :description, nil, class: 'control-label' %>
+    <%= f.text_area :description, rows: 7, class: 'form-control description' %>
+    </div>
 
-      <div class="form-group">
-        <%= f.label :notes, nil, class: 'control-label' %>
-        <%= f.text_area :notes, rows: 2, class: 'form-control notes' %>
-      </div>
+    <div class="form-group">
+    <%= f.label :notes, nil, class: 'control-label' %>
+    <%= f.text_area :notes, rows: 2, class: 'form-control notes' %>
+    </div>
 
-    </fieldset>
-  </div>
+  </fieldset>
 
   <div class="form-actions">
     <%= f.submit nil, class: 'btn btn-primary' %>

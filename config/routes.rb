@@ -2,18 +2,20 @@ Access::Application.routes.draw do
   devise_for :users, controllers: { registrations: 'contour/registrations', sessions: 'contour/sessions', passwords: 'contour/passwords', confirmations: 'contour/confirmations', unlocks: 'contour/unlocks' }, path_names: { sign_up: 'register', sign_in: 'login' }
 
   # Resources
-  resources :documentations
-  resources :sources
-  resources :source_types
-  resources :event_dictionary
-  resources :data_types
-  resources :events do
-    get ':name', action: :new, on: :new
-  end
-
   resources :data_dictionary do
     post 'data_attribute_form', :on => :collection
   end
+  resources :data_types
+  resources :documentations
+  resources :event_dictionary
+  resources :events do
+    get ':name', action: :new, on: :new
+  end
+  resources :sources
+  resources :source_types
+  resources :subject_groups
+  resources :subjects
+
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

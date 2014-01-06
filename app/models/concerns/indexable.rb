@@ -2,7 +2,7 @@ module Indexable
   extend ActiveSupport::Concern
 
   included do
-    scope :page_per, lambda { |params| page(params[:page] ? params[:page] : 1).per(params[:per_page] == "all" ? nil : params[:per_page]) }
+    scope :page_per, lambda { |params| page(params[:page] ? params[:page] : 1).per((params[:per_page].blank? or params[:per_page] == 'all') ?  nil : params[:per_page]) }
   end
 
   module ClassMethods
@@ -11,8 +11,8 @@ module Indexable
       #search_terms.each{|search_term| search_scope = search_scope.search(search_term) }
       #
       #search_scope
-
-      all.search(search_terms)
+      MY_LOG.info search_terms
+      search_terms.blank? ? all : all.search(search_terms)
     end
 
     def set_order(params, default)

@@ -1,0 +1,57 @@
+<div class="page-header">
+  <h1><%= @title %></h1>
+</div>
+
+<div id="subject_group_form">
+  <div class="row">
+    <div class="col-md-6">
+      <%= form_for @subject_group, html: { role: 'form' }  do |f| %>
+          <%= display_errors @subject_group %>
+          <fieldset>
+            <legend>Main Information</legend>
+            <div class="form-group">
+              <%= f.label :name, nil%>
+              <%= f.text_field :name, class: 'form-control' %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :description, nil%>
+              <%= f.text_area :description, class: 'form-control' %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :subject_ids, "Subjects" %><br/>
+              <%= f.collection_select :subject_ids, Subject.current.order(:subject_code), :id, :subject_code, {}, {multiple:true, rel: 'chosen', class: 'form-control'} %>
+            </div>
+          </fieldset>
+          <div class="form-actions">
+            <%= f.submit nil, class: 'btn btn-primary' %>
+            <%= cancel %>
+          </div>
+      <% end %>
+    </div>
+    <div class="col-md-6" id="subject_addition_tools">
+      <%= form_tag subjects_path, id: 'merge_subject_groups' do  %>
+          <fieldset>
+            <legend>Merge in other subject groups<span><%= submit_tag "Merge", class: 'btn btn-warning btn-xs pull-right' %></span></legend>
+            <div class="form-group">
+              <%= label_tag :subject_group_ids, nil, class: 'sr-only' %>
+              <%= select_tag :subject_group_ids, options_from_collection_for_select(SubjectGroup.current.order(:name), :id, :name), {multiple:true, rel: 'chosen', class: 'form-control', data: {placeholder: 'Select Subject Groups'}} %>
+
+            </div>
+          </fieldset>
+      <% end %>
+      <%= form_tag subjects_path, id: 'add_bulk_subjects' do %>
+        <fieldset>
+          <legend>Bulk-add subjects <span><%= submit_tag "Add", class: 'btn btn-warning pull-right btn-xs' %></span></legend>
+          <div class="form-group">
+            <%= label_tag :subject_codes, nil, class: 'sr-only' %>
+            <%= text_area_tag :subject_codes, nil, class: 'form-control', placeholder: 'Enter comma-separated subject codes' %>
+          </div>
+</fieldset>
+      <% end %>
+    </div>
+  </div>
+
+
+</div>

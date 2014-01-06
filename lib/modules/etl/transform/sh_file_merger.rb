@@ -22,8 +22,7 @@ module ETL
 
       subject_group.subjects.each do |subject|
         begin
-          subject_dir = File.join(source_directory, subject.subject_code)
-          subject_dir = File.join(source_directory, subject.subject_code.downcase) unless File.directory? subject_dir
+          subject_dir = ETL::TDriveCrawler.find_subject_directory(subject, @source_directory)
 
           unless File.directory? subject_dir
             raise StandardError, "Cannot find subject directory #{subject_dir} for subject #{subject.subject_code}"
@@ -69,27 +68,6 @@ module ETL
           LOAD_LOG.info "## Sh File Merger: #{error.message}\nRow: #{line}\nBacktrace:\n#{error.backtrace}"
         end
       end
-    end
-
-
-    private
-
-
-
-
-
-    def find_subject_directory(subject, source_dir)
-      subject_dir = nil
-      if subject.t_drive_location.present?
-        if File.basename(subject.t_drive_location).upcase == subject.subject_code
-          subject_dir = subject.t_drive_location
-        else
-          subject_dir = File.join(subject.t_drive_location)
-        end
-      else
-
-      end
-
     end
   end
 

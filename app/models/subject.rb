@@ -42,8 +42,9 @@ class Subject < ActiveRecord::Base
   # researcher
   # subject group
   scope :search, lambda { |term| search_scope([:subject_code, :notes, {join: :subject_groups, column: :name }, {join: :study, column: :official_name }, {join: :irbs, column: :title }], term) }
-  scope :in_subject_group, lambda { |subject_groups| joins(:subject_groups).where(subject_groups: {name: subject_groups}) }
-
+  scope :in_subject_group_by_name, lambda { |subject_group_names| joins(:subject_groups).where(subject_groups: {names: subject_group_names}) }
+  scope :in_subject_group_by_id, lambda { |subject_group_ids| joins(:subject_groups).where(subject_groups: {id: subject_group_ids}) }
+  scope :in_subject_code_list, lambda { |subject_codes| where(subject_code: subject_codes.split(/\W+/)) }
 
   ##
   # Validations

@@ -2,8 +2,8 @@
   <h1><%= @title %></h1>
 </div>
 
-<div id='source_type_form' class='container'>
-  <%= form_for @source_type, html: {role: 'form', class: 'form-horizontal'} do |f| %>
+<div id='source_type_form'>
+  <%= form_for @source_type, html: {role: 'form'} do |f| %>
     <%= display_errors @source_type %>
 
     <div class="form-group">
@@ -13,7 +13,7 @@
 
     <div class="form-group">
       <%= f.label :description, nil, class: 'control-label' %>
-      <%= f.text_area :description, rows: 7, style: 'width:95%', class: 'form-control' %>
+      <%= f.text_area :description, rows: 7, class: 'form-control' %>
     </div>
 
     <div class="form-actions">

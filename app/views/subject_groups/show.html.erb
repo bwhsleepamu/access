@@ -1,0 +1,29 @@
+<%=
+    render partial: "layouts/show_page_header",
+           locals: {
+                   model: @subject_group,
+                   title: "Subject Group: #{@subject_group.name}",
+                   edit_path: edit_subject_group_path(@subject_group),
+                   index_path: subject_groups_path,
+                   new_path: new_subject_group_path
+           }
+%>
+
+<div id="main_info">
+  <dl class="dl-horizontal">
+    <dt>Name</dt>
+    <dd><%= @subject_group.name %></dd>
+
+    <dt>Description</dt>
+    <dd><%= @subject_group.description %></dd>
+
+    <dt>Subjects</dt>
+    <dd>
+      <ul class="inline">
+        <% @subject_group.subjects.each do |subject| %>
+          <li><%= link_to subject.subject_code, subject %></li>
+        <% end %>
+      </ul>
+    </dd>
+  </dl>
+</div>

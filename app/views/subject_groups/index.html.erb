@@ -1,0 +1,12 @@
+<% @title = 'Subject Groups' %>
+<div class="page-header">
+  <h1>
+    <%= @title %>
+    <%= link_to "Create Subject Group", new_subject_group_path, class: 'btn btn-mini btn-primary' %>
+  </h1>
+</div>
+
+<%= render partial: 'layouts/index_functionality', locals: { object: :subject_groups, per_page: params[:per_page], path: subject_groups_path  } %>
+
+
+<div id="subject_groups" class="index-content"></div>

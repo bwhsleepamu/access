@@ -20,19 +20,30 @@ Contour.setup do |config|
   config.menu_items =
       [
           {
+              name: 'Resources', display: 'always', path: 'subjects_path', position: 'right', condition: 'true', image: '', image_options: {},
+              links: [
+                  {name: "Subject Groups", path: "subject_groups_path"}
+              ]
+
+          },
+          {
               name: 'Resources', display: 'always', path: '', position: 'right', condition: 'true', image: '', image_options: {},
               links: [
+                  {name: "Data Dictionary", path: "data_dictionary_index_path"},
+                  {name: "Event Dictionary", path: "event_dictionary_index_path"},
+                  {divider: true},
                   {name: "Documentations", path: "documentations_path"},
                   {name: "Sources", path: "sources_path"},
                   {divider: true},
-                  {name: "Data Dictionary", path: "data_dictionary_index_path"},
-                  {name: "Event Dictionary", path: "event_dictionary_index_path"}
-#                  {name: "Source Types", path: "source_types_path"}
+                  {name: "Source Types", path: "source_types_path"}
+
               ]
           },
-
           {
               name: 'Login', display: 'not_signed_in', path: 'new_user_session_path', position: 'right', condition: 'true'
+          },
+          {
+              name: 'Logout', display: 'signed_in', path: 'destroy_user_session_path', position: 'right', condition: 'true'
           },
 
       ]
