@@ -12,6 +12,26 @@ class SubjectsController < ApplicationController
     @subjects = subjects_scope.search_by_terms(parse_search_terms(params[:search])).set_order(params[:order], "subject_code asc").page_per(params)
   end
 
+  # POST /subjects
+  # POST /subjects.json
+  def create_list
+    @subjects = Subject.create_list(subject_list_params[:subject_codes])
+
+    respond_to do |format|
+
+      if @subjects
+        format.html { render action: 'show_list' }
+        format.json { render json: @subjects }
+      else
+        format.html { render action: "new_list" }
+        format.json { render json: @subjects.map(&:errors), status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def new_list
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
@@ -23,4 +43,9 @@ class SubjectsController < ApplicationController
   #def subject_params
   #  params.require(:subject).permit(:location, :original_location, :description, :subject_type_id, :notes, :parent_subject_id, child_subject_ids: [])
   #end
+
+  def subject_list_params
+    MY_LOG.info params
+    params.require(:subjects).permit(:subject_codes)
+  end
 end

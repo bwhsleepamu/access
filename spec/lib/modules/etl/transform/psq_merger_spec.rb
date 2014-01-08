@@ -23,6 +23,12 @@ describe ETL::PsqMerger do
       }
     }
 
+    before do
+      create(:source_type, name: "Comma Delimited File")
+      create(:source_type, name: "Excel File")
+      create(:user, email: 'pmankowski@partners.org')
+    end
+
     it "should merge all tabs in the template source into a master xls (csv?) file" do
       # 8 subjects * 23 SP + 1 subject * 12 SP
       subject_group = create(:subject_group_with_subjects, subject_code_list: ["1732MX", "1712MX", "1684MX", "29U2X0T1", "2701X0T4", "3017X", "3018X", "3038X", "3075X", "3098X", "30C6X", "30E1X"])
@@ -32,6 +38,7 @@ describe ETL::PsqMerger do
       psq_merger = ETL::PsqMerger.new subject_group, source_file_list, destination_file_path
 
       expect(psq_merger.merge_files).to be_true
+      psq_merger.merge_files
 
       expect(File.exists? destination_file_path).to be_true
       expect(File.open(destination_file_path).readlines.size).to eq(1 + (8 * 23) + (1 * 12) + 28 + 27 + 25)

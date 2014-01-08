@@ -14,7 +14,12 @@ Access::Application.routes.draw do
   resources :sources
   resources :source_types
   resources :subject_groups
-  resources :subjects
+  resources :subjects, only: [:index] do
+    collection do
+      post 'create_list'
+      get 'new_list'
+    end
+  end
 
 
   # The priority is based upon order of creation: first created -> highest priority.

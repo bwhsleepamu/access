@@ -49,8 +49,9 @@ module ETL
 =end
 
     COLUMN_LIST = ["subject_code", "sleep_period", "lights_out_labtime_decimal", "q_1", "q_2", "q_3", "q_4", "q_4a", "q_5", "q_6", "q_7", "q_8", "notes"]
-    OUTPUT_TYPE = SourceType.find_by_name("Comma Delimited File")
-    INPUT_TYPE = SourceType.find_by_name("Excel File")
+    OUTPUT_TYPE ="Comma Delimited File"
+    INPUT_TYPE = "Excel File"
+    USER_EMAIL = "pmankowski@partners.org"
 
 
     def initialize(subject_group, input_file_list, output_file_path)
@@ -61,11 +62,15 @@ module ETL
 
     def merge_files
       begin
-        merged_source = Source.new(location: @output_file_path)
+        output_source_type = SourceType.find_by_name(OUTPUT_TYPE)
+        input_source_type = SourceType.find_by_name(INPUT_TYPE)
+        user = User.find_by_email(USER_EMAIL)
+
+        merged_source = Source.find_or_initialize_by(location: @output_file_path, source_type_id: output_source_type.id, user_id: user.id)
         CSV.open(@output_file_path, "wb") do |csv|
           csv << COLUMN_LIST
           @input_file_list.each do |input_file_path, columns|
-            merged_source.child_sources.build(location: input_file_path)
+            merged_source.child_sources << Source.find_or_initialize_by(location: input_file_path, source_type_id: input_source_type.id, user_id: user.id)
             xls = Roo::Excel.new(input_file_path)
             xls.each_with_pagename do |subject_tab, sheet|
               subject_code = subject_tab.upcase
@@ -123,8 +128,7 @@ module ETL
       note_i = columns.index("notes")
 
       q_range = (columns.index("q_1")..columns.index("q_8"))
-
-      row[note_i] = "Entered by and on: #{row[pde_i]} | #{row[note_i]}"
+      row[note_i] = "Entered by and on: #{row[pde_i]} | #{row[note_i]}" unless pde_i.nil?
 
       COLUMN_LIST.each do |name|
         row_i = columns.index(name)
@@ -140,9 +144,6 @@ module ETL
       end
 
       finalized_row[sc_i] = subject_code if finalized_row[sc_i].nil? or finalized_row[sc_i] != subject_code
-
-      MY_LOG.info finalized_row
-
       valid_row?(finalized_row) ? finalized_row : nil
     end
 

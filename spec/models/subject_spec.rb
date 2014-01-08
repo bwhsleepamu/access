@@ -108,4 +108,18 @@ describe Subject do
     end  
   end
 
+  describe "#create_list" do
+    it "should create a list of subjects and return valid subject object for created subjects and for existing subjects." do
+      existing = create_list :subject, 3
+      for_creation = build_list :subject, 4
+
+      r = Subject.create_list((for_creation + existing).map(&:subject_code))
+
+      MY_LOG.info r
+      expect(r[:existing]).to eq(existing)
+      expect(r[:created].map(&:subject_code)).to eq(for_creation.map(&:subject_code))
+
+    end
+  end
+
 end

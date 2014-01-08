@@ -1,0 +1,30 @@
+<div class="page-header">
+  <h1>
+    <span><%= @subjects[:created].length %> Subjects Created</span>
+    <div class="btn-group pull-right">
+      <%= link_to "View All Subjects", nil, class: 'btn btn-xs btn-default' %>
+      <%= link_to "Create New Subject", nil, class: 'btn btn-xs btn-default' %>
+      <%= link_to "Initialize New Subject List", create_list_subjects_path, class: 'btn btn-xs btn-default' %>
+    </div>
+  </h1>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <h3><%= @subjects[:existing].length %> Existing Subjects:</h3>
+    <ul>
+      <% @subjects[:existing].each do |subject| %>
+        <li><%= link_to subject.subject_code, nil %></li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <h3><%= @subjects[:created].length %> Created Subjects:</h3>
+    <ul>
+      <% @subjects[:created].each do |subject| %>
+        <li><%= link_to subject.subject_code, nil %></li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+

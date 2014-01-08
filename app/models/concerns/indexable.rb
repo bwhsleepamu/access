@@ -2,7 +2,7 @@ module Indexable
   extend ActiveSupport::Concern
 
   included do
-    scope :page_per, lambda { |params| page(params[:page] ? params[:page] : 1).per((params[:per_page].blank? or params[:per_page] == 'all') ?  nil : params[:per_page]) }
+    scope :page_per, lambda { |params| page(params[:page] ? params[:page] : 1).per((params[:per_page].blank? or params[:per_page] == 'all') ?  self.count : params[:per_page]) }
   end
 
   module ClassMethods

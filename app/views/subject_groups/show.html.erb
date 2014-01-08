@@ -21,7 +21,7 @@
     <dd>
       <ul class="inline">
         <% @subject_group.subjects.each do |subject| %>
-          <li><%= link_to subject.subject_code, subject %></li>
+          <li><%= link_to subject.subject_code, nil %></li>
         <% end %>
       </ul>
     </dd>

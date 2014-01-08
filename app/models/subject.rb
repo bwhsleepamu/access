@@ -53,6 +53,26 @@ class Subject < ActiveRecord::Base
 
   ##
   # Class Methods
+  def self.create_list(subject_codes)
+    MY_LOG.info subject_codes
+
+    subjects = {existing: [], created: []}
+    subject_codes = subject_codes.split(/\W+/) unless subject_codes.kind_of? Array
+
+    Subject.transaction do
+      subject_codes.each do |subject_code|
+        subject = Subject.find_by_subject_code(subject_code)
+        if subject
+          subjects[:existing] << subject
+        else
+          subjects[:created] << Subject.create(subject_code: subject_code)
+        end
+      end
+    end
+
+    subjects
+  end
+
 
   ##
   # Instance Methods
