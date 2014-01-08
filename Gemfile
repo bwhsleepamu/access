@@ -43,7 +43,6 @@ gem 'rubyzip'
 
 # Markdown
 gem 'redcarpet'
-gem "therubyracer", :require => 'v8'
 
 # R and Raster Plots
 gem 'rsruby'
