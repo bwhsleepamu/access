@@ -1,5 +1,29 @@
 ## 1.0.0
 
+### Upgrades
+- Upgraded to Rails 4.0.2
+- Upgrated to Ruby 2.1
+- Upgraded many gems and technologies
+- Upgraded to Contour 2.2.1 (which included Bootstrap upgrades)
+- Upgrades chosen
+
+### Enhancements
+- Subject Group bulk addition
+- Subject bulk initialization
+- Raster Plot upgrades
+- Index functionality upgrades
+- Source and Documentation upgrades
+
+### ETL
+- Mood Loader
+- PVT Loader
+- PSQ Merger
+- Actigraphy Merger and Loader
+- SH file Merger and Loader
+
+### Bug Fix
+- Timezone fixes
+
 ## 0.4.0
 
 ### Enhancements

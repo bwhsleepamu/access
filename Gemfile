@@ -27,11 +27,11 @@ gem 'jquery-rails'
 gem 'turbolinks'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 1.2'
+gem 'jbuilder', '~> 2.0'
 
 # Authentication and Styles
 gem 'contour',        '~> 2.2.0'
-gem 'kaminari',       '~> 0.14.1'
+gem 'kaminari',       '~> 0.15.0'
 
 # Observers
 gem 'rails-observers'
