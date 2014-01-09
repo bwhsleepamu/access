@@ -295,7 +295,37 @@ namespace :etl do
       LOAD_LOG.info "\n################################\nFinished Loading Sleep Data for all Subjects!\nsuccessful: #{successful_subjects}\nunsuccessful: #{unsuccessful_subjects}\n################################\n\n\n"
     end
 
+    desc 'load t drive location'
+    task :t_drive_location => :environment do
+      subject_group = SubjectGroup.find_by_name("psq_subjects")
+      LOAD_LOG.info "Loading T Drive Location for #{subject_group.name}"
+      res = ETL::TDriveCrawler.populate_t_drive_location(subject_group, "/T/IPM")
+      LOAD_LOG.info "T Drive Location Loader Results:\n#{res.to_s}"
 
+    end
+
+
+
+    desc "load SH Files"
+    task :sleep_data => :environment do
+      successful_subjects = []
+      unsuccessful_subjects = []
+
+      documentation = Documentation.find(93253658)
+      subject_group = SubjectGroup.find_by_name("psq_subjects")
+
+
+
+
+      cr_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/psq_subjects_constant_routines.csv")
+      lt_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/psq_subjects_light_events.csv")
+      sp_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/psq_subjects_sleep_periods.csv")
+
+
+
+
+      LOAD_LOG.info "\n################################\nFinished Loading Sleep Data for #{subject_group} Subjects!\nsuccessful: #{successful_subjects}\nunsuccessful: #{unsuccessful_subjects}\n################################\n\n\n"
+    end
   end
 
   namespace :transform do
@@ -313,11 +343,14 @@ namespace :etl do
       options = {
         source_dir: '/T/IPM',
         output_dir: '/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files',
-        subject_group: SubjectGroup.find_by_name("psq_subjects")
+        subject_group: SubjectGroup.find_by_name("psq_subjects"),
+        find_missing_t_drive_location: false,
+        user_email: "pmankowski@partners.org"
       }
 
       shm = ETL::ShFileMerger.new(options)
-      shm.merge
+      res = shm.merge
+      LOAD_LOG.info "\n\nMerge SH Files Successful!!" if res
     end
 
     desc "merge psq files"

@@ -16,6 +16,7 @@
 /log/extracted/*
 /log/loaded/*
 /log/transformed/*
+/log/test/*
 /tmp
 
 # Ignore IDE files
