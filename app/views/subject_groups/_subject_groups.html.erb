@@ -5,6 +5,7 @@
       <th><%= sort_field_helper(params[:order], 'name', 'Name', 'subject_group_search') %></th>
       <th><%= sort_field_helper(params[:order], 'description', 'Description', 'subject_group_search') %></th>
       <th>Member Subjects</th>
+      <th><%= sort_field_helper(params[:order], 'created_at', 'Created At', 'subject_group_search') %></th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -25,6 +26,8 @@
           </p>
           <p class="text-muted">Count: <%= subject_group.subjects.count %></p>
         </td>
+        <td><%= simple_date(subject_group.created_at) %></td>
+
         <td>
           <%= render partial: 'layouts/index_actions', locals: {object: subject_group, edit_path: edit_subject_group_path(subject_group)} %>
         </td>

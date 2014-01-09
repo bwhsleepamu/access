@@ -310,7 +310,13 @@ namespace :etl do
 
     desc "merge sh files"
     task :merge_sh_files => :environment do
-      shm = ETL::ShFileMerger.new("/home/pwm4/Desktop/GRRRR/Vacation Data/NSBRI_55d_Entrainment", "/home/pwm4/Desktop/GRRRR/Vacation Data/Merged", SubjectGroup.find_by_name("beth_raster_plots"))
+      options = {
+        source_dir: '/T/IPM',
+        output_dir: '/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files',
+        subject_group: SubjectGroup.find_by_name("psq_subjects")
+      }
+
+      shm = ETL::ShFileMerger.new(options)
       shm.merge
     end
 

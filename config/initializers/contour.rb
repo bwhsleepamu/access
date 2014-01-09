@@ -20,7 +20,7 @@ Contour.setup do |config|
   config.menu_items =
       [
           {
-              name: 'Resources', display: 'always', path: 'subjects_path', position: 'right', condition: 'true', image: '', image_options: {},
+              name: 'Subjects', display: 'always', path: '', position: 'left', condition: 'true', image: '', image_options: {},
               links: [
                   {name: "Subject Groups", path: "subject_groups_path"}
               ]

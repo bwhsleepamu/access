@@ -1,6 +1,12 @@
 require 'spec_helper'
 
 describe ETL::ShFileMerger do
+  before do
+    create(:source_type, name: 'LT<lux value>.S~H')
+    create(:source_type, name: 'IBOB.S~H')
+    create(:source_type, name: 'Comma Delimited File')
+  end
+
   it "should work for subjects with no T Drive location" do
     subjects = []
     subjects << create(:subject, subject_code: '18J5W')
@@ -36,12 +42,14 @@ describe ETL::ShFileMerger do
     expect(sg.save).to be_true
 
     shm = ETL::ShFileMerger.new({source_dir: s_d, output_dir: o_d, subject_group: sg})
-    shm.merge
+    expect(shm.merge).to be_true
 
     expect(File.exists?(File.join(o_d, shm.sp_output_name))).to be_true
     expect(File.exists?(File.join(o_d, shm.lt_output_name))).to be_true
     expect(File.size(File.join(o_d, shm.sp_output_name))).to be > 200
     expect(File.size(File.join(o_d, shm.lt_output_name))).to be > 200
+
+    expect(Source.count).to be > 5
   end
 
 end

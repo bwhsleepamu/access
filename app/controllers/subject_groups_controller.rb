@@ -6,7 +6,7 @@ class SubjectGroupsController < ApplicationController
   # GET /subject_groups.json
   def index
     subject_groups_scope = SubjectGroup.current
-    @subject_groups = subject_groups_scope.search_by_terms(parse_search_terms(params[:search])).set_order(params[:order], "name asc").page_per(params)
+    @subject_groups = subject_groups_scope.search_by_terms(parse_search_terms(params[:search])).set_order(params[:order], "created_at desc").page_per(params)
   end
 
   # GET /subject_groups/1
