@@ -62,8 +62,9 @@ describe ETL::ShFileMerger do
       expect(s.location).to be_present
       expect(s.user).to be_present
       expect(s.source_type).to be_present
+
+      expect(s.subject).to be_present if s.parent_id.present?
     end
-    MY_LOG.info "\n"
   end
 
 end

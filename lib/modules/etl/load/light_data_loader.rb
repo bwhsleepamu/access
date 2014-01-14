@@ -56,14 +56,14 @@ module ETL
           },
           {
               class: Event,
-              existing_records: {action: :append },
+              existing_records: {action: :destroy, find_by: [:subject_id, :name] },
               event_name: 'light_episode_start',
               group: :light_episode,
               static_fields: { labtime_sec: 0 }
           },
           {
               class: Event,
-              existing_records: {action: :append },
+              existing_records: {action: :destroy, find_by: [:subject_id, :name] },
               event_name: 'light_episode_end',
               group: :light_episode,
               static_fields: { labtime_sec: 0 }

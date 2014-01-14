@@ -117,7 +117,7 @@ module ETL
 
 
     def merge_ibob(subject, path, output, source)
-      source.child_sources.build(location: path, user: @user, source_type: @sp_type)
+      source.child_sources.build(location: path, user: @user, source_type: @sp_type, subject: subject)
       File.open(path).each_line do |line|
         begin
           m = SH_LINE_REGEX.match(line)
@@ -131,7 +131,7 @@ module ETL
 
 
     def merge_cr(subject, path, output, source)
-      source.child_sources.build(location: path, user: @user, source_type: @cr_type)
+      source.child_sources.build(location: path, user: @user, source_type: @cr_type, subject: subject)
       File.open(path).each_line do |line|
         begin
           m = SH_LINE_REGEX.match(line)
@@ -144,7 +144,7 @@ module ETL
     end
 
     def merge_lt(subject, path, lux, output, source)
-      source.child_sources.build(location: path, user: @user, source_type: @lt_type)
+      source.child_sources.build(location: path, user: @user, source_type: @lt_type, subject: subject)
       File.open(path).each_line do |line|
         begin
           m = SH_LINE_REGEX.match(line)

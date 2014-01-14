@@ -7,6 +7,8 @@ module ETL
 
     ## Constructor
     def initialize(source_info, object_map, column_map, source, documentation, subject=nil)
+      raise StandardError, "Missing parameters!" unless (source && documentation)
+
       generate_loader_map(object_map, column_map)
       generate_conditions(column_map)
       open_spreadsheet(source_info)
@@ -23,11 +25,14 @@ module ETL
       ActiveRecord::Base.transaction do
         #MY_LOG.info "In load_data transaction"
         # Process Existing Records that need to be destroyed
-        destroy_existing_events?(@loader_map, @subject) if @subject.present?
+        ## If we need to destroy records, we can either do it once per file, once per row, or once per (find_by) combo (new subject code)
+        # File destroy:
+        destroy_existing_events(@loader_map, @subject)
 
-        start_time = Time.zone.now()
+        start_time = Time.zone.now
         LOAD_LOG.info "########## Database Loader: Loading Data ##########"
         LOAD_LOG.info "##########  Starting at row #{@first_row}   ##########"
+        MY_LOG.info "#{@loader_map}\n######\n#{@subject}"
 
         (@first_row..@source_file.last_row).each do |i|
           begin
@@ -36,25 +41,34 @@ module ETL
             next if skip_row?(row)
            #MY_LOG.info "ROW: #{row}"
             row_subject = ensure_subject_available
+            new_subject_row = false
+
             LOAD_LOG.info "###### LOADING ROW #{i}: #{(Time.zone.now() - start_time)/60} minutes elapsed" if i % 1000 == @first_row
             #MY_LOG.info "#{@loader_map}"
 
             group_labels = set_group_labels
 
             @loader_map.each do |mapping|
-             #MY_LOG.info "MAPPING: #{mapping}"
+              #MY_LOG.info "MAPPING: #{mapping}"
+
 
               col_values = {}
               data_values = {}
-
-              ## Destroy existing records if required, and only for single-row-per-subject files (aka subject cannot be supplied)
-              destroy_existing_record?(mapping, row_subject) unless @subject.present?
 
               ## Map spreadsheet cell values to object fields
               mapping[:column_fields].each{|field, index| col_values[field] = cell_value(row, index)}
               mapping[:data_fields].each{|field,index| data_values[field.to_s] = cell_value(row, index)} if mapping[:data_fields]
 
-             #MY_LOG.info "\nCVS: #{col_values}\nDVS: #{data_values}"
+              ### Destroy existing records if required, and only for single-row-per-subject files (aka subject cannot be supplied)
+              #LOAD_LOG.info "#{i}: nsr? #{new_subject_row} | rs #{row_subject} | ors #{old_row_subject} | @s #{@subject} | p? #{@subject.present?} | "
+              #if new_subject_row
+              #  destroy_existing_record?(mapping, row_subject)
+              #end
+
+              # Row Destroy:
+              destroy_existing_for_event(mapping, row_subject) if new_subject_row
+
+              #MY_LOG.info "\nCVS: #{col_values}\nDVS: #{data_values}"
 
               ## Determine number of objects to create
               attrs_list = determine_object_number(mapping, col_values, data_values)
@@ -102,16 +116,26 @@ module ETL
                 set_subject_association(obj, mapping, row_subject)
 
                 # Set loaded subject as row subject
-                row_subject = obj if mapping[:class] == Subject
+                if mapping[:class] == Subject
+                  row_subject = obj
+                  if unique_subjects.include? row_subject.subject_code
+                    new_subject_row = false
+                  else
+                    unique_subjects << row_subject.subject_code
+                    new_subject_row = true
+                  end
+                end
+
               end
               row_subject.touch
-              unique_subjects << row_subject.subject_code unless unique_subjects.include? row_subject.subject_code
-            end
+
+            end # @loader_map
+
+
            #MY_LOG.info "\n"
           rescue => error
             LOAD_LOG.info "## Database Loader: #{@source.location} | Row failed to load: #{error.message}\nRow: #{row}\nBacktrace:\n#{error.backtrace}"
           end
-
         end # rows
         LOAD_LOG.info "TIME: #{(Time.zone.now() - start_time)/60} minutes"
 
@@ -134,7 +158,7 @@ module ETL
       end
     end
 
-    def destroy_existing_record?(mapping, subject)
+    def destroy_existing_for_event(mapping, subject)
       if mapping[:existing_records][:action] == :destroy and mapping[:class] == Event and subject.present?
         LOAD_LOG.error "DESTROYING!!!! #{subject.subject_code} #{mapping[:event_name]}"
         Event.hard_delete(subject, mapping[:event_name])
@@ -143,13 +167,15 @@ module ETL
       end
     end
 
-    def destroy_existing_events?(map, subject)
+    def destroy_existing_events(map, subject)
     # Destroys all existing events if subject is already given. This needs to be done at the start of the transaction -
     # otherwise newly created events will be destroyed, since the same subject is present for each row.
       #MY_LOG.info "In destroy_existing_events?"
 
-      map.each do |mapping|
-        destroy_existing_record? mapping, subject
+      if subject
+        map.each do |mapping|
+          destroy_existing_for_event mapping, subject
+        end
       end
     end
 

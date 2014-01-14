@@ -8,6 +8,7 @@ class Source < ActiveRecord::Base
   belongs_to :user
   has_many :child_sources, class_name: "Source", foreign_key: "parent_id", autosave: true
   belongs_to :parent_source, class_name: "Source", foreign_key: "parent_id"
+  belongs_to :subject
 
   ##
   # Attributes

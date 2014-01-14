@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131209231433) do
+ActiveRecord::Schema.define(version: 20140110190845) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id",    precision: 38, scale: 0
@@ -114,7 +114,7 @@ ActiveRecord::Schema.define(version: 20131209231433) do
   add_index "data_types", ["name"], name: "index_data_types_on_name"
 
   create_table "data_values", force: true do |t|
-    t.integer  "num_value",       precision: 38, scale: 0
+    t.decimal  "num_value"
     t.string   "text_value"
     t.datetime "time_value"
     t.string   "type_flag"
@@ -315,6 +315,7 @@ ActiveRecord::Schema.define(version: 20131209231433) do
     t.text     "notes"
     t.integer  "parent_id",         precision: 38, scale: 0
     t.string   "original_location"
+    t.integer  "subject_id",        precision: 38, scale: 0
   end
 
   add_index "sources", ["deleted"], name: "index_sources_on_deleted"
@@ -509,6 +510,7 @@ ActiveRecord::Schema.define(version: 20131209231433) do
 
   add_foreign_key "sources", "source_types", name: "sources_source_type_id_fk"
   add_foreign_key "sources", "sources", column: "parent_id", name: "sources_parent_id_fk", dependent: :nullify
+  add_foreign_key "sources", "subjects", name: "sources_subject_id_fk"
   add_foreign_key "sources", "users", name: "sources_user_id_fk"
 
   add_foreign_key "study_nicknames", "studies", name: "study_nicknames_study_id_fk", dependent: :delete

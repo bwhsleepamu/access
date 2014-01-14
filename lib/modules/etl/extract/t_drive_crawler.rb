@@ -130,8 +130,12 @@ module ETL
 
       # Add all possible variations of t drive location
       if subject.t_drive_location.present?
-        t_drive_dir_transformed = subject.t_drive_location.gsub(/(^\w)/, '/\1').gsub(':', '')
+        t_drive_dir_transformed = self.standardize_location(subject.t_drive_location)
         if File.basename(subject.t_drive_location).upcase == subject.subject_code
+          subject_dirs << subject.t_drive_location
+          subject_dirs << t_drive_dir_transformed
+        elsif File.basename(subject.t_drive_location) =~ /#{subject.subject_code}/i
+          MY_LOG.info "WARNING: UNCONVENTIONAL T DRIVE LOCATION: #{subject.t_drive_location}"
           subject_dirs << subject.t_drive_location
           subject_dirs << t_drive_dir_transformed
         else
@@ -141,9 +145,14 @@ module ETL
           subject_dirs << File.join(t_drive_dir_transformed, subject.subject_code.downcase)
         end
 
-        MY_LOG.info "#{subject.t_drive_location} | #{t_drive_dir_transformed} | #{subject_dirs} | #{subject_dirs.uniq.keep_if { |d| File.directory? d }}"
+        #MY_LOG.info "#{subject.t_drive_location} | #{t_drive_dir_transformed} | #{subject_dirs} | #{subject_dirs.uniq.keep_if { |d| File.directory? d }}"
 
-        subject_dirs = subject_dirs.uniq.keep_if { |d| File.directory? d }
+        subject_dirs = subject_dirs.uniq.keep_if do |d|
+          # Checks if directory is part of directory list of it's parent folder
+          # Replaced just File.directory? d since that did not account for capitalization differences
+
+          File.directory?(d) && Dir[File.dirname(d)+"/*"].include?(d)
+        end
       end
 
       # If folder cannot be found using t drive location, search T drive
@@ -159,7 +168,7 @@ module ETL
       end
 
       # What if more than one folder is found?
-      raise StandardError if subject_dirs.length > 1
+      raise StandardError, "Error with: #{subject_dirs}" if subject_dirs.length > 1
 
       subject_dirs.first
 
@@ -192,7 +201,7 @@ module ETL
           s = Subject.find_by_subject_code sc
           new_location = locations.first
           if s.t_drive_location.present?
-            if new_location != s.t_drive_location
+            if new_location != self.standardize_location(s.t_drive_location)
               LOAD_LOG.info "Warning!! For subject #{sc}, T drive location found (#{new_location}) is different than current T drive location (#{s.t_drive_location}. No change will be made."
               results[:locations_differ] << sc
             else
@@ -213,82 +222,13 @@ module ETL
       results
     end
 
-    def self.populate_admit_year(subject_group, root_path = T_DRIVE_ROOT)
-      subject_codes = subject_group.subjects.map(&:subject_code)
-      admit_year_map = {}
-      subject_codes.each {|sc| admit_year_map[sc] = []}
+    private
 
-      results = {none_found: [], year_differs: [], year_same: [], new_set: []}
-
-      # Sources:
-      ## Subject Code
-      ## Subject.admit_year
-      ## patient_year = get_year(File.join(parent_path, subject_code, "Sleep", xls_file_name)) from AMU CLEANED!
-
-
-      Find.find(root_path) do |path|
-        if FileTest.directory?(path)
-          possible_subject_code = File.basename(path.upcase)
-          if possible_subject_code =~ Subject::SUBJECT_CODE_REGEX && subject_codes.include?(possible_subject_code)
-            t_drive_loc_map[possible_subject_code] << path
-            Find.prune
-          end
-        end
-      end
-
-      t_drive_loc_map.each_pair do |sc, locations|
-
-        if locations.length == 0
-          LOAD_LOG.info "No T drive location found for subject #{sc}!"
-          results[:none_found] << sc
-        elsif locations.length == 1
-          s = Subject.find_by_subject_code sc
-          new_location = locations.first
-          if s.t_drive_location.present?
-            if new_location != s.t_drive_location
-              LOAD_LOG.info "Warning!! For subject #{sc}, T drive location found (#{new_location}) is different than current T drive location (#{s.t_drive_location}. No change will be made."
-              results[:locations_differ] << sc
-            else
-              LOAD_LOG.info "For subject #{sc}, found T drive location is the same as current location. No change will be made."
-              results[:locations_same] << sc
-            end
-          else
-            LOAD_LOG.info "The following T drive locations is being set for subject #{sc}: #{new_location}."
-            s.update_attribute(:t_drive_location, new_location)
-            results[:new_set] << sc
-          end
-        else
-          LOAD_LOG.info "Warning!! Multiple locations found for subject #{sc}: #{locations}"
-          results[:multiple_found] << sc
-        end
-      end
-
-      results
-
-
-    end
-  end
-end
-
-
-def get_year(path)
-  if @subject.admit_date.present?
-    @subject.admit_date.year
-  else
-
-    xx = Roo::Excel.new(path)
-    xx.default_sheet = xx.sheets[0]
-
-    #xx.default_sheet = "tasciifiles"
-
-    row_count = 2
-    until (m = /.*_*.(\d\d)_.*/i.match(xx.row(row_count)[0])).present? or row_count > 100
-      row_count += 1
+    def self.standardize_location(loc)
+      loc.gsub(/(^\w)/, '/\1').gsub(':', '')
     end
 
-    raise StandardError, "Could not find suitable year from excel file!" if row_count > 100
 
-    year = m[1].to_i
-    year + ((year < 60) ? 2000 : 1900)
+
   end
 end

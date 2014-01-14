@@ -6,6 +6,7 @@ module ETL
   # Extract
   require 'etl/extract/dbf_reader'
   require 'etl/extract/t_drive_crawler'
+  require 'etl/extract/pvt_all_finder'
 
   # Transform
   require 'etl/transform/actigraphy_merger'
@@ -26,6 +27,8 @@ module ETL
   require 'etl/load/pvt_loader'
   require 'etl/load/vas_loader'
   require 'etl/load/sleep_data_loader'
+  require 'etl/load/cr_data_loader'
   require 'etl/load/light_data_loader'
+  require 'etl/load/admit_year_loader'
 
 end

@@ -297,7 +297,7 @@ namespace :etl do
 
     desc 'load t drive location'
     task :t_drive_location => :environment do
-      subject_group = SubjectGroup.find_by_name("psq_subjects")
+      subject_group = SubjectGroup.find_by_name("darpa_generalizability_pvt")
       LOAD_LOG.info "Loading T Drive Location for #{subject_group.name}"
       res = ETL::TDriveCrawler.populate_t_drive_location(subject_group, "/T/IPM")
       LOAD_LOG.info "T Drive Location Loader Results:\n#{res.to_s}"
@@ -307,26 +307,33 @@ namespace :etl do
 
 
     desc "load SH Files"
-    task :sleep_data => :environment do
-      successful_subjects = []
-      unsuccessful_subjects = []
-
+    task :sh_files => :environment do
       documentation = Documentation.find(93253658)
-      subject_group = SubjectGroup.find_by_name("psq_subjects")
+      subject_group = SubjectGroup.find_by_name("darpa_generalizability_pvt")
 
+      cr_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/#{subject_group.name}_constant_routines.csv")
+      lt_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/#{subject_group.name}_light_events.csv")
+      sp_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/#{subject_group.name}_sleep_periods.csv")
 
+      sdl = ETL::SleepDataLoader.new(sp_source, documentation)
+      ldl = ETL::LightDataLoader.new(lt_source, documentation)
+      cdl = ETL::CrDataLoader.new(cr_source, documentation)
 
+      sdl.load
+      ldl.load
+      cdl.load
 
-      cr_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/psq_subjects_constant_routines.csv")
-      lt_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/psq_subjects_light_events.csv")
-      sp_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/psq_subjects_sleep_periods.csv")
+      LOAD_LOG.info "\n################################\nFinished Loading Sleep Data for #{subject_group} Subjects!\n################################\n\n\n"
+    end
 
-
-
-
-      LOAD_LOG.info "\n################################\nFinished Loading Sleep Data for #{subject_group} Subjects!\nsuccessful: #{successful_subjects}\nunsuccessful: #{unsuccessful_subjects}\n################################\n\n\n"
+    desc "load admit years"
+    task :admit_year => :environment do
+      sg = SubjectGroup.find_by_name "admit_year_temp_group"
+      ETL::AdmitYearLoader.populate_admit_year(sg, "/T/IPM")
     end
   end
+
+
 
   namespace :transform do
     desc "merge actigraphy"
@@ -343,7 +350,7 @@ namespace :etl do
       options = {
         source_dir: '/T/IPM',
         output_dir: '/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files',
-        subject_group: SubjectGroup.find_by_name("psq_subjects"),
+        subject_group: SubjectGroup.find_by_name("darpa_generalizability_pvt"),
         find_missing_t_drive_location: false,
         user_email: "pmankowski@partners.org"
       }
@@ -368,6 +375,13 @@ namespace :etl do
       psq_merger.merge_files
     end
 
+  end
+
+  namespace :extract do
+    desc "find PVT all files"
+    task :pvt_all_files => :environment do
+
+    end
   end
 
 end
