@@ -15,10 +15,11 @@
   <dt>Source Type</dt>
   <dd><%= link_to @source.source_type.name, @source.source_type if @source.source_type %></dd>
 
-  <dt>User</dt>
-
   <dt>Location</dt>
   <dd><%= @source.location %></dd>
+
+  <dt>Original Location</dt>
+  <dd><%= @source.original_location %></dd>
 
   <dt>Description</dt>
   <dd><%= simple_format @source.description %></dd>

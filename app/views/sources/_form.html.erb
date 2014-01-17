@@ -28,6 +28,11 @@
     </div>
 
     <div class='col-md-6'>
+      <fieldset class='subject'>
+        <legend>Associated Subject</legend>
+        <%= f.select :subject_id, [['---', nil]] + Subject.current.collect{|s| [s.subject_code, s.id]}, {}, {rel: :chosen, class: 'form-control',  data: {placeholder: "Chose one if applicable..."}} %>
+      </fieldset>
+
       <fieldset class='source-hierarchy'>
         <legend>Source hierarchy</legend>
         <div class="fields"><div class="center" id="ajax_loader"><%= image_tag "contour/ajax-loader.gif" %></div></div>
@@ -38,6 +43,11 @@
 
   <fieldset>
     <div class="form-group">
+      <%= f.label :worksheet_name, nil, class: 'control-label' %>
+      <%= f.text_field :worksheet_name, class: 'form-control' %>
+    </div>
+
+    <div class="form-group">
     <%= f.label :description, nil, class: 'control-label' %>
     <%= f.text_area :description, rows: 7, class: 'form-control description' %>
     </div>
@@ -45,6 +55,11 @@
     <div class="form-group">
     <%= f.label :notes, nil, class: 'control-label' %>
     <%= f.text_area :notes, rows: 2, class: 'form-control notes' %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :column_map, nil, class: 'control-label' %>
+      <%= f.text_area :column_map, rows: 100, class: 'form-control description' %>
     </div>
 
   </fieldset>

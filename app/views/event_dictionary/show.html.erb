@@ -25,10 +25,10 @@
     </ul>
   </dd>
 
-  <dt>Data Records</dt>
+  <dt><%= @event_dictionary.data_dictionary.count %> Data Records</dt>
   <dd>
     <ul>
-      <% @event_dictionary.data_dictionary.each do |data_record| %>
+      <% @event_dictionary.data_dictionary.order(:title).each do |data_record| %>
         <li><%= link_to data_record.title, data_record %></li>
       <% end %>
     </ul>

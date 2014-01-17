@@ -137,10 +137,12 @@ module ETL
     def initialize(subject, source, documentation)
       begin
         @subject = subject
-        admit_year = find_admit_year(subject, source)
-        input_file_info = { path: source.location, sheet: SOURCE_SHEET, skip_lines: 1 }
+        admit_year = subject.admit_year
+        input_file_info = { path: source.location, sheet: source.worksheet_name, skip_lines: 1 }
 
-        @db_loader = ETL::DatabaseLoader.new(input_file_info, object_map(admit_year), column_map, source, documentation, @subject)
+        col_map_to_use = source.column_map.present? ? YAML.load(source.column_map) : column_map
+
+        @db_loader = ETL::DatabaseLoader.new(input_file_info, analyzed_object_map(admit_year), col_map_to_use, source, documentation, @subject, false)
         LOAD_LOG.info "#### PVT Loader: Successfully initialized #{@subject.subject_code} for loading of PVT data"
         @valid = true
       rescue => error
@@ -171,9 +173,101 @@ module ETL
 
     private
 
+    def standard_col_map
+      # These are the largely standardized PVT all columns
+      [
+          { target: :datum, field: :session_number, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :handedness, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :interstimulus_interval_min, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :interstimulus_interval_max, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :n_coincidence, event_name: 'cleaned_pvt_all' },
+          { target: :datum, field: :n_wrong, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :n_anticipation_wrong, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :n_anticipation_correct, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :n_timeouts, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :all_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :all_median, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :all_std, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :slow_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :slow_std, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :fast_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :fast_std, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :all_inverse_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :all_inverse_median, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :all_inverse_std, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :n_correct, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :slow_inverse_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :slow_inverse_std, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :n_slow, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :fast_inverse_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :fast_inverse_std, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :n_fast, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :n_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :lapse_transformation, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :n_lapses_in_slow, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :slow_lapse_percentage, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_1_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_2_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_3_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_4_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_5_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_6_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_7_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_8_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_9_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_10_mean, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_1_mean_of_inverse, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_2_mean_of_inverse, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_3_mean_of_inverse, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_4_mean_of_inverse, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_5_mean_of_inverse, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_6_mean_of_inverse, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_7_mean_of_inverse, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_8_mean_of_inverse, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_9_mean_of_inverse, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_10_mean_of_inverse, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_1_n_trials, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_2_n_trials, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_3_n_trials, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_4_n_trials, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_5_n_trials, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_6_n_trials, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_7_n_trials, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_8_n_trials, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_9_n_trials, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_10_n_trials, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_1_n_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_2_n_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_3_n_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_4_n_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_5_n_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_6_n_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_7_n_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_8_n_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_9_n_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_10_n_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_1_percent_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_2_percent_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_3_percent_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_4_percent_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_5_percent_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_6_percent_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_7_percent_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_8_percent_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_9_percent_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :bin_10_percent_lapses, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :slope, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :intercept, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :inverse_of_intercept, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :correlation, event_name: 'cleaned_pvt_all'},
+          { target: :datum, field: :correlation_squared, event_name: 'cleaned_pvt_all'}
+      ]
+    end
+
+
     def column_map
       [
-          { target: :subject, field: :subject_code },
+          { target: :none },
           { target: :none },
           { target: :event, field: :labtime, event_name: EVENT_NAME },
           { target: :none },
@@ -290,7 +384,7 @@ module ETL
       ]
     end
 
-    def object_map(patient_year)
+    def old_object_map(patient_year)
       [
           {
               class: Subject,
@@ -307,6 +401,29 @@ module ETL
               class: Event,
               existing_records: { action: :destroy, find_by: [:name, :subject_id]},
               event_name: SCHEDULED_EVENT_NAME,
+              static_fields: { labtime_year: patient_year },
+              static_data_fields: { pvt_type: "visual pvt" }
+          }
+      ]
+    end
+
+    def analyzed_object_map(patient_year)
+      [
+          {
+              class: Event,
+              existing_records: {action: :destroy, find_by: [:name, :subject_id]},
+              event_name: 'pvt_all_analyzed',
+              static_fields: { labtime_year: patient_year },
+          }
+      ]
+    end
+
+    def object_map(patient_year)
+      [
+          {
+              class: Event,
+              existing_records: {action: :destroy, find_by: [:name, :subject_id]},
+              event_name: EVENT_NAME,
               static_fields: { labtime_year: patient_year },
               static_data_fields: { pvt_type: "visual pvt" }
           }

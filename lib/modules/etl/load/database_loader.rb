@@ -6,8 +6,9 @@ module ETL
     attr_accessor :source_file
 
     ## Constructor
-    def initialize(source_info, object_map, column_map, source, documentation, subject=nil)
+    def initialize(source_info, object_map, column_map, source, documentation, subject=nil, strict_event_creation = true)
       raise StandardError, "Missing parameters!" unless (source && documentation)
+    #MY_LOG.info column_map
 
       generate_loader_map(object_map, column_map)
       generate_conditions(column_map)
@@ -15,11 +16,12 @@ module ETL
       
       @source = source
       @documentation = documentation
-      @subject = subject      
+      @subject = subject
+      @strict_event_creation = strict_event_creation
     end
 
     def load_data
-      unique_subjects = []
+      unique_subjects = [@subject.subject_code]
       #MY_LOG.info "In load_data"
 
       ActiveRecord::Base.transaction do
@@ -32,24 +34,23 @@ module ETL
         start_time = Time.zone.now
         LOAD_LOG.info "########## Database Loader: Loading Data ##########"
         LOAD_LOG.info "##########  Starting at row #{@first_row}   ##########"
-        MY_LOG.info "#{@loader_map}\n######\n#{@subject}"
+       #MY_LOG.info "##loader_map:\n#{@loader_map}"
 
         (@first_row..@source_file.last_row).each do |i|
           begin
-            #MY_LOG.info "##loader_map:\n#{@loader_map.to_yaml}"
             row = @source_file.row(i)
             next if skip_row?(row)
            #MY_LOG.info "ROW: #{row}"
             row_subject = ensure_subject_available
             new_subject_row = false
 
-            LOAD_LOG.info "###### LOADING ROW #{i}: #{(Time.zone.now() - start_time)/60} minutes elapsed" if i % 1000 == @first_row
+            LOAD_LOG.info "###### LOADING ROW #{i}: #{(Time.zone.now() - start_time)/60} minutes elapsed" if i % 25 == @first_row
             #MY_LOG.info "#{@loader_map}"
 
             group_labels = set_group_labels
 
             @loader_map.each do |mapping|
-              #MY_LOG.info "MAPPING: #{mapping}"
+             #MY_LOG.info "MAPPING: #{mapping}"
 
 
               col_values = {}
@@ -68,11 +69,11 @@ module ETL
               # Row Destroy:
               destroy_existing_for_event(mapping, row_subject) if new_subject_row
 
-              #MY_LOG.info "\nCVS: #{col_values}\nDVS: #{data_values}"
+            #MY_LOG.info "\nCVS: #{col_values}\nDVS: #{data_values}"
 
               ## Determine number of objects to create
               attrs_list = determine_object_number(mapping, col_values, data_values)
-             #MY_LOG.info "attrs_list: #{attrs_list}"
+              #MY_LOG.info "attrs_list: #{attrs_list}"
 
               ## Create all objects
               attrs_list.each do |attr_array|
@@ -89,13 +90,14 @@ module ETL
 
                 ## Clean Time Attributes if object is an event
                 #obj_attrs = clean_time_params(obj_attrs, mapping) if mapping[:class] == Event
-                #MY_LOG.info "class: #{mapping[:class]} col: #{col_attrs} d: #{data_attrs} obj: #{obj_attrs} row_subject: #{row_subject}"
+               #MY_LOG.info "class: #{mapping[:class]} col: #{col_attrs} d: #{data_attrs} obj: #{obj_attrs} row_subject: #{row_subject}"
 
                 ## Create Object
 
                 # For existing records: update -
                 obj = get_existing_object(mapping, obj_attrs) if mapping[:existing_records][:action] == :update or mapping[:existing_records][:action] == :ignore
 
+               #MY_LOG.info "OBJECT: #{obj}"
                 if obj
 
                   ## Update - use logged update
@@ -213,10 +215,12 @@ module ETL
     def set_group_labels
       label_map = {}
 
-      @event_groups.each_pair do |group, events|
-        label = ActiveRecord::Base.connection.next_sequence_value "object_id_seq"
-        events.each do |event_name|
-          label_map[event_name] = label
+      if @event_groups
+        @event_groups.each_pair do |group, events|
+          label = ActiveRecord::Base.connection.next_sequence_value "object_id_seq"
+          events.each do |event_name|
+            label_map[event_name] = label
+          end
         end
       end
 
@@ -241,7 +245,7 @@ module ETL
 
         obj_attrs[:source_id] = @source.id
         obj_attrs[:documentation_id] = @documentation.id
-        obj_attrs[:data_list] = build_data_list data_attrs, static_data_fields
+        obj_attrs[:data_list] = build_data_list data_attrs, static_data_fields, mapping[:event_dictionary]
         obj_attrs[:subject_id] = row_subject.id
 
         obj_attrs[:group_label] = group_labels[mapping[:event_name]]
@@ -296,10 +300,17 @@ module ETL
       obj_attrs
     end
 
-    def build_data_list(data_attrs, static_data_fields)
+    def build_data_list(data_attrs, static_data_fields, ed)
       # Created to standardize data lists between direct create and normal create of events
       data_list = {clear_all: 0, list: []}
-      (data_attrs.merge static_data_fields).each do |key, value|
+      #MY_LOG.info "HELLOOO !! #{data_attrs} | #{ed.data_dictionary.map(&:title)} | #{ed.data_dictionary.map(&:title) - data_attrs.keys} "
+      #MY_LOG.info "#{data_attrs} | #{ed.data_dictionary.map(&:title)} | #{ed.data_dictionary.map(&:title) - data_attrs} "
+
+      missing_attrs = {}
+      (ed.data_dictionary.map(&:title) - data_attrs.keys).each {|x| missing_attrs[x] = nil } unless @strict_event_creation
+
+      final_attrs = (data_attrs.merge static_data_fields).merge(missing_attrs)
+      final_attrs.each do |key, value|
         data_list[:list] << { title: key, value: value }
       end
 
@@ -328,7 +339,7 @@ module ETL
         # If no multiple objects allowed, create an array of length 1
         attrs_list = [[col_values, data_values]]        
       end
-      #MY_LOG.info "c: #{mapping[:class]} m?: #{mapping[:multiple]} \nc: #{col_values}\nattrs_list #{attrs_list}"
+    #MY_LOG.info "c: #{mapping[:class]} m?: #{mapping[:multiple]} \nc: #{col_values}\nattrs_list #{attrs_list}"
 
       attrs_list
     end

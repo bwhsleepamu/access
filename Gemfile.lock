@@ -110,6 +110,9 @@ GEM
       actionpack (>= 3.1)
       less (~> 2.4.0)
     libv8 (3.16.14.3)
+    linguistics (2.0.3)
+      loggability (~> 0.7)
+    loggability (0.8.1)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
@@ -285,6 +288,7 @@ DEPENDENCIES
   jquery-rails
   kaminari (~> 0.15.0)
   less-rails
+  linguistics (~> 2.0.3)
   meta_request
   poltergeist
   rails (= 4.0.2)

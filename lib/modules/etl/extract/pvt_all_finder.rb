@@ -3,6 +3,35 @@ require "find"
 module ETL
   class PvtAllFinder
 
+    def self.info(inpath, outpath)
+      out = CSV.open(outpath, 'wb')
+      info = {}
+
+      Find.find(inpath) do |p|
+        if p =~ /\.xls$/
+          MY_LOG.info "Checking #{p}"
+          s = Roo::Excel.new(p)
+          info[p] = {}
+          info[p][:sheets] = s.sheets
+
+          possible_fevs = s.sheets.select {|x| (x =~ /acceptable/i or x =~ /pvt.*fev/i)}
+          if possible_fevs.length == 1
+            fev_sheet = s.sheet(possible_fevs.first)
+            #info[p][:stats] = [fev_sheet.first_row, fev_sheet.last_row, fev_sheet.first_column, fev_sheet.last_column]
+            source = Source.find_by_location(p)
+
+            sid = (source.nil? ? nil : source.id)
+
+            out << [sid, p, possible_fevs.first] + fev_sheet.row(1)
+          else
+            MY_LOG.info "CAN'T FIND FEV SHEET #{p}"
+          end
+
+        end
+      end
+      out.close
+      MY_LOG.info info.to_yaml
+    end
 
     def initialize(subject_group_list, dest_dir, descriptions, patterns)
       @subject_group_list = subject_group_list

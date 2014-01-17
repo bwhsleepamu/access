@@ -47,6 +47,9 @@ gem 'redcarpet'
 # R and Raster Plots
 gem 'rsruby'
 
+# Lingustics Support
+gem "linguistics", "~> 2.0.3"
+
 # Testing
 group :test do
   gem 'rspec-rails'

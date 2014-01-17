@@ -64,16 +64,24 @@ describe Event do
   describe "self.hard_delete" do
     it "should completely delete event and related data/data_values of a given name for the given subject" do
       c = 10
-      ed = create(:event_dictionary_with_data_records)
+      dr = 2
+      ed = create(:event_dictionary_with_data_records, data_record_count: dr)
       ed2 = create(:event_dictionary)
       s = create(:subject)
       events = create_list(:event_from_dictionary, c, name: ed.name, subject: s)
       events = create_list(:event_from_dictionary, c, name: ed2.name, subject: s)
+
+      expect(Datum.count).to eq c*dr
+      expect(DataValue.count).to eq c*dr
+
       Event.count.should == c*2
       Event.where(name: ed.name).count.should == c
       Event.hard_delete s, ed.name
       Event.count.should == c
       Event.where(name: ed.name).count.should == 0
+
+      expect(Datum.count).to eq 0
+      expect(DataValue.count).to eq 0
     end
   end
 

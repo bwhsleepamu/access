@@ -217,35 +217,41 @@ FactoryGirl.define do
       st = create(:string_type) if st.blank?
       dt = create(:date_type) if dt.blank?
 
-      create(:data_dictionary, title: "wake_period", data_type: it, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "section_of_protocol", data_type: st, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "test_type_identifier", data_type: st, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "session_number", data_type: it, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "handedness", data_type: st, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "interstimulus_interval_min", data_type: nt, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "interstimulus_interval_max", data_type: nt, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "n_wrong", data_type: it, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "n_timeouts", data_type: it, multivalue: true, event_dictionary: [event_dictionary])
       create(:data_dictionary, title: "all_mean", data_type: nt, event_dictionary: [event_dictionary])
       create(:data_dictionary, title: "all_median", data_type: nt, event_dictionary: [event_dictionary])
       create(:data_dictionary, title: "all_std", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "bin_length", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "correlation", data_type: nt, event_dictionary: [event_dictionary])
       create(:data_dictionary, title: "fast_mean", data_type: nt, event_dictionary: [event_dictionary])
       create(:data_dictionary, title: "fast_std", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "good", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "handedness", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "include", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "intercept", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "interstimulus_interval_max", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "interstimulus_interval_min", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "lapse_definition", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "lapse_transformation", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_anticipation_correct", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_anticipation_wrong", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_coincidence", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_correct", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_lapses", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_lapses_in_slow", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_timeouts", data_type: it, multivalue: true, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "n_wrong", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "pvt_type", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "section_of_protocol", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "session_number", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "slope", data_type: nt, event_dictionary: [event_dictionary])
       create(:data_dictionary, title: "slow_mean", data_type: nt, event_dictionary: [event_dictionary])
       create(:data_dictionary, title: "slow_std", data_type: nt, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "n_correct", data_type: it, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "lapse_definition", data_type: st, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "n_lapses", data_type: it, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "lapse_transformation", data_type: nt, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "n_lapses_in_slow", data_type: it, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "bin_length", data_type: nt, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "slope", data_type: nt, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "intercept", data_type: nt, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "correlation", data_type: nt, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "test_duration_scheduled", data_type: nt, event_dictionary: [event_dictionary])
       create(:data_dictionary, title: "test_duration_actual", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "test_duration_scheduled", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "test_type_identifier", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "valid_data", data_type: it, event_dictionary: [event_dictionary])
       create(:data_dictionary, title: "version", data_type: st, event_dictionary: [event_dictionary])
-      create(:data_dictionary, title: "pvt_type", data_type: st, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "wake_period", data_type: it, event_dictionary: [event_dictionary])
     end
   end
 
@@ -337,3 +343,5 @@ FactoryGirl.define do
     name "vas_shtscale_scheduled"
   end
 end
+
+

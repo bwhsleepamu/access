@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140110190845) do
+ActiveRecord::Schema.define(version: 20140116160751) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id",    precision: 38, scale: 0
@@ -316,6 +316,8 @@ ActiveRecord::Schema.define(version: 20140110190845) do
     t.integer  "parent_id",         precision: 38, scale: 0
     t.string   "original_location"
     t.integer  "subject_id",        precision: 38, scale: 0
+    t.text     "column_map"
+    t.string   "worksheet_name"
   end
 
   add_index "sources", ["deleted"], name: "index_sources_on_deleted"
@@ -510,7 +512,6 @@ ActiveRecord::Schema.define(version: 20140110190845) do
 
   add_foreign_key "sources", "source_types", name: "sources_source_type_id_fk"
   add_foreign_key "sources", "sources", column: "parent_id", name: "sources_parent_id_fk", dependent: :nullify
-  add_foreign_key "sources", "subjects", name: "sources_subject_id_fk"
   add_foreign_key "sources", "users", name: "sources_user_id_fk"
 
   add_foreign_key "study_nicknames", "studies", name: "study_nicknames_study_id_fk", dependent: :delete

@@ -1,3 +1,21 @@
+### TODO: NEEDS UPGRADES
+
+##
+# With group labels and without
+#
+# Existing record variations:
+#  Events:
+#   * Destroy once per file
+#   * Destroy once per line
+#   * Destroy once per subject change
+#  Destroying other objects
+#
+# Conditional Loading
+
+
+
+
+
 require 'spec_helper'
 
 describe ETL::DatabaseLoader do
@@ -87,7 +105,7 @@ describe ETL::DatabaseLoader do
       },
       {
         target: :irb,
-        field: :number,
+        field: :irb_number,
         multiple: true,
       },
       {
@@ -192,7 +210,7 @@ describe ETL::DatabaseLoader do
       },
       {
         class: Irb,
-        existing_records: {action: :update, find_by: [:number]}
+        existing_records: {action: :update, find_by: [:irb_number]}
       },
       {
         class: Event,
@@ -233,7 +251,7 @@ describe ETL::DatabaseLoader do
         },
         {
             class: Irb,
-            existing_records: {action: :update, find_by: [:number]}
+            existing_records: {action: :update, find_by: [:irb_number]}
         },
         {
             class: Event,
@@ -295,7 +313,7 @@ describe ETL::DatabaseLoader do
       s.should be_present
       s.irbs.length.should == 1
       s.irbs.first.title.should == "Sleep duration required to restore performance during chronic sleep restriction"
-      s.irbs.first.number.should == "2011-P-001094"
+      s.irbs.first.irb_number.should == "2011-P-001094"
       s.project_leaders.length.should == 2
       s.project_leaders.first.last_name.should == "Hull"
       s.principal_investigators.length.should == 1
@@ -375,7 +393,7 @@ describe ETL::DatabaseLoader do
       s.should be_present
       s.irbs.length.should == 1
       s.irbs.first.title.should == "Sleep duration required to restore performance during chronic sleep restriction"
-      s.irbs.first.number.should == "2011-P-001094"
+      s.irbs.first.irb_number.should == "2011-P-001094"
       s.project_leaders.length.should == 2
       s.project_leaders.first.last_name.should == "Hull"
       s.principal_investigators.length.should == 1

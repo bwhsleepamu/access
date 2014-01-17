@@ -14,7 +14,7 @@
   <dd><%= @data_dictionary.title %></dd>
 
   <dt>Description</dt>
-  <dd><%= simple_format @data_dictionary.description %></dd>
+  <dd><%= markdown @data_dictionary.description %></dd>
 
   <dt>Data Type</dt>
   <dd><%= link_to @data_dictionary.data_type.name, @data_dictionary.data_type if @data_dictionary.data_type %></dd>

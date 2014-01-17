@@ -18,7 +18,7 @@ describe ETL::TDriveCrawler do
     descriptions = {sg1.name => "Some desc for these sources", sg2.name => "SOme other desc for sources"}
     subject_group_list = {sg1 => "/I/AMU Cleaned Data Sets", sg2 => "/X/Studies/Analyses/PRET-modafinil/data/cog"}
     output_dir = "/usr/local/htdocs/access/spec/data/pvt_all_finder"
-    patterns = {sg1.name => /.*pvt.*fev.*(\.xls)\z/i, sg2.name => /.*pvtall.*(\.xls)\z/i}
+    patterns = {sg1.name => /.*testing\/\d[0-9a-z]*[a-z][0-9a-z]*_.*pvt.*fev.*(\.xls)\z/i, sg2.name => /.*pvtall.*(\.xls)\z/i}
 
 
     f = ETL::PvtAllFinder.new(subject_group_list, output_dir, descriptions, patterns)

@@ -156,23 +156,26 @@ FactoryGirl.define do
     before(:create) do |event, evaluator|
       ed = EventDictionary.find_by_name(event.name)
       event.realtime = Time.zone.now unless event.realtime.present? or event.labtime.present?
-      ed.data_dictionary.each do |dd|
-        event.data << build(:datum_from_dictionary, title: dd.title)
-      end
     end
 
+    after(:create) do |event, evaluator|
+      ed = EventDictionary.find_by_name(event.name)
+      ed.data_dictionary.each do |dd|
+        event.data << create(:datum_from_dictionary, title: dd.title)
+      end
+    end
   end
 
   factory :datum_from_dictionary, class: Datum do
     # Needs title
-    before(:create) do |datum, evaluator|
-      datum.data_dictionary = DataDictionary.find_by_title(datum.title)
+    after(:create) do |datum, evaluator|
+      dd = DataDictionary.find_by_title(datum.title)
       if dd.data_type.storage == "num_value"
-        datum.value = Random.rand(100)
+        datum.data_values.create(num_value: Random.rand(100))
       elsif dd.data_type.storage == "text_value"
-        datum.value = "test_text_#{Radom.rand(100)}"
+        datum.data_values.create(text_value: "test_text_#{Random.rand(100)}")
       else
-        datum.value = Time.zone.now
+        datum.data_values.create(time_value: Time.zone.now)
       end
     end
   end
