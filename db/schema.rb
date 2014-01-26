@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140116160751) do
+ActiveRecord::Schema.define(version: 20140123215719) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id",    precision: 38, scale: 0
@@ -157,9 +157,10 @@ ActiveRecord::Schema.define(version: 20140116160751) do
   create_table "event_dictionary", force: true do |t|
     t.string   "name"
     t.text     "description"
-    t.boolean  "deleted",     precision: 1, scale: 0, default: false, null: false
-    t.datetime "created_at",                                          null: false
-    t.datetime "updated_at",                                          null: false
+    t.boolean  "deleted",     precision: 1,  scale: 0, default: false, null: false
+    t.datetime "created_at",                                           null: false
+    t.datetime "updated_at",                                           null: false
+    t.integer  "paired_id",   precision: 38, scale: 0
   end
 
   add_index "event_dictionary", ["deleted"], name: "i_event_dictionary_deleted"
@@ -496,6 +497,8 @@ ActiveRecord::Schema.define(version: 20140116160751) do
   add_foreign_key "documentation_links", "documentations", name: "doc_lin_doc_id_fk"
 
   add_foreign_key "documentations", "users", name: "documentations_user_id_fk"
+
+  add_foreign_key "event_dictionary", "event_dictionary", column: "paired_id", name: "event_dictionary_paired_id_fk", dependent: :nullify
 
   add_foreign_key "event_dictionary_data_fields", "data_dictionary", name: "eve_dic_dat_fie_dat_dic_id_fk"
   add_foreign_key "event_dictionary_data_fields", "event_dictionary", name: "eve_dic_dat_fie_eve_dic_id_fk"

@@ -324,12 +324,10 @@ namespace :etl do
 
     end
 
-
-
     desc "load SH Files"
     task :sh_files => :environment do
       documentation = Documentation.find(93253658)
-      subject_group = SubjectGroup.find_by_name("darpa_generalizability_pvt")
+      subject_group = SubjectGroup.find_by_name("psq_subjects")
 
       cr_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/#{subject_group.name}_constant_routines.csv")
       lt_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/#{subject_group.name}_light_events.csv")
@@ -761,9 +759,10 @@ namespace :etl do
       options = {
         source_dir: '/T/IPM',
         output_dir: '/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files',
-        subject_group: SubjectGroup.find_by_name("darpa_generalizability_pvt"),
+        subject_group: SubjectGroup.find_by_name("psq_subjects"),
         find_missing_t_drive_location: false,
-        user_email: "pmankowski@partners.org"
+        user_email: "pmankowski@partners.org",
+        ignore_duplicates: true
       }
 
       shm = ETL::ShFileMerger.new(options)

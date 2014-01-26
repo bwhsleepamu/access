@@ -9,6 +9,12 @@ class EventsController < ApplicationController
     @events = events_scope.search_by_terms(parse_search_terms(params[:search])).set_order(params[:order], "title asc").page_per(params) #.page(params[:page] ? params[:page] : 1).per(params[:per_page] == "all" ? nil : params[:per_page])
   end
 
+  # GET /events/report/name/subject_code/subject_group_name/ignore_paired
+  # GET /events/report/name.json
+  def report
+    @report = Event.generate_report(params[:name], {subject_group_name: params[:subject_group_name], subject_code: params[:subject_code], ignore_paired: params[:ignore_paired]})
+  end
+
   # GET /documentations/1
   # GET /documentations/1.json
   def show

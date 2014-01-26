@@ -38,6 +38,14 @@ class Event < ActiveRecord::Base
 
   ##
   # Class Methods
+  def self.generate_report(name, attrs = {})
+    attrs = { ignore_paired: false }.merge attrs
+    ed = EventDictionary.find_by_name name
+    sql = ed.event_data_query_sql(attrs)
+
+    Event.connection.exec_query sql
+  end
+
   def self.continuous_list(subject, event_record, options = {use_materialized_view: true, refresh: false, recreate: false})
 
     event_name = event_record.name

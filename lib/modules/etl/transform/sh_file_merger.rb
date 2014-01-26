@@ -29,6 +29,8 @@ module ETL
 
       @find_missing_t_drive_location = attrs[:find_missing_t_drive_location]
       @find_missing_t_drive_location ||= false
+      @ignore_duplicates = attrs[:ignore_duplicates]
+      @ignore_duplicates ||= false
 
       LOAD_LOG.info "Initializing S~H File Merger with the following options:\nsd: #{@source_directory} | od: #{@output_directory} | sg: #{@subject_group.name} | spon: #{@sp_output_name} | lton: #{@lt_output_name} | cron: #{@cr_output_name} | sptype: #{@sp_type} | lttype: #{@lt_type} | crtype: #{@cr_type} | otype: #{@output_type} | user: #{@user}"
       raise StandardError, "Failed to initialize!\n#{@source_directory} && #{@output_directory} && #{@subject_group} && #{@sp_type} && #{@lt_type} && #{@cr_type} && #{@output_type} && #{@user}" unless (@source_directory && @output_directory && @subject_group && @sp_type && @lt_type && @cr_type && @output_type && @user)
@@ -77,26 +79,37 @@ module ETL
             end
           end
 
-          if file_lists[:ibob].length == 1
-            merge_ibob(subject, file_lists[:ibob].first, ibob_output, ibob_source)
-          else
-            raise StandardError, "#{file_lists[:ibob].length} IBOB files found in subject folder!\nsubject: #{subject.subject_code} | dir: #{subject_dir}\npaths: #{file_lists[:ibob]}"
-          end
-
-          if file_lists[:cr].length == 1
-            merge_cr(subject, file_lists[:cr].first, cr_output, cr_source)
-          else
-            raise StandardError, "#{file_lists[:cr].length} CR files found in subject folder!\nsubject: #{subject.subject_code} | dir: #{subject_dir}\npaths: #{file_lists[:cr]}"
-          end
-
-          file_lists[:lt].each_pair do |lux_val, paths|
-            if paths.length == 1
-              merge_lt(subject, paths.first, lux_val, lt_output, lt_source)
+          begin
+            if (file_lists[:ibob].length == 1) || (@ignore_duplicates && file_lists[:ibob].length >= 1)
+              merge_ibob(subject, file_lists[:ibob].first, ibob_output, ibob_source)
             else
-              raise StandardError, "#{paths.length} LT #{lux_val} files found in subject folder!\nsubject: #{subject.subject_code} | dir: #{subject_dir}\npaths: #{paths}"
+              raise StandardError, "#{file_lists[:ibob].length} IBOB files found in subject folder!\nsubject: #{subject.subject_code} | dir: #{subject_dir}\npaths: #{file_lists[:ibob]}"
             end
+          rescue => error
+            LOAD_LOG.info "\n####\nERROR! #{subject.subject_code} Sh File Merger: #{error.message} | Backtrace:\n#{error.backtrace}\n####"
           end
 
+          begin
+            if (file_lists[:cr].length == 1) || (@ignore_duplicates && file_lists[:cr].length >= 1)
+              merge_cr(subject, file_lists[:cr].first, cr_output, cr_source)
+            else
+              raise StandardError, "#{file_lists[:cr].length} CR files found in subject folder!\nsubject: #{subject.subject_code} | dir: #{subject_dir}\npaths: #{file_lists[:cr]}"
+            end
+          rescue => error
+            LOAD_LOG.info "\n####\nERROR! #{subject.subject_code} Sh File Merger: #{error.message} | Backtrace:\n#{error.backtrace}\n####"
+          end
+
+          begin
+            file_lists[:lt].each_pair do |lux_val, paths|
+              if (paths.length == 1) || (@ignore_duplicates && paths.length >= 1)
+                merge_lt(subject, paths.first, lux_val, lt_output, lt_source)
+              else
+                raise StandardError, "#{paths.length} LT #{lux_val} files found in subject folder!\nsubject: #{subject.subject_code} | dir: #{subject_dir}\npaths: #{paths}"
+              end
+            end
+          rescue => error
+            LOAD_LOG.info "\n####\nERROR! #{subject.subject_code} Sh File Merger: #{error.message} | Backtrace:\n#{error.backtrace}\n####"
+          end
           successful << subject.subject_code
         rescue => error
           LOAD_LOG.info "\n####\nERROR! #{subject.subject_code} Sh File Merger: #{error.message} | Backtrace:\n#{error.backtrace}\n####"

@@ -8,6 +8,14 @@ Access::Application.routes.draw do
   resources :data_types
   resources :documentations
   resources :event_dictionary
+
+  get 'events/:name/report/subject/:subject_code/ignore_paired', to: "events#report", defaults: {ignore_paired: 1}
+  get 'events/:name/report/subject/:subject_code', to: "events#report"
+  get 'events/:name/report/subject_group/:subject_group_name/ignore_paired', to: "events#report", defaults: {ignore_paired: 1}
+  get 'events/:name/report/subject_group/:subject_group_name', to: "events#report"
+  get 'events/:name/report/ignore_paired', to: "events#report", defaults: {ignore_paired: 1}
+  get 'events/:name/report', to: "events#report"
+
   resources :events do
     get ':name', action: :new, on: :new
   end

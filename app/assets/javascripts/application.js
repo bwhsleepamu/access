@@ -14,6 +14,10 @@
 //= require jquery
 //= require jquery_ujs
 //= require my-contour
+//= require jquery.dataTables
+//= require TableTools
+//= require ZeroClipboard
+//= require datatables
 //= require PageDown/index
 //= require chosen.jquery
 //= require_tree .

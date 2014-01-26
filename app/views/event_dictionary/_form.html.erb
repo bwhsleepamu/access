@@ -19,6 +19,10 @@
   </div>
   <div class="col-md-6">
     <div class="form-group">
+      <%= f.label :paired_id, "Paired Event Record", class: 'control-label' %><br/>
+      <%= f.select :paired_id, [[nil, nil]] + EventDictionary.current.collect{|s| [s.name, s.id]}, {}, {rel: 'chosen', class: 'form-control', data: {placeholder: "Choose paired record if applicable..."}} %>
+    </div>
+    <div class="form-group">
       <%= f.label :event_tag_ids, "Event Tags", class: 'control-label' %><br/>
       <%= f.collection_select :event_tag_ids, EventTag.current.order(:name), :id, :name, {}, {multiple:true, rel: 'chosen', class: 'form-control'} %>
     </div>

@@ -21,7 +21,7 @@ module ETL
     end
 
     def load_data
-      unique_subjects = [@subject.subject_code]
+      unique_subjects = (@subject ? [@subject.subject_code] : [])
       #MY_LOG.info "In load_data"
 
       ActiveRecord::Base.transaction do

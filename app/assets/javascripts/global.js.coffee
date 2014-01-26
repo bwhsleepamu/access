@@ -7,6 +7,7 @@
   sourcesReady()
   studiesReady()
   subjectGroupsReady()
+  eventsReady()
 
 
 ## The two options (turbolinks, full page refresh) are adressed here

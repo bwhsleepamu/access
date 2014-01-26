@@ -71,7 +71,7 @@ class EventDictionaryController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def event_dictionary_params
-    params.require(:event_dictionary).permit(:name, :description, data_dictionary_ids: [], event_tag_ids: [])
+    params.require(:event_dictionary).permit(:name, :description, :paired_id, data_dictionary_ids: [], event_tag_ids: [])
   end
 end
 
