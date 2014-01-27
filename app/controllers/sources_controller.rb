@@ -14,6 +14,16 @@ class SourcesController < ApplicationController
   def show
   end
 
+  def latest
+    klass = params[:type].camelcase.constantize
+    @source = klass.find(params[:id]).latest_source
+    if @source.present?
+      render :show
+    else
+      redirect_to :sources
+    end
+  end
+
   # GET /sources/new
   # GET /sources/new.json
   def new

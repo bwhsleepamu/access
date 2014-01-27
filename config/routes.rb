@@ -6,8 +6,14 @@ Access::Application.routes.draw do
     post 'data_attribute_form', :on => :collection
   end
   resources :data_types
+
+  get 'documentations/latest/:type/:id', to: "documentations#latest", as: :latest_documentation
+  get 'sources/latest/:type/:id', to: "sources#latest", as: :latest_source
+
   resources :documentations
   resources :event_dictionary
+
+  post 'events/report', to: "events#report", as: :report
 
   get 'events/:name/report/subject/:subject_code/ignore_paired', to: "events#report", defaults: {ignore_paired: 1}
   get 'events/:name/report/subject/:subject_code', to: "events#report"

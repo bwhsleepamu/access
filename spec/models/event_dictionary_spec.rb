@@ -10,6 +10,7 @@ describe EventDictionary do
       @paired_sql = %(select
           s.id subject_id,
           s.subject_code subject_code,
+          max( decode(e.name, '#{@ed_name}', e.id)) first_event_id,
           max( decode(e.name, '#{@ed_name}', e.name)) first_event_name,
           max( decode(e.name, '#{@ed_name}', labtime_hour)) first_labtime_hour,
           max( decode(e.name, '#{@ed_name}', labtime_min)) first_labtime_min,
@@ -17,6 +18,7 @@ describe EventDictionary do
           max( decode(e.name, '#{@ed_name}', labtime_year)) first_labtime_year,
           max( decode(e.name, '#{@ed_name}', labtime_decimal(e.labtime_hour, e.labtime_min, e.labtime_sec))) first_decimal_labtime,
           max( decode(e.name, '#{@ed_name}', realtime)) first_realtime,
+          max( decode(e.name, '#{@ed2_name}', e.id)) second_event_id,
           max( decode(e.name, '#{@ed2_name}', e.name)) second_event_name,
           max( decode(e.name, '#{@ed2_name}', labtime_hour)) second_labtime_hour,
           max( decode(e.name, '#{@ed2_name}', labtime_min)) second_labtime_min,
@@ -40,6 +42,7 @@ describe EventDictionary do
       @single_sql = %(select
           s.id subject_id,
           s.subject_code subject_code,
+          e.id event_id,
           max(e.name) event_name,
           max(e.labtime_hour) labtime_hour,
           max(e.labtime_min) labtime_min,

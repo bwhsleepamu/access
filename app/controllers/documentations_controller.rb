@@ -14,6 +14,16 @@ class DocumentationsController < ApplicationController
   def show
   end
 
+  def latest
+    klass = params[:type].camelcase.constantize
+    @documentation = klass.find(params[:id]).latest_documentation
+    if @documentation.present?
+      render :show
+    else
+      redirect_to :documentations
+    end
+  end
+
   # GET /documentations/new
   def new
     @documentation = Documentation.new

@@ -41,12 +41,21 @@ module Loggable
   def latest_source
     r = ChangeLog.recent(self.id).with_source
     #MY_LOG.info "r: #{r.to_a}"
-    r.first.source unless r.empty?
+    if r.empty?
+      self.respond_to?(:source) ? self.source : nil
+    else
+      r.first.source
+    end
+
   end
 
   def latest_documentation
     r = ChangeLog.recent(self.id).with_documentation
-    r.first.documentation unless r.empty?
+    if r.empty?
+      self.respond_to?(:documentation) ? self.documentation : nil
+    else
+      r.first.documenation
+    end
   end
 
   def latest_change

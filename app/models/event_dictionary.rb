@@ -51,7 +51,8 @@ class EventDictionary < ActiveRecord::Base
     if event_records.length > 1
       event_records.each_with_index do |er, j|
         i = j + 1
-        query += %(, max( decode(e.name, '#{er.name}', e.name)) #{i.en.ordinate}_event_name,
+        query += %(, max( decode(e.name, '#{er.name}', e.id)) #{i.en.ordinate}_event_id,
+          max( decode(e.name, '#{er.name}', e.name)) #{i.en.ordinate}_event_name,
           max( decode(e.name, '#{er.name}', labtime_hour)) #{i.en.ordinate}_labtime_hour,
           max( decode(e.name, '#{er.name}', labtime_min)) #{i.en.ordinate}_labtime_min,
           max( decode(e.name, '#{er.name}', labtime_sec)) #{i.en.ordinate}_labtime_sec,
@@ -60,7 +61,7 @@ class EventDictionary < ActiveRecord::Base
           max( decode(e.name, '#{er.name}', realtime)) #{i.en.ordinate}_realtime)
       end
     else
-      query += ", max(e.name) event_name, max(e.labtime_hour) labtime_hour, max(e.labtime_min) labtime_min, max(e.labtime_sec) labtime_sec, max(e.labtime_year) labtime_year, max(labtime_decimal(e.labtime_hour, e.labtime_min, e.labtime_sec)) decimal_labtime, max(e.realtime) realtime"
+      query += ", e.id event_id, max(e.name) event_name, max(e.labtime_hour) labtime_hour, max(e.labtime_min) labtime_min, max(e.labtime_sec) labtime_sec, max(e.labtime_year) labtime_year, max(labtime_decimal(e.labtime_hour, e.labtime_min, e.labtime_sec)) decimal_labtime, max(e.realtime) realtime"
     end
     
     data_records.each do |dr|

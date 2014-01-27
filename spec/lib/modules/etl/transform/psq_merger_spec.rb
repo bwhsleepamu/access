@@ -18,8 +18,8 @@ describe ETL::PsqMerger do
   describe "Merging of Jeanne Duffy files" do
     let(:source_file_list) {
       {
-          "/usr/local/htdocs/access/spec/data/psq_merger/psq_merger_d.xls" => ["subject_code", "sleep_period", "lights_out_labtime_decimal", "q_1", "q_2", "q_3", "q_4", "q_4a", "q_5", "q_6", "q_7", "q_8", "person_date_entered", "notes"],
-          "/usr/local/htdocs/access/spec/data/psq_merger/psq_merger_d2.xls" => ["sleep_period", "lights_out_labtime_decimal", "q_1", "q_2", "q_2a", "q_3", "q_4", "q_4a", "q_5", "q_6", "q_7", "q_8", "person_date_entered", "notes"]
+          "/usr/local/htdocs/access/spec/data/psq_merger/psq_merger_d.xls" => ["subject_code", "sleep_period", "cumulative_minutes", "q_1", "q_2", "q_3", "q_4", "q_4a", "q_5", "q_6", "q_7", "q_8", "person_date_entered", "notes"],
+          "/usr/local/htdocs/access/spec/data/psq_merger/psq_merger_d2.xls" => ["sleep_period", "cumulative_minutes", "q_1", "q_2", "q_2a", "q_3", "q_4", "q_4a", "q_5", "q_6", "q_7", "q_8", "person_date_entered", "notes"]
       }
     }
 
@@ -27,6 +27,10 @@ describe ETL::PsqMerger do
       create(:source_type, name: "Comma Delimited File")
       create(:source_type, name: "Excel File")
       create(:user, email: 'pmankowski@partners.org')
+      ed1 = create(:event_dictionary, name: "sleep_period_start")
+      ed2 = create(:event_dictionary, name: "sleep_period_end")
+      ed1.paired_event_dictionary = ed2
+      ed1.save
     end
 
     it "should merge all tabs in the template source into a master xls (csv?) file" do

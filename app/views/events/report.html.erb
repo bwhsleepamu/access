@@ -5,25 +5,69 @@
   </h1>
 </div>
 
-<pre><%= @report.to_a[0] %></pre>
+<div id="report-generator" class="well">
+  <%= form_tag report_path do %>
+    <div class="row">
+      <div class="col-md-10">
+        <div class="row">
+          <div class="form-group col-md-4">
+            <%= select_tag :subject_code, options_for_select([nil]+Subject.current.map(&:subject_code), params[:subject_code]), {rel: 'chosen', class: 'form-control', data: {placeholder: "Select subject..."}} %>
+          </div>
+          <div class="form-group col-md-4">
+            <%= select_tag :subject_group_name, options_for_select([nil]+SubjectGroup.current.map(&:name), params[:subject_group_name]), {rel: 'chosen', class: 'form-control', data: {placeholder: "Select subject group..."}} %>
+          </div>
+          <div class="form-group col-md-4">
+            <%= select_tag :name, options_for_select([nil]+EventDictionary.current.map(&:name), params[:name]), {rel: 'chosen', class: 'form-control', data: {placeholder: "Select event name..."}} %>
+          </div>
+        </div>
+        <div class="row selected-cols">
+          <div class="form-group col-md-12">
+            <%= select_tag :selected_columns, options_for_select(@report[:result].columns, params[:selected_columns]), {multiple:true, rel: 'chosen', class: 'form-control', data: {placeholder: "Select columns to display..."}} %>
+          </div>
+        </div>
+
+      </div>
+      <div class="form-group col-md-2">
+        <button type="submit" class="btn btn-primary btn-lg btn-block">Update</button>
+      </div>
+    </div>
+
+<% end %>
+</div>
 
 <div id="report">
-  <table class="table table-bordered table-condensed table-striped datatable">
+  <table class="table table-striped table-bordered table-condensed datatable">
     <thead>
     <tr>
-      <% @report.columns.each do |colname| %>
-        <th><%= colname %></th>
+      <% @report[:result].columns.each do |colname| %>
+        <% if params[:selected_columns].blank? or  params[:selected_columns].include? colname %>
+          <th><%= colname %></th>
+        <% end %>
       <% end %>
+      <th>Actions</th>
     </tr>
     </thead>
     <tbody>
-    <% @report.each do |r| %>
+    <% @report[:result].each do |r| %>
       <tr>
-        <% r.values.each do |value|%>
-          <td><%= value %></td>
+        <% r.each do |colname, value|%>
+          <% if params[:selected_columns].blank? or  params[:selected_columns].include? colname %>
+            <td><%= value %></td>
+          <% end %>
         <% end %>
+        <td>
+          <% if r["event_id"] %>
+            <%= link_to "documenatation", latest_documentation_path(type: :event, id: r["event_id"]), class: "btn btn-xs btn-default" %>
+            <%= link_to "source", latest_source_path(type: :event, id: r["event_id"]), class: "btn btn-xs btn-default" %>
+          <% end %>
+        </td>
       </tr>
     <% end %>
+
     </tbody>
   </table>
 </div>
+
+<h3>SQL:</h3>
+<pre><%= @report[:sql] %></pre>
+

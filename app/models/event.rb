@@ -43,7 +43,7 @@ class Event < ActiveRecord::Base
     ed = EventDictionary.find_by_name name
     sql = ed.event_data_query_sql(attrs)
 
-    Event.connection.exec_query sql
+    {sql: sql, result: Event.connection.exec_query(sql)}
   end
 
   def self.continuous_list(subject, event_record, options = {use_materialized_view: true, refresh: false, recreate: false})

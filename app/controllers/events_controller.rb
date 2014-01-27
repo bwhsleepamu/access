@@ -12,6 +12,7 @@ class EventsController < ApplicationController
   # GET /events/report/name/subject_code/subject_group_name/ignore_paired
   # GET /events/report/name.json
   def report
+    params.keep_if {|k, v| v.present? }
     @report = Event.generate_report(params[:name], {subject_group_name: params[:subject_group_name], subject_code: params[:subject_code], ignore_paired: params[:ignore_paired]})
   end
 
