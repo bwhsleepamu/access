@@ -52,7 +52,7 @@
       <tr>
         <% r.each do |colname, value|%>
           <% if params[:selected_columns].blank? or  params[:selected_columns].include? colname %>
-            <td><%= value %></td>
+            <td><%= value.to_f > 0.0 ? value.round(3) : value %></td>
           <% end %>
         <% end %>
         <td>

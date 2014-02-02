@@ -41,8 +41,7 @@ describe ETL::PsqMerger do
 
       psq_merger = ETL::PsqMerger.new subject_group, source_file_list, destination_file_path
 
-      expect(psq_merger.merge_files).to be_true
-      psq_merger.merge_files
+      expect(psq_merger.merge_duffy_files).to be_true
 
       expect(File.exists? destination_file_path).to be_true
       expect(File.open(destination_file_path).readlines.size).to eq(1 + (8 * 23) + (1 * 12) + 28 + 27 + 25)
@@ -53,7 +52,7 @@ describe ETL::PsqMerger do
     it "should work without a subject group" do
       psq_merger = ETL::PsqMerger.new nil, source_file_list, destination_file_path
 
-      expect(psq_merger.merge_files).to be_true
+      expect(psq_merger.merge_duffy_files).to be_true
 
       expect(File.exists? destination_file_path).to be_true
       expect(Source.all.count).to eq(3)

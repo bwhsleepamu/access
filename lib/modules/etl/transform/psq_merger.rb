@@ -48,7 +48,7 @@ module ETL
     }
 =end
 
-    COLUMN_LIST = ["subject_code", "sleep_period", "start_sp_guess", "start_sp_end", "start_sp_diff", "start_sp_flag", "end_sp_guess", "end_sp_end", "end_sp_diff", "end_sp_flag", "sp_number_guess", "sp_number_end", "sp_number_diff", "sp_number_flag", "cumulative_minutes", "cumulative_labtime", "sp_flag", "q_1", "q_2", "q_3", "q_4", "q_4a", "q_5", "q_6", "q_7", "q_8", "notes", "source_file"]
+    COLUMN_LIST = ["subject_code", "database_sleep_periods", "sleep_period", "start_sp_guess", "start_sp_start", "start_sp_end", "start_sp_diff", "start_sp_flag", "end_sp_guess", "end_sp_start", "end_sp_end", "end_sp_diff", "end_sp_flag", "sp_number_guess", "sp_number_start", "sp_number_end", "sp_number_diff", "sp_number_flag", "cumulative_minutes", "cumulative_labtime", "time_field", "sp_flag", "q_1", "q_2", "q_3", "q_4", "q_4a", "q_5", "q_6", "q_7", "q_8", "notes", "source_file"]
     OUTPUT_TYPE ="Comma Delimited File"
     INPUT_TYPE = "Excel File"
     USER_EMAIL = "pmankowski@partners.org"
@@ -66,68 +66,152 @@ module ETL
       @subject_group = subject_group
     end
 
-    def merge_klerman
+    def read_klerman_file(input_xls, columns)
+      rows_by_subject = {}
+      # Klerman Specific
+      # 1. Find Subject
+      # If code valid:
+      #   2. Find Subject Range
+      sheet = input_xls.longest_sheet
+      (sheet.first_row+1..sheet.last_row).each do |row_num|
+
+        row = columns.include?("q_2a") ? merge_question_2(columns, sheet.row(row_num)) : sheet.row(row_num)
+        row_subject = row[columns.index("subject_code")].upcase
+
+        #LOAD_LOG.info row
+        #LOAD_LOG.info row_subject
+
+
+        if subject_code_valid? row_subject, @subject_group
+          rows_by_subject[row_subject] = [] unless rows_by_subject.has_key? row_subject
+          rows_by_subject[row_subject] << row
+        end
+      end
+
+      LOAD_LOG.info rows_by_subject
+
+      rows_by_subject
 
     end
 
-    def merge_duffy
+
+    def read_duffy_file(input_xls, columns)
+      rows_by_subject = {}
+
+      # Duffy Specific
+      #
+      input_xls.each_with_pagename do |subject_tab, sheet|
+        subject_code = subject_tab.upcase
+        if subject_code_valid? subject_code, @subject_group
+          rows_by_subject[subject_code] = []
+          (sheet.first_row+1..sheet.last_row).each do |row_num|
+            row = columns.include?("q_2a") ? merge_question_2(columns, sheet.row(row_num)) : sheet.row(row_num)
+            rows_by_subject[subject_code] << row
+          end
+        end
+      end
+
+      rows_by_subject
+    end
+
+    def merge_duffy_files
+      merge_files :duffy
+    end
+
+    def merge_klerman_files
+      merge_files :klerman
+    end
+
+    def merge_files(type)
       begin
+        # Setup
         output_source_type = SourceType.find_by_name(OUTPUT_TYPE)
         input_source_type = SourceType.find_by_name(INPUT_TYPE)
         user = User.find_by_email(USER_EMAIL)
-        subject_lists = {missing_sps: [], no_errors: [], neither: []}
-
         merged_source = Source.find_or_initialize_by(location: @output_file_path, source_type_id: output_source_type.id, user_id: user.id)
 
+        subject_lists = {missing_sps: [], no_errors: [], neither: []}
+
+        # Set Up Output Files
+        merged_output = CSV.open(@output_file_path, "wb")
         correct_output = CSV.open(@correct_output_path, 'wb')
         missing_output = CSV.open(@missing_output_path, 'wb')
         neither_output = CSV.open(@neither_output_path, 'wb')
+
+        merged_output << COLUMN_LIST
         correct_output << COLUMN_LIST
         missing_output << COLUMN_LIST
         neither_output << COLUMN_LIST
 
-        CSV.open(@output_file_path, "wb") do |csv|
-          csv << COLUMN_LIST
-          @input_file_list.each do |input_file_path, columns|
-            merged_source.child_sources << Source.find_or_initialize_by(location: input_file_path, source_type_id: input_source_type.id, user_id: user.id)
-            xls = Roo::Excel.new(input_file_path)
-            xls.each_with_pagename do |subject_tab, sheet|
-              subject_code = subject_tab.upcase
-              if subject_tab_valid? subject_code, @subject_group
-                # Here, we have subject code and everything...
-                sp_events = Event.generate_report("sleep_period_start", subject_code: subject_code)[:result].map{|h| [h['period_number'], h['first_decimal_labtime'], h['second_decimal_labtime'], h['first_labtime_year']]}
-                added_rows = []
-                all_equal_sps = true
-                (sheet.first_row+1..sheet.last_row).each do |row_num|
-                  row = columns.include?("q_2a") ? merge_question_2(columns, sheet.row(row_num)) : sheet.row(row_num)
-                  mapped_row = map_row(columns, row, subject_code, sp_events)
-                  if mapped_row.present?
-                    mapped_row[COLUMN_LIST.index("source_file")] = File.basename(input_file_path)
-                    csv << mapped_row
-                    added_rows << mapped_row
-                    all_equal_sps = (all_equal_sps and (mapped_row[COLUMN_LIST.index("sp_flag")] != "X"))
-                  end
-                end
-                if (sp_events.length - added_rows.length).abs > 0
-                  MY_LOG.info "#{subject_code} has incorrect number of Post Sleep Questionnaires: expected: #{sp_events.length} found: #{added_rows.length} in #{File.basename(input_file_path)}"
-                  subject_lists[:missing_sps] << subject_code
-                  added_rows.each {|r| missing_output << r}
-                elsif all_equal_sps
-                  MY_LOG.info "#{subject_code} seems to have no errors in #{File.basename(input_file_path)}"
-                  subject_lists[:no_errors] << subject_code
-                  added_rows.each {|r| correct_output << r}
-                else
-                  MY_LOG.info "#{subject_code} fits neither category in #{File.basename(input_file_path)}"
-                  subject_lists[:neither] << subject_code
-                  added_rows.each {|r| neither_output << r}
-                end
+
+        # Iterate Over Subjects
+        @input_file_list.each do |input_file_path, columns|
+          merged_source.child_sources << Source.find_or_initialize_by(location: input_file_path, source_type_id: input_source_type.id, user_id: user.id)
+
+
+          xls_file = Roo::Excel.new(input_file_path)
+
+          if type == :duffy
+            rows_by_subject = read_duffy_file(xls_file, columns)
+          else
+            rows_by_subject = read_klerman_file(xls_file, columns)
+          end
+
+
+
+          rows_by_subject.each_pair do |subject_code, rows|
+            # Initialization
+            sp_events = Event.generate_report("sleep_period_start", subject_code: subject_code)[:result].map{|h| [h['period_number'], h['first_decimal_labtime'], h['second_decimal_labtime'], h['first_labtime_year']]}
+            added_rows = []
+            all_equal_sps = true
+
+            rows.each do |row|
+              # Map row values to correct spots
+              mapped_row = map_row(columns, row, subject_code, sp_events)
+
+
+              LOAD_LOG.info "1 #{mapped_row}"
+
+              # If mapping was successful
+              if mapped_row.present?
+                mapped_row[COLUMN_LIST.index("source_file")] = File.basename(input_file_path)
+                LOAD_LOG.info "2 #{mapped_row}"
+
+
+                # Add to output
+                merged_output << mapped_row
+
+                # Save row for subsequent addition to one of the scoped output files
+                added_rows << mapped_row
+
+                # Determine if sp numbers agree across row
+                all_equal_sps = (all_equal_sps and (mapped_row[COLUMN_LIST.index("sp_flag")] != "X"))
               end
+            end
+            if (sp_events.length - added_rows.length).abs > 0
+              MY_LOG.info "#{subject_code} has incorrect number of Post Sleep Questionnaires: expected: #{sp_events.length} found: #{added_rows.length} in #{File.basename(input_file_path)}"
+              subject_lists[:missing_sps] << subject_code
+              added_rows.each {|r| missing_output << r}
+            elsif all_equal_sps
+              MY_LOG.info "#{subject_code} seems to have no errors in #{File.basename(input_file_path)}"
+              subject_lists[:no_errors] << subject_code
+              added_rows.each {|r| correct_output << r}
+            else
+              MY_LOG.info "#{subject_code} fits neither category in #{File.basename(input_file_path)}"
+              subject_lists[:neither] << subject_code
+              added_rows.each {|r| neither_output << r}
             end
           end
         end
+
         MY_LOG.info "missing sps (#{subject_lists[:missing_sps].length}): #{subject_lists[:missing_sps]}"
         MY_LOG.info "no errors (#{subject_lists[:no_errors].length}): #{subject_lists[:no_errors]}"
         MY_LOG.info "neither (#{subject_lists[:neither].length}): #{subject_lists[:neither]}"
+
+        merged_output.close
+        correct_output.close
+        missing_output.close
+        neither_output.close
 
         merged_source.save
       rescue => e
@@ -163,7 +247,7 @@ module ETL
         valid = true if row[i].present?
       end
 
-      valid and row[sp_i].kind_of? Numeric
+      valid and (row[sp_i].kind_of? Numeric or row[COLUMN_LIST.index("time_field")].present?)
     end
 
     def map_row(columns, row, subject_code, sp_events)
@@ -198,36 +282,51 @@ module ETL
 
       finalized_row[cum_labtime_i] = (finalized_row[cum_min_i].to_f != 0.0) ? (finalized_row[cum_min_i].to_f / 60.0) : nil
       #MY_LOG.info "#{finalized_row[cum_min_i]} #{cum_labtime_i} #{finalized_row[cum_labtime_i - 1]} #{finalized_row.length}==#{COLUMN_LIST.length} || #{finalized_row[cum_min_i].is_a?(Fixnum)}"
-      sp_guesses = guess_sleep_period sp_events, finalized_row[cum_labtime_i], finalized_row[sp_i]
+      if finalized_row[cum_labtime_i]
+        sp_guesses = guess_sleep_period sp_events, finalized_row[cum_labtime_i], finalized_row[sp_i]
+      else
+        sp_guesses = guess_sleep_period sp_events, finalized_row[COLUMN_LIST.index("time_field")], finalized_row[sp_i]
+      end
 
       #MY_LOG.info "sp_guesses: #{sp_guesses}"
 
       sp_vals << finalized_row[sp_i]
+      finalized_row[cum_labtime_i] = sp_guesses.delete(:cumulative_labtime) unless finalized_row[cum_labtime_i].present?
+      finalized_row[sp_i] = sp_guesses.delete(:sleep_period) unless finalized_row[sp_i].present?
+
       if sp_guesses
         sp_guesses.values.each_with_index do |sp, i|
           if sp
-            this_i = (sp_guess_i + (i*4))
+            this_i = (sp_guess_i + (i*5))
             finalized_row[this_i] = sp[0]
-            finalized_row[this_i + 1] = sp[2]
+            finalized_row[this_i + 1] = sp[1]
+            finalized_row[this_i + 2] = sp[2]
             if finalized_row[cum_labtime_i]
-              finalized_row[this_i + 2] = (finalized_row[cum_labtime_i] - sp[2]) * 60
-              finalized_row[this_i + 3] = "X" if finalized_row[this_i + 2].abs > 60
+              finalized_row[this_i + 3] = (finalized_row[cum_labtime_i] - sp[2]) * 60
+              finalized_row[this_i + 4] = "X" if finalized_row[this_i + 3].abs > 60
+              finalized_row[this_i + 4] = "XXX" if finalized_row[this_i + 3].abs > 120
+
             end
             sp_vals << sp[0]
           end
         end
+
       end
 
-      #MY_LOG.info sp_vals
-      finalized_row[sp_flag_i] = "X" if sp_vals.map(&:to_i).uniq.length > 1
+      finalized_row[COLUMN_LIST.index("database_sleep_periods")] = sp_events.length
 
-      finalized_row[sc_i] = subject_code if finalized_row[sc_i].nil? or finalized_row[sc_i] != subject_code
-      #LOAD_LOG.info finalized_row
+
+
+      #MY_LOG.info sp_vals
+      finalized_row[sp_flag_i] = "X" if sp_vals.compact.map(&:to_i).uniq.length > 1
+
+      finalized_row[sc_i] = subject_code #if finalized_row[sc_i].nil? or finalized_row[sc_i] != subject_code
+      LOAD_LOG.info "F! #{finalized_row}"
 
       valid_row?(finalized_row) ? finalized_row : nil
     end
 
-    def subject_tab_valid?(subject_code, subject_group)
+    def subject_code_valid?(subject_code, subject_group)
       if subject_group.nil?
         (Subject::SUBJECT_CODE_REGEX =~ subject_code).present?
       else
@@ -237,16 +336,19 @@ module ETL
 
 
     def guess_sleep_period(sp_events, field_to_match, sp_field)
-      #MY_LOG.info "ftm: #{field_to_match} sp_field: #{sp_field}"
-      guesses = {start_of_sp: nil, end_of_sp: nil, sp_number: nil}
+      MY_LOG.info "ftm: #{field_to_match} sp_field: #{sp_field}"
+      guesses = {start_of_sp: nil, end_of_sp: nil, sp_number: nil, cumulative_labtime: nil}
       threshold = 60 # in minutes
       labtime = nil
       period = sp_field.to_i
 
-      if field_to_match =~ /(\d+):(\d+)/
+      if field_to_match =~ /(\d+):(\d*)/
         labtime = $1.to_f + $2.to_f/60.0
-      elsif field_to_match =~ /sp.*(\d+)/
+      elsif field_to_match =~ /sp\s*(\d+)/i
         period = $1.to_i
+      elsif field_to_match.is_a? Date
+        dt = field_to_match
+        labtime = Labtime.parse(Time.zone.local(dt.year, dt.month, dt.day)).to_decimal
       elsif field_to_match.to_f != 0.0
         labtime = field_to_match.to_f
       end
@@ -256,11 +358,16 @@ module ETL
         guesses[:start_of_sp] = sp_events.min_by {|x| (x[1] - labtime).abs }
         # match end
         guesses[:end_of_sp] = sp_events.min_by {|x| (x[2] - labtime).abs }
+        guesses[:cumulative_labtime] = labtime
+
       end
 
       # match sp
       #MY_LOG.info "PERIOD: #{period}"
-      guesses[:sp_number] = sp_events.select{|x| x[0] == period }.first
+      if period > 0
+        guesses[:sp_number] = sp_events.select{|x| x[0] == period }.first
+        guesses[:sleep_period] = period
+      end
       guesses
     end
   end

@@ -782,7 +782,7 @@ namespace :etl do
       }
 
       psq_merger = ETL::PsqMerger.new nil, source_file_list, destination_file_path
-      psq_merger.merge_files
+      psq_merger.merge_duffy_files
     end
 
     desc "merge klerman psq files"
@@ -793,7 +793,7 @@ namespace :etl do
       }
 
       psq_merger = ETL::PsqMerger.new nil, source_file_list, destination_file_path
-      psq_merger.merge_duffy
+      psq_merger.merge_klerman_files
     end
   end
 
