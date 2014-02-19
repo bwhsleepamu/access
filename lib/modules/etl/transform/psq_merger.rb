@@ -11,6 +11,69 @@ module ETL
 
 
   class PsqMerger
+
+    def self.float?(str)
+      str =~ /^\s*[+-]?((\d+_?)*\d+(\.(\d+_?)*\d+)?|\.(\d+_?)*\d+)(\s*|([eE][+-]?(\d+_?)*\d+)\s*)$/
+    end
+
+    def self.finalize_corrected_file(input_path, output_path)
+      # if X, ignore line
+      # if labtime exists, make sure it's in decimal form? or non-decimal form?
+      # Columns:
+      #    subject_code
+      #    sleep_period_number
+      #    labtime_decimal
+      #    labtime_year
+      #    labtime_difference
+      #    q_1...q_8
+      #    notes
+
+      # For Labtime:
+      #   Note if SP # labtime is far off -
+
+      input_file = Roo::Excel.new(input_path)
+      output_file = CSV.open(output_path, "wb")
+
+      output_columns = [:subject_code, :sleep_period_number, :decimal_labtime, :labtime_year, :sp_labtime, :sp_year, :labtime_difference, :q_1, :q_2, :q_3, :q_4, :q_4a, :q_5, :q_6, :q_7, :q_8, :notes]
+      output_file << output_columns
+
+
+      sheet = input_file.longest_sheet
+
+      current_subject_code = sheet.first_row+1
+
+      (sheet.first_row+1..sheet.last_row).each do |row_num|
+        row = sheet.row(row_num)
+        if current_subject_code != row[2]
+          current_subject_code = row[2]
+          current_subject = Subject.find_by_subject_code(current_subject_code)
+
+          sp_events = Event.generate_report("sleep_period_start", subject_code: current_subject_code)[:result].map{|h| [h['period_number'], h['first_decimal_labtime'], h['second_decimal_labtime'], h['first_labtime_year']]}
+        end
+
+        row_sp = row[4].to_i
+        output_row = [current_subject_code, row_sp]
+
+        if self.float?(row[6])
+          row_labtime = Labtime.from_decimal(row[6].to_f, current_subject.admit_year)
+        else
+          row_labtime = Labtime.from_s(row[6], {year: current_subject.admit_year})
+        end
+
+        sp_labtime = sp_events[sp_events.index {|a| a[0] == row_sp}][2]
+        sp_year = sp_events[sp_events.index {|a| a[0] == row_sp}][3]
+
+
+        labtime_difference = row_labtime.to_decimal - sp_labtime
+
+        output_row = [current_subject_code, row_sp, row_labtime.to_decimal, row_labtime.year, sp_labtime, sp_year, labtime_difference]
+        output_row += row[8..17]
+
+        output_file << output_row
+      end
+    end
+
+
     # Need:
     #   file list
 
