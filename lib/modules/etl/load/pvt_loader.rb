@@ -135,20 +135,7 @@ module ETL
 
 
     def initialize(subject, source, documentation)
-      begin
-        @subject = subject
-        admit_year = subject.admit_year
-        input_file_info = { path: source.location, sheet: source.worksheet_name, skip_lines: 1 }
-
-        col_map_to_use = source.column_map.present? ? YAML.load(source.column_map) : column_map
-
-        @db_loader = ETL::DatabaseLoader.new(input_file_info, analyzed_object_map(admit_year), col_map_to_use, source, documentation, @subject, false)
-        LOAD_LOG.info "#### PVT Loader: Successfully initialized #{@subject.subject_code} for loading of PVT data"
-        @valid = true
-      rescue => error
-        LOAD_LOG.info "#### PVT Loader: Setup Error: #{error.message}\n\nBacktrace:\n#{error.backtrace}"
-        @valid = false
-      end
+      f
     end
 
     def valid?

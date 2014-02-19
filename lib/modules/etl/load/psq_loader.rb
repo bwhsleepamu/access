@@ -12,9 +12,17 @@ module ETL
 
 
 
-    def initialize(subject_group, source, documentation)
+    def initialize(source, documentation)
+      begin
+        data_info = { path: source.location, skip_lines: 1, header: true }
 
+        init_column_map
+        init_object_map
 
+        @db_loader = ETL::DatabaseLoader.new(data_info, @object_map, @column_map, source, documentation)
+      rescue => error
+        LOAD_LOG.info "#### Setup Error: #{error.message}\n\nBacktrace:\n#{error.backtrace}"
+      end
     end
 
 
@@ -27,18 +35,22 @@ module ETL
     def init_column_map
       @column_map = [
           { target: :subject, field: :subject_code },
-          { target: :datum, field: :sleep_period },
-          { target: :datum, field: :lights_out_labtime_decimal },
-          { target: :datum, field: :question_1 },
-          { target: :datum, field: :question_2 },
-          { target: :datum, field: :question_3 },
-          { target: :datum, field: :question_4 },
-          { target: :datum, field: :question_4a },
-          { target: :datum, field: :question_5 },
-          { target: :datum, field: :question_6 },
-          { target: :datum, field: :question_7 },
-          { target: :datum, field: :question_8 },
-          { target: :event, field: :notes }
+          { target: :datum, field: :sleep_period, event_name: EVENT_NAME },
+          { target: :event, field: :labtime_decimal },
+          { target: :event, field: :labtime_year },
+          { target: :none },
+          { target: :none },
+          { target: :none },
+          { target: :datum, field: :question_1, event_name: EVENT_NAME },
+          { target: :datum, field: :question_2, event_name: EVENT_NAME },
+          { target: :datum, field: :question_3, event_name: EVENT_NAME },
+          { target: :datum, field: :question_4, event_name: EVENT_NAME },
+          { target: :datum, field: :question_4a, event_name: EVENT_NAME },
+          { target: :datum, field: :question_5, event_name: EVENT_NAME },
+          { target: :datum, field: :question_6, event_name: EVENT_NAME },
+          { target: :datum, field: :question_7, event_name: EVENT_NAME },
+          { target: :datum, field: :question_8, event_name: EVENT_NAME },
+          { target: :event, field: :notes, event_name: EVENT_NAME }
       ]
     end
 
