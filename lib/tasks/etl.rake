@@ -344,6 +344,21 @@ namespace :etl do
       LOAD_LOG.info "\n################################\nFinished Loading Sleep Data for #{subject_group} Subjects!\n################################\n\n\n"
     end
 
+    desc "load melatonin excel sheets"
+    task :melatonin => :environment do
+      documentation = Documentation.find()
+      subject_group = SubjectGroup.find_by_name("csr_data_request")
+
+      subject_group.subjects.each do |subject|
+        base_path = subject.t_drive_location
+
+        Find.find(base_path) do |path|
+          if =~ /
+        end
+
+      end
+    end
+
     desc "load admit years"
     task :admit_year => :environment do
       sg = SubjectGroup.find_by_name "admit_year_temp_group"
@@ -740,6 +755,9 @@ namespace :etl do
       end
 
     end
+
+
+
   end
 
 

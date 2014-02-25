@@ -32,7 +32,6 @@
 /config/initializers/omniauth.rb
 
 # Possible Subject Data Ignores
-/lib/etl.rake
 /lib/data/*
 /spec/data/*
 

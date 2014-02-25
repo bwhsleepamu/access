@@ -65,7 +65,7 @@ class EventDictionary < ActiveRecord::Base
     end
     
     data_records.each do |dr|
-      q = "max( decode( d.title, '#{dr.title}', #{dr.data_type.storage})) #{dr.title}"
+      q = "max( decode( d.title, '#{dr.title}', #{dr.data_type.storage})) #{dr.title.truncate(30, omission: '')}"
       data_titles << dr.title unless data_titles.include? dr.title
       data_query << q unless data_query.include? q
     end
