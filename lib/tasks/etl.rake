@@ -353,7 +353,7 @@ namespace :etl do
         base_path = subject.t_drive_location
 
         Find.find(base_path) do |path|
-          if =~ /
+          #if =~ /
         end
 
       end
@@ -816,6 +816,12 @@ namespace :etl do
   end
 
   namespace :extract do
+    desc "find and extract melatonin files"
+    task :melatonin => :environment do
+      mf = ETL::MelatoninFinder.new(SubjectGroup.find_by_name("csr_data_request"), "/I/Projects/Database Project/Data Sources/Melatonin")
+      mf.extract
+    end
+
     desc "find PVT all files"
     task :pvt_all_files => :environment do
       descriptions = {"darpa_amu_cleaned_afo_missing" => "PVT All cleaned by Dan Cohen according to the Performance Committee Worksheet."} #, "darpa_amu_cleaned_caff" => "PVT All cleaned by James Wyatt according to the Performance Committee Worksheet.", "darpa_modafinil" => "PVT All cleaned by Scott Grady or Daniel Aeschebach"}

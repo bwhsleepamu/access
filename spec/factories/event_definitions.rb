@@ -335,6 +335,27 @@ FactoryGirl.define do
 
   end
 
+
+  factory :melatonin_sample, class: EventDictionary do
+    name "melatonin_sample"
+
+    after(:create) do |event_dictionary|
+      it = DataType.find_by_name("integer_type")
+      nt = DataType.find_by_name("numeric_type")
+      st = DataType.find_by_name("string_type")
+
+      it = create(:integer_type) if it.blank?
+      nt = create(:numeric_type) if nt.blank?
+      st = create(:string_type) if st.blank?
+
+      create(:data_dictionary, title: "sample_number", data_type: it, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "pg_ml_concentration", data_type: nt, event_dictionary: [event_dictionary])
+      create(:data_dictionary, title: "pmol_l_concentration", data_type: nt, event_dictionary: [event_dictionary])
+    end
+
+  end
+
+
   factory :vas_scalesad_scheduled, class: EventDictionary do
     name "vas_scalesad_scheduled"
   end

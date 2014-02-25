@@ -7,6 +7,7 @@ module ETL
   require 'etl/extract/dbf_reader'
   require 'etl/extract/t_drive_crawler'
   require 'etl/extract/pvt_all_finder'
+  require 'etl/extract/melatonin_finder'
 
   # Transform
   require 'etl/transform/actigraphy_merger'
@@ -30,5 +31,6 @@ module ETL
   require 'etl/load/cr_data_loader'
   require 'etl/load/light_data_loader'
   require 'etl/load/admit_year_loader'
+  require 'etl/load/melatonin_loader'
 
 end
