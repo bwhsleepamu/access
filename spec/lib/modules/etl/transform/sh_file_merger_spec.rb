@@ -23,7 +23,7 @@ describe ETL::ShFileMerger do
 
   it "should work for subjects with a T Drive location" do
     subjects = []
-    subjects << create(:subject, subject_code: '1983W', t_drive_location: '/usr/local/htdocs/access/spec/data/sh_file_merger/t_drive_dir/some_dir/1983W')
+    subjects << create(:subject, subject_code: '2844DX', t_drive_location: '/usr/local/htdocs/access/spec/data/sh_file_merger/t_drive_dir/some_dir/2844DX')
     subjects << create(:subject, subject_code: '1916W', t_drive_location: '/usr/local/htdocs/access/spec/data/sh_file_merger/t_drive_dir/some_dir')
 
     sg = create(:subject_group)
@@ -34,7 +34,7 @@ describe ETL::ShFileMerger do
 
 
   def merge_test(sg, no_loc = false)
-    s_d = '/usr/local/htdocs/access/spec/data/sh_file_merger/study_dir'
+    s_d = '/usr/local/htdocs/access/spec/data/sh_file_merger/t_drive_dir/some_dir'
     o_d = '/usr/local/htdocs/access/spec/data/sh_file_merger/output'
 
     Find.find(o_d) do |path|

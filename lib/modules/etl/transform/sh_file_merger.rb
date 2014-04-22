@@ -60,6 +60,7 @@ module ETL
 
       subject_group.subjects.each do |subject|
         begin
+          errored = false
           subject_dir = ETL::TDriveCrawler.find_subject_directory(subject, @source_directory, @find_missing_t_drive_location)
 
           unless subject_dir && File.directory?(subject_dir)
@@ -86,6 +87,7 @@ module ETL
               raise StandardError, "#{file_lists[:ibob].length} IBOB files found in subject folder!\nsubject: #{subject.subject_code} | dir: #{subject_dir}\npaths: #{file_lists[:ibob]}"
             end
           rescue => error
+            errored = true
             LOAD_LOG.info "\n####\nERROR! #{subject.subject_code} Sh File Merger: #{error.message} | Backtrace:\n#{error.backtrace}\n####"
           end
 
@@ -96,6 +98,7 @@ module ETL
               raise StandardError, "#{file_lists[:cr].length} CR files found in subject folder!\nsubject: #{subject.subject_code} | dir: #{subject_dir}\npaths: #{file_lists[:cr]}"
             end
           rescue => error
+            errored = true
             LOAD_LOG.info "\n####\nERROR! #{subject.subject_code} Sh File Merger: #{error.message} | Backtrace:\n#{error.backtrace}\n####"
           end
 
@@ -108,9 +111,14 @@ module ETL
               end
             end
           rescue => error
+            errored = true
             LOAD_LOG.info "\n####\nERROR! #{subject.subject_code} Sh File Merger: #{error.message} | Backtrace:\n#{error.backtrace}\n####"
           end
-          successful << subject.subject_code
+          if errored
+            unsuccessful << subject.subject_code
+          else
+            successful << subject.subject_code
+          end
         rescue => error
           LOAD_LOG.info "\n####\nERROR! #{subject.subject_code} Sh File Merger: #{error.message} | Backtrace:\n#{error.backtrace}\n####"
           unsuccessful << subject.subject_code

@@ -181,12 +181,19 @@ module ETL
 
       results = {none_found: [], locations_differ: [], locations_same: [], new_set: [], multiple_found: []}
 
+      start = Time.now
 
       Find.find(root_path) do |path|
         if FileTest.directory?(path)
+          if Time.now - start > 60
+            start = Time.now
+
+            LOAD_LOG.info "current path: #{path} results: #{results}"
+          end
           possible_subject_code = File.basename(path.upcase)
           if possible_subject_code =~ Subject::SUBJECT_CODE_REGEX && subject_codes.include?(possible_subject_code)
             t_drive_loc_map[possible_subject_code] << path
+
             Find.prune
           end
         end

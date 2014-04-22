@@ -11,7 +11,6 @@
  *= require_self
  *= require contour
  *= require chosen
- *= require chosen-bootstrap
  *= require datatables
  *= require TableTools
  *= require PageDown/index
