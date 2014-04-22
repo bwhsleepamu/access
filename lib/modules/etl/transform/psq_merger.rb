@@ -129,7 +129,9 @@ module ETL
       @subject_group = subject_group
     end
 
-    def read_klerman_file(input_xls, columns)
+    def read_klerman_file(input_file_path, columns)
+      input_xls = Roo::Excel.new(input_file_path)
+
       rows_by_subject = {}
       # Klerman Specific
       # 1. Find Subject
@@ -158,7 +160,14 @@ module ETL
     end
 
 
-    def read_duffy_file(input_xls, columns)
+    def read_4ab_file(input_file_path, columns)
+      
+    end
+
+
+    def read_duffy_file(input_file_path, columns)
+      input_xls = Roo::Excel.new(input_file_path)
+
       rows_by_subject = {}
 
       # Duffy Specific
@@ -184,6 +193,8 @@ module ETL
     def merge_klerman_files
       merge_files :klerman
     end
+
+
 
     def merge_files(type)
       begin
@@ -215,9 +226,11 @@ module ETL
           xls_file = Roo::Excel.new(input_file_path)
 
           if type == :duffy
-            rows_by_subject = read_duffy_file(xls_file, columns)
+            rows_by_subject = read_duffy_file(input_file_path, columns)
+          elsif type == :study_4ab
+            rows_by_subject = read_4ab_file(input_file_path, columns)
           else
-            rows_by_subject = read_klerman_file(xls_file, columns)
+            rows_by_subject = read_klerman_file(input_file_path, columns)
           end
 
 
