@@ -1,12 +1,18 @@
 # Page Load Actions
 @documentationsReady = () ->
-  null
+  $("panel] .scroll").slimscroll(
+    height: '425px';
+  )
 
 # Event Handler Definitions
+$(document).on 'click', '#print-link', (event)->
+  $("div#print-area").printArea()
+  event.preventDefault()
+
+
 $(document).on 'click', '#documentation_form .remove-link', (event) ->
   $(this).prev('input[type=hidden]').val('1')
   $(this).closest('fieldset').hide()
-  event.preventDefault()
 
 $(document).on 'click', '#documentation_form .add-links', (event) ->
   time = new Date().getTime()

@@ -8,18 +8,87 @@
                    new_path: new_documentation_path
            }
 %>
-<dl class="dl-horizontal">
-  <dt>Title</dt>
-  <dd><%= @documentation.title %></dd>
 
-  <dt>Author</dt>
-  <dd><%= @documentation.author %></dd>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <dl class="dl-horizontal">
 
-  <dt>Created By</dt>
-  <dd><%= link_to @documentation.user.name if @documentation.user %></dd>
+          <dt>Title</dt>
+          <dd><%= @documentation.title %></dd>
 
-</dl>
+          <dt>Author</dt>
+          <dd><%= @documentation.author %></dd>
 
-<strong>Description</strong>
-<div class="container"><%= markdown @documentation.description %></div>
+          <dt>Created By</dt>
+          <dd><%= link_to @documentation.user.name if @documentation.user %></dd>
+
+          <dt>Created At</dt>
+          <dd><%= simple_date(@documentation.created_at) %></dd>
+        </dl>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Description
+      </div>
+      <div class="panel-body scroll">
+
+        <div id="print-area">
+          <%= markdown @documentation.description %>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <!-- Default panel contents -->
+          <div class="panel-heading">Related Documentations</div>
+          <div class="panel-body">
+            <h2>Supported</h2>
+          </div>
+          <!-- List group -->
+          <ul class="list-group">
+            <% @documentation.supported_documentations.each do |sd| %>
+                <li class="list-group-item"><%= link_to sd.title, sd %></li>
+            <% end %>
+          </ul>
+          <div class="panel-body">
+            <h2>Supporting</h2>
+            <ul class="list-group">
+              <% @documentation.supporting_documentations.each do |sd| %>
+                  <li class="list-group-item"><%= link_to sd.title, sd %></li>
+              <% end %>
+            </ul>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            Other Links
+          </div>
+          <div class="list-group">
+            <% @documentation.documentation_links.each do |dl| %>
+              <div class="list-group-item">
+                <strong><%= dl.title  %>:</strong>
+                <%= dl.path %>
+              </div>
+          </div>
+        </div>
+        <%= end  %>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 
