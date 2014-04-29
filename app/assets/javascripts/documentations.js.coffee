@@ -1,8 +1,9 @@
 # Page Load Actions
 @documentationsReady = () ->
-  $("panel] .scroll").slimscroll(
-    height: '425px';
-  )
+  if $(".panel .scroll").length > 0
+    $(".panel .scroll").slimscroll(
+      height: '500px';
+    )
 
 # Event Handler Definitions
 $(document).on 'click', '#print-link', (event)->

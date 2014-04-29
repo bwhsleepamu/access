@@ -327,7 +327,7 @@ namespace :etl do
     desc "load SH Files"
     task :sh_files => :environment do
       documentation = Documentation.find(93253658)
-      subject_group = SubjectGroup.find_by_name("temp_new_found_success")
+      subject_group = SubjectGroup.find_by_name("psq_afosr9")
 
       cr_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/#{subject_group.name}_constant_routines.csv")
       lt_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/#{subject_group.name}_light_events.csv")
@@ -361,7 +361,7 @@ namespace :etl do
 
     desc "load admit years"
     task :admit_year => :environment do
-      sg = SubjectGroup.find_by_name "admit_year_temp_group"
+      sg = SubjectGroup.find_by_name "temp_temp"
       ETL::AdmitYearLoader.populate_admit_year(sg, "/T/IPM")
     end
 
@@ -777,7 +777,7 @@ namespace :etl do
       options = {
         source_dir: '/T/IPM',
         output_dir: '/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files',
-        subject_group: SubjectGroup.find_by_name("temp_new_found"),
+        subject_group: SubjectGroup.find_by_name("psq_afosr9"),
         find_missing_t_drive_location: false,
         user_email: "pmankowski@partners.org",
         ignore_duplicates: true
@@ -791,27 +791,30 @@ namespace :etl do
     desc "merge Duffy psq files"
     task :merge_duffy_psq_files => :environment do
       destination_file_path = "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/merged_duffy_psqs.csv"
-      source_file_list = {
-        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data sheet Aging PPG CSR study 12-12-08.xls" => ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'],
-        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data sheet for circadian genetics study.xls" => ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'],
-        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data sheet for Vitamin B12 study.xls" => ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'],
-        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data sheet PER3-PPG CSR.xls" => ["subject_code", "sleep_period", "cumulative_minutes", "q_1", "q_2", "q_3", "q_4", "q_4a", "q_5", "q_6", "q_7", "q_8", "person_date_entered", "notes"],
-        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data YOUNG 20h melatonin study.xls" => ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_2a', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes']
-      }
+      source_file_list = [
+        { source_id: 95375683, column_map: ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'], file_type: :multiple_sheets },
+        { source_id: 95375684, column_map: ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'], file_type: :multiple_sheets },
+        { source_id: 95375685, column_map: ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'], file_type: :multiple_sheets },
+        { source_id: 95375686, column_map: ["subject_code", "sleep_period", "cumulative_minutes", "q_1", "q_2", "q_3", "q_4", "q_4a", "q_5", "q_6", "q_7", "q_8", "person_date_entered", "notes"], file_type: :multiple_sheets },
+        { source_id: 95375687, column_map: ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_2a', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'], file_type: :multiple_sheets }
+      ]
 
       psq_merger = ETL::PsqMerger.new nil, source_file_list, destination_file_path
-      psq_merger.merge_duffy_files
+      psq_merger.merge_files
     end
 
-    desc "merge klerman psq files"
+    desc "merge Klerman psq files"
     task :merge_klerman_psq_files => :environment do
       destination_file_path = "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/merged_klerman_psqs.csv"
-      source_file_list = {
-          "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/Klerman PSQ Project (Finished)-ebk.xls" => ['subject_code', 'time_field', 'q_1', 'q_2', 'q_2a', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'q_9', 'q_10']
-      }
+      source_file_list = [
+          { source_id: 95507715, column_map: ['subject_code', 'sleep_period', 'sp_length', 'time_field', 'q_1', 'q_2', 'q_3', 'q_4', 'q_5', 'q_6', 'q_7', 'q_8', 'comments'], file_type: :single_sheet },
+          { source_id: 95507716, column_map: ['subject_code', 'sleep_period', 'pre_sp_protocol', 'sp_duration', 'time_field', 'q_1', 'q_2', 'q_3', 'q_4', 'q_5', 'q_6', 'q_7', 'q_8'], file_type: :single_sheet },
+          { source_id: 95507717, column_map: ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_2a', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'], file_type: :multiple_sheets }
+#          { source_id: 95375703, column_map: ['subject_code', 'time_field', 'q_1', 'q_2', 'q_2a', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'q_9', 'q_10'], file_type: :single_sheet },
+      ]
 
       psq_merger = ETL::PsqMerger.new nil, source_file_list, destination_file_path
-      psq_merger.merge_klerman_files
+      psq_merger.merge_files
     end
   end
 

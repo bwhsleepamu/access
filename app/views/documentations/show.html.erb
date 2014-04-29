@@ -12,23 +12,52 @@
 <div class="row">
   <div class="col-md-4">
     <div class="panel panel-default">
-      <div class="panel-body">
-        <dl class="dl-horizontal">
+      <div class="panel-heading">
+        Main Attributes
+      </div>
+      <div class="list-group dl-horizontal">
+        <div class="list-group-item">
+          <h5 class="text-muted">Title</h5><%= @documentation.title %>
+        </div>
+        <div class="list-group-item">
+          <h5 class="text-muted">Author</h5><%= @documentation.author %>
+        </div>
+        <div class="list-group-item">
+          <h5 class="text-muted">Created</h5><%= simple_date(@documentation.created_at) %>
+        </div>
+        <div class="list-group-item">
+          <h5 class="text-muted">Updated</h5><%= simple_date(@documentation.updated_at) %>
+        </div>
 
-          <dt>Title</dt>
-          <dd><%= @documentation.title %></dd>
-
-          <dt>Author</dt>
-          <dd><%= @documentation.author %></dd>
-
-          <dt>Created By</dt>
-          <dd><%= link_to @documentation.user.name if @documentation.user %></dd>
-
-          <dt>Created At</dt>
-          <dd><%= simple_date(@documentation.created_at) %></dd>
-        </dl>
       </div>
     </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Related Documentations
+      </div>
+      <!-- List group -->
+      <div class="list-group">
+        <div class="list-group-item">
+          <span class="badge"><%= @documentation.supported_documentations.length %></span>
+          <span class="text-info">Supported</span>
+        </div>
+        <% @documentation.supported_documentations.each do |sd| %>
+          <%= link_to sd.title, sd, class: "list-group-item" %>
+        <% end %>
+      </div>
+
+      <div class="list-group">
+        <div class="list-group-item">
+          <span class="badge"><%= @documentation.supporting_documentations.length %></span>
+          <span class="text-info">Supporting</span>
+        </div>
+        <% @documentation.supporting_documentations.each do |sd| %>
+          <%= link_to sd.title, sd, class: 'list-group-item' %>
+        <% end %>
+      </div>
+    </div>
+
 
   </div>
   <div class="col-md-8">
@@ -43,51 +72,30 @@
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-md-6">
-        <div class="panel panel-default">
-          <!-- Default panel contents -->
-          <div class="panel-heading">Related Documentations</div>
-          <div class="panel-body">
-            <h2>Supported</h2>
-          </div>
-          <!-- List group -->
-          <ul class="list-group">
-            <% @documentation.supported_documentations.each do |sd| %>
-                <li class="list-group-item"><%= link_to sd.title, sd %></li>
-            <% end %>
-          </ul>
-          <div class="panel-body">
-            <h2>Supporting</h2>
-            <ul class="list-group">
-              <% @documentation.supporting_documentations.each do |sd| %>
-                  <li class="list-group-item"><%= link_to sd.title, sd %></li>
-              <% end %>
-            </ul>
-          </div>
 
-        </div>
+  </div>
 
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Other Links
       </div>
-
-      <div class="col-md-6">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            Other Links
+      <div class="list-group">
+        <% @documentation.documentation_links.each do |dl| %>
+          <div class="list-group-item">
+            <strong><%= dl.title  %>:</strong>
+            <%= dl.path %>
           </div>
-          <div class="list-group">
-            <% @documentation.documentation_links.each do |dl| %>
-              <div class="list-group-item">
-                <strong><%= dl.title  %>:</strong>
-                <%= dl.path %>
-              </div>
-          </div>
-        </div>
-        <%= end  %>
+        <% end  %>
       </div>
     </div>
+
   </div>
 </div>
+
+
 
 
 

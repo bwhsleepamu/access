@@ -9,29 +9,29 @@
            }
 %>
 
-<dl class="dl-horizontal">
-  <dt>Name</dt>
-  <dd><%= @event_dictionary.name %></dd>
+<div class="row">
+  <div class="col-md-6">
+    <dl>
+      <dt>Name</dt>
+      <dd><%= @event_dictionary.name %></dd>
 
-  <dt>Description</dt>
-  <dd><%= simple_format @event_dictionary.description %></dd>
+      <dt>Description</dt>
+      <dd><%= markdown @event_dictionary.description %></dd>
+    </dl>
+  </div>
 
-  <dt>Event Tags</dt>
-  <dd>
-    <ul>
-      <% @event_dictionary.event_tags.each do |event_tag| %>
-        <li><%= event_tag.name %></li>
-      <% end %>
-    </ul>
-  </dd>
+  <div class="col-md-6">
+    <dl>
+      <dt><%= @event_dictionary.data_dictionary.count %> Data Records</dt>
+      <dd>
+        <ul>
+          <% @event_dictionary.data_dictionary.order(:title).each do |data_record| %>
+            <li><%= link_to data_record.title, data_record %></li>
+          <% end %>
+        </ul>
+      </dd>
+    </dl>
 
-  <dt><%= @event_dictionary.data_dictionary.count %> Data Records</dt>
-  <dd>
-    <ul>
-      <% @event_dictionary.data_dictionary.order(:title).each do |data_record| %>
-        <li><%= link_to data_record.title, data_record %></li>
-      <% end %>
-    </ul>
-  </dd>
-
-</dl>
+    <p>Number of existing events: <%= @event_dictionary.events.count %></p>
+  </div>
+</div>
