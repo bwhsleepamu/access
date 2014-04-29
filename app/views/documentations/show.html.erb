@@ -64,6 +64,8 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         Description
+        <%= link_to "Print", "#", id: "print-link", class: 'print-link pull-right' %>
+
       </div>
       <div class="panel-body scroll">
 
@@ -71,8 +73,8 @@
           <%= markdown @documentation.description %>
         </div>
       </div>
-    </div>
 
+    </div>
   </div>
 
 </div>

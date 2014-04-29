@@ -1,2 +1,1 @@
-$("#sources").html("<%= escape_javascript(render("sources")) %>");
-$("#ajax_loader").hide();
+$(".source-hierarchy .fields").html("<%= escape_javascript(render(partial: 'source_hierarchy')) %>"); mainReady();

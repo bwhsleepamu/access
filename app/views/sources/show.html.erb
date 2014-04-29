@@ -9,21 +9,110 @@
            }
 %>
 
+<div id="show-source">
+  <div class="row">
+    <div class="col-md-5">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Main Attributes
+        </div>
+
+        <div class="panel-body">
+          <dl>
+            <dt>Source Type</dt>
+            <dd><%= link_to @source.source_type.name, @source.source_type if @source.source_type %></dd>
+
+            <dt>Location</dt>
+            <dd><%= @source.location %></dd>
+
+            <dt>Original Location</dt>
+            <dd><%= @source.original_location %></dd>
+
+            <dt>Associated Subject</dt>
+            <dd><%= link_to @source.subject.subject_code, "" if @source.subject %></dd>
+
+            <dt>Worksheet name</dt>
+            <dd><%= @source.worksheet_name %></dd>
 
 
-<dl class="dl-horizontal">
-  <dt>Source Type</dt>
-  <dd><%= link_to @source.source_type.name, @source.source_type if @source.source_type %></dd>
+          </dl>
 
-  <dt>Location</dt>
-  <dd><%= @source.location %></dd>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Related Sources
+        </div>
+        <div class="list-group">
+          <div class="list-group-item">
+            <span class="text-info">Parent Source</span>
+          </div>
+          <div class="list-group-item"><%= link_to @source.parent_source.location, @source.parent_source if @source.parent_source  %></div>
+        </div>
 
-  <dt>Original Location</dt>
-  <dd><%= @source.original_location %></dd>
+        <div class="list-group">
+          <div class="list-group-item">
+            <span class="badge"><%= @source.child_sources.length %></span>
+            <span class="text-info">Child Sources</span>
+          </div>
+          <% @source.child_sources.each do |cs| %>
+            <%= link_to cs.location, cs, class: 'list-group-item' %>
+          <% end %>
+        </div>
 
-  <dt>Description</dt>
-  <dd><%= simple_format @source.description %></dd>
+      </div>
+    </div>
 
-  <dt>Notes</dt>
-  <dd><%= simple_format @source.notes %></dd>
-</dl>
+    <div class="col-md-7">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Description
+        </div>
+        <div class="panel-body">
+          <%= markdown @source.description if @source.description %>
+        </div>
+
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Column Map
+        </div>
+        <div class="panel-body">
+          <ol>
+            <% if @source.column_map.present? %>
+              <% YAML.load(@source.column_map).each do |cm| %>
+                <li>
+                  <% if cm.has_key? :target %>
+                    <strong>target: </strong><%= cm[:target] %>
+                  <% end %>
+                  <% if cm.has_key? :field %>
+                    <strong>field: </strong><%= cm[:field] %>
+                  <% end %>
+                  <% if cm.has_key? :event_name %>
+                    <strong>event name: </strong><%= cm[:event_name] %>
+                  <% end %>
+
+
+                </li>
+              <% end %>
+            <% end %>
+          </ol>
+
+        </div>
+
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Notes
+        </div>
+        <div class="panel-body">
+          <%= markdown @source.notes if @source.notes %>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+

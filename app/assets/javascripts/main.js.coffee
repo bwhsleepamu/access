@@ -10,7 +10,7 @@
     width: '100%'
 
   ## Markdown Functionality
-  $("form textarea").each( (index, textarea) ->
+  $("form textarea.md").each( (index, textarea) ->
     panel = $("<did/>", {
       "class": "wmd-panel"
     })
