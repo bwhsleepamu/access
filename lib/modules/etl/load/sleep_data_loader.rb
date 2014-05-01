@@ -35,6 +35,7 @@ module ETL
 
     private
 
+    # Column map for generated sleep data files
     def column_map
       [
           { target: :subject, field: :subject_code},

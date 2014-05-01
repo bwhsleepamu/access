@@ -31,6 +31,9 @@
             <dt>Associated Subject</dt>
             <dd><%= link_to @source.subject.subject_code, "" if @source.subject %></dd>
 
+            <dt>Supporting Documentation</dt>
+            <dd><%= link_to @source.documentation.title, @source.documentation if @source.documentation %></dd>
+
             <dt>Worksheet name</dt>
             <dd><%= @source.worksheet_name %></dd>
 

@@ -28,9 +28,16 @@
     </div>
 
     <div class='col-md-6'>
+
+
       <fieldset class='subject'>
         <legend>Associated Subject</legend>
         <%= f.select :subject_id, [['---', nil]] + Subject.current.collect{|s| [s.subject_code, s.id]}, {}, {rel: :chosen, class: 'form-control',  data: {placeholder: "Chose one if applicable..."}} %>
+      </fieldset>
+
+      <fieldset class='documentation'>
+        <legend>Supporting Documentation</legend>
+        <%= f.select :documentation_id, [['---', nil]] + Documentation.current.collect{|d| [d.display_name, d.id]}, {}, {rel: :chosen, class: 'form-control',  data: {placeholder: "Select documentation"}} %>
       </fieldset>
 
       <fieldset class='source-hierarchy'>

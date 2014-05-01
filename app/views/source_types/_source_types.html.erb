@@ -2,6 +2,7 @@
   <thead>
     <tr>
       <th><%= sort_field_helper(params[:order], 'name', 'Name') %></th>
+      <th><%= sort_field_helper(params[:order], 'file_pattern', 'File Pattern') %></th>
       <th><%= sort_field_helper(params[:order], 'description', 'Description') %></th>
       <th><%= sort_field_helper(params[:order], 'created_at', 'Created') %></th>
       <th><%= sort_field_helper(params[:order], 'updated_at', 'Updated') %></th>
@@ -13,6 +14,7 @@
   <% @source_types.each do |source_type| %>
     <tr>
       <td><%= link_to source_type.name, source_type %></td>
+      <td><%= source_type.file_pattern %></td>
       <td><%= source_type.description %></td>
       <td><%= simple_date(source_type.created_at) %></td>
       <td><%= simple_date(source_type.updated_at) %></td>

@@ -87,7 +87,7 @@ class SourcesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def source_params
-    params.require(:source).permit(:location, :original_location, :description, :source_type_id, :notes, :parent_source_id, :column_map, :worksheet_name, child_source_ids: [])
+    params.require(:source).permit(:location, :original_location, :description, :source_type_id, :documentation_id, :notes, :parent_source_id, :column_map, :worksheet_name, child_source_ids: [])
   end
 
   def parse_date(date_string)

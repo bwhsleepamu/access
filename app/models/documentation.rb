@@ -13,6 +13,8 @@ class Documentation < ActiveRecord::Base
   has_many :documentations_supporting_documentations, foreign_key: :parent_id
   has_many :documentations_supported_documentations, foreign_key: :child_id, class_name: "DocumentationsSupportingDocumentation"
 
+  has_many :sources
+  has_many :source_types
   ##
   # Attributes
   #attr_accessible :author, :description_of_procedure, :origin_location, :title, :user_id

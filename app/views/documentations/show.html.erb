@@ -58,6 +58,19 @@
       </div>
     </div>
 
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Related Source Types
+        <span class="badge pull-right"><%= @documentation.source_types.length %></span>
+      </div>
+      <div class="list-group">
+        <% @documentation.source_types.each do |st| %>
+          <div class="list-group-item">
+            <%= link_to st.name, st %>
+          </div>
+        <% end %>
+      </div>
+    </div>
 
   </div>
   <div class="col-md-8">
