@@ -22,7 +22,7 @@ module ETL
       @init_subject_list = []
       failed_subject_list = []
 
-      @subject_group.each do |subject|
+      @subject_group.subjects.each do |subject|
 
 
         begin
@@ -47,10 +47,8 @@ module ETL
 
           failed_subject_list << subject.subject_code
         end
-
-        LOAD_LOG.info "Finished initializing Sleep Stage Loader\n\nSubjects successfully initialized:\n#{@init_subject_list.map{|s| s[:subject].subject_code}}\n\nSubjects failing to initialize: #{failed_subject_list}"
-
       end
+      LOAD_LOG.info "Finished initializing Sleep Stage Loader\n\nSubjects successfully initialized:\n#{@init_subject_list.map{|s| s[:subject].subject_code}}\n\nSubjects failing to initialize: #{failed_subject_list}"
     end
 
     def load
@@ -72,6 +70,8 @@ module ETL
           LOAD_LOG.info "## Sleep Stage Loading Error for subject #{subject_info[:subject].subject_code}!\n#{error.message}\nBacktrace:\n#{error.backtrace}\n\n"
         end
       end
+
+      {loaded: loaded_subjects, failed: failed_subjects}
     end
  
     private

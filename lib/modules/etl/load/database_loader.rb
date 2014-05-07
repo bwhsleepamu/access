@@ -258,7 +258,7 @@ module ETL
     end
 
     def set_event_time(obj_attrs, mapping)
-     #MY_LOG.info obj_attrs
+      MY_LOG.info obj_attrs
       Time.zone = ActiveSupport::TimeZone.new("Eastern Time (US & Canada)")
 
       # LABTIME
@@ -279,16 +279,30 @@ module ETL
       # REALTIME
       if obj_attrs[:realtime].present? and mapping[:realtime_format].present?
         t = Time.strptime(obj_attrs[:realtime], mapping[:realtime_format])
-        obj_attrs[:realtime] = Time.zone.local(t.year, t.month, t.day, t.hour, t.min, t.sec)
+        nt = Time.zone.local(t.year, t.month, t.day, t.hour, t.min, t.sec)
+      elsif obj_attrs[:realtime].present?
+        t = mapping[:realtime]
+        nt = Time.zone.local(t.year, t.month, t.day, t.hour, t.min, t.sec)
+      elsif obj_attrs[:labtime].present?
+        nt = obj_attrs[:labtime].to_time
+      else
+        raise StandardError, "Realtime not set!"
       end
 
+      obj_attrs[:realtime] = nt
+      obj_attrs[:realtime_offset_sec] = nt.utc_offset
 
-      if obj_attrs[:labtime].present?
-      elsif obj_attrs[:realtime].present? and mapping[:realtime_format].present?
-        # if format not present, just use default loading of dates (excel-format cells seem to work)
-        t = Time.strptime(mapping[:realtime], mapping[:realtime_format])
-        obj_attrs[:realtime] = Time.zone.local(t.year, t.month, t.day, t.hour, t.min, t.sec)
-      end
+      MY_LOG.info "!!!!! #{nt.utc_offset}"
+
+
+      # if obj_attrs[:labtime].present?
+      # elsif obj_attrs[:realtime].present? and mapping[:realtime_format].present?
+      #   # if format not present, just use default loading of dates (excel-format cells seem to work)
+      #   obj_attrs[:realtime] = nt
+      #   obj_attrs[:realtime_offset_sec] = nt.utc_offset
+      #
+      #   MY_LOG.info "!!!!! #{nt.utc_offset}"
+      # end
 
       # COMPARE
       if obj_attrs.keys.include?(:labtime) and obj_attrs.keys.include?(:realtime)

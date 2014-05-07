@@ -8,28 +8,15 @@ namespace :etl do
     task :sleep_stage_data => :environment do
       #subjects = %w(26N2GXT2 26O2GXT2 27D9GX 27Q9GX 1708XX 1920MX 2071DX 2123W 2419HM 2823GX 2844GX 3232GX)
       #subjects = %w(1105X 1106X 1111X 1120X 1122X 1133X 1136X 1144X 1145X 1209V 1213HX 1215H 1257V 1304HX 1319HX 1355H 1366HX 1375HX 1425MX72 1458HX 1475HX 1485HX 1490HX 14A6HX 1507HX 1547MX62 1620XX 1637XX 1649XX 1683XX 1684MX 1691MX 1702MX 1708XX 1712MX 1722MX 1725MX 1732MX 1734XX 1736MX 1742MX 1745MX 1750XX 1755MX 1760MX 1764MX 1772MX 1772XXT2 1776MX 1777MX 1779MX 1795MX 1798MX 1800XX 1818MX 1819XX 1825MX 1834MX 1835XX 1851MX 1854MX 1871MX 1873MX 1888XX 1889MX 18B2XX 18E3XX 18E4MX 18H4MX 18H5MX 18I9MX 18K1XX 1903MX 1905MX 1920MX 1963XX 19G3HM 2065DX 2072DX 2072W1T2 2082W1T2 2093HM 20A4DX 20B1HM 20B7DX 20C1DX 2109W 2111DX 2111W 2138DX 2140DX 2149DX 2150DX 2152DX 2173DX 2195W 2196W 2199HM 21A4DX 21B3DX 2209W 2210W 2238DX 2249HM 22B1DX 22C5DX 22F2W 22T1W 2310HM 2313W 23C2HM 23CDHM 23CEHM 23DHHM 24B7GXT3 25R8GXT2 2760GXT2 3227GX 3228GX26N2GXT2 26O2GXT2 27D9GX 27Q9GX 1708XX 1920MX 2071DX 2123W 2419HM 2823GX 2844GX 3232GX)
-      LOAD_LOG.info "################# Sleep Stage Info ##################"
-      parent_path = "/home/pwm4/Windows/idrive/AMU Cleaned Data Sets"
-      location = "I:/AMU Cleaned Data Sets"
+      root_path = "/I/AMU Cleaned Data Sets"
 
-      subject_group = SubjectGroup.find_by_name("authorized")
-      subjects = subject_group.subjects
+      subject_group = SubjectGroup.find_by_name("amu_cleaned")
+      documentation = Documentation.find(10020)
+      source_type = SourceType.find(10120)
+      user = User.find_by_email('pmankowski@partners.org')
 
-      loaded = []
-      failed = []
-      skipped = []
-
-      subjects.each do |subject|
-        if Event.current.where(subject_id: subject.id, name: 'scored_epoch').count == 0
-          loader = ETL::SleepStageLoader.new(subject.subject_code, parent_path, location)
-          loader.load_subject ? loaded << subject.subject_code : failed << subject.subject_code
-        else
-          skipped << subject.subject_code
-        end
-      end
-
-      LOAD_LOG.info "loaded subjects: #{loaded.join("', '")}\nfailed subjects: #{failed.join("', '")}\nskipped subjects: #{skipped.join("', '")}"
-      LOAD_LOG.info "#####################################################"
+      loader = ETL::SleepStageLoader.new(root_path, subject_group, source_type, documentation, user)
+      loader.load
     end
 
     desc "load subject information"
@@ -317,7 +304,7 @@ namespace :etl do
 
     desc 'load t drive location'
     task :t_drive_location => :environment do
-      subject_group = SubjectGroup.find_by_name("actually_all_psq")
+      subject_group = SubjectGroup.find_by_name("amu_cleaned")
       LOAD_LOG.info "Loading T Drive Location for #{subject_group.name}"
       res = ETL::TDriveCrawler.populate_t_drive_location(subject_group, "/T/IPM")
       LOAD_LOG.info "T Drive Location Loader Results:\n#{res.to_s}"
@@ -361,7 +348,7 @@ namespace :etl do
 
     desc "load admit years"
     task :admit_year => :environment do
-      sg = SubjectGroup.find_by_name "temp_temp"
+      sg = SubjectGroup.find_by_name "amu_cleaned"
       ETL::AdmitYearLoader.populate_admit_year(sg, "/T/IPM")
     end
 

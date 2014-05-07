@@ -232,6 +232,7 @@ class Event < ActiveRecord::Base
         documentation_id: params[:documentation_id],
         quality_flag_id: params[:quality_flag_id],
         realtime: params[:realtime],
+        realtime_offset_sec: params[:realtime_offset_sec],
         labtime_hour: params[:labtime].hour,
         labtime_min: params[:labtime].min,
         labtime_sec: params[:labtime].sec,
