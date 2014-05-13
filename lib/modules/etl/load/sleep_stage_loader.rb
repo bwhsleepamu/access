@@ -24,30 +24,35 @@ module ETL
 
       @subject_group.subjects.each do |subject|
 
+        unless subject.events.where(name: "scored_epoch", deleted: false).first.present?
+          begin
+            raise StandardError, "Admit year missing for subject #{subject.subject_code}!" unless subject.admit_year.present?
 
-        begin
-          raise StandardError, "Admit year missing for subject #{subject.subject_code}!" unless subject.admit_year.present?
+            input_file_path = find_input_file(root_path, subject)
 
-          input_file_path = find_input_file(root_path, subject)
+            source = Source.find_or_create_by(location: input_file_path)
+            source.update_attributes(source_type_id: source_type.id, description: SOURCE_DESCRIPTION, subject_id: subject.id, documentation_id: documentation.id, user_id: user.id )
 
-          source = Source.find_or_create_by(location: input_file_path)
-          source.update_attributes(source_type_id: source_type.id, description: SOURCE_DESCRIPTION, subject_id: subject.id, documentation_id: documentation.id, user_id: user.id )
+            data_info = {
+              path: source.location,
+              skip_lines: 0
+            }
 
-          data_info = {
-            path: source.location,
-            skip_lines: 0
-          }
+            db_loader = ETL::DatabaseLoader.new(data_info, object_map(subject), column_map, source, documentation, subject)
 
-          db_loader = ETL::DatabaseLoader.new(data_info, object_map(subject), column_map, source, documentation, subject)
+            @init_subject_list << {subject: subject, loader: db_loader}
+          rescue => error
+            LOAD_LOG.error "## Failed to initialize subject #{subject.subject_code}"
+            LOAD_LOG.info "## Error: #{error.message}\n## Backtrace:\n#{error.backtrace}\n\n"
 
-          @init_subject_list << {subject: subject, loader: db_loader}
-        rescue => error
-          LOAD_LOG.error "## Failed to initialize subject #{subject.subject_code}"
-          LOAD_LOG.info "## Error: #{error.message}\n## Backtrace:\n#{error.backtrace}\n\n"
+            failed_subject_list << subject.subject_code
+          end
 
-          failed_subject_list << subject.subject_code
+        else
+          LOAD_LOG.info "Not loading #{subject.subject_code}! Events already exist."
         end
       end
+
       LOAD_LOG.info "Finished initializing Sleep Stage Loader\n\nSubjects successfully initialized:\n#{@init_subject_list.map{|s| s[:subject].subject_code}}\n\nSubjects failing to initialize: #{failed_subject_list}"
     end
 

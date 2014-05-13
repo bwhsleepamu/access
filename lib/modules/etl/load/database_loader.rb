@@ -6,7 +6,7 @@ module ETL
     attr_accessor :source_file
 
     ## Constructor
-    def initialize(source_info, object_map, column_map, source, documentation, subject=nil, strict_event_creation = true)
+    def initialize(source_info, object_map, column_map, source, documentation, subject=nil, strict_event_creation = true, log_frequency=1000)
       raise StandardError, "Missing parameters!" unless (source && documentation)
     #MY_LOG.info column_map
 
@@ -18,6 +18,7 @@ module ETL
       @documentation = documentation
       @subject = subject
       @strict_event_creation = strict_event_creation
+      @log_frequency = log_frequency
     end
 
     def load_data
@@ -44,7 +45,7 @@ module ETL
             row_subject = ensure_subject_available
             new_subject_row = false
 
-            LOAD_LOG.info "###### LOADING ROW #{i}: #{(Time.zone.now() - start_time)/60} minutes elapsed" if i % 25 == @first_row
+            LOAD_LOG.info "###### LOADING ROW #{i}: #{(Time.zone.now() - start_time)/60} minutes elapsed" if i % log_frequency == @first_row
             #MY_LOG.info "#{@loader_map}"
 
             group_labels = set_group_labels
@@ -108,7 +109,7 @@ module ETL
                     #MY_LOG.info "\n#OBJ_ATTRS:\n#{obj_attrs}"
                     Event.direct_create(obj_attrs)
                   else # Normal route for other classes
-                    LOAD_LOG.info "Creating #{mapping[:class]}"
+                    #LOAD_LOG.info "Creating #{mapping[:class]}"
                     obj = mapping[:class].logged_new(obj_attrs, @source.user, @source, @documentation)
                     LOAD_LOG.error "##### WARNING!! Object failed to save: #{obj} | #{obj.errors.full_messages}" unless obj.save
                   end
@@ -258,7 +259,7 @@ module ETL
     end
 
     def set_event_time(obj_attrs, mapping)
-      MY_LOG.info obj_attrs
+      #MY_LOG.info obj_attrs
       Time.zone = ActiveSupport::TimeZone.new("Eastern Time (US & Canada)")
 
       # LABTIME
@@ -292,7 +293,7 @@ module ETL
       obj_attrs[:realtime] = nt
       obj_attrs[:realtime_offset_sec] = nt.utc_offset
 
-      MY_LOG.info "!!!!! #{nt.utc_offset}"
+      #MY_LOG.info "!!!!! #{nt.utc_offset}"
 
 
       # if obj_attrs[:labtime].present?
