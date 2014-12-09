@@ -8,9 +8,39 @@ module ETL
 
 
 
+  ## Call in etl.rake:
+=begin
+  desc "merge Duffy psq files"
+  task :merge_duffy_psq_files => :environment do
+    destination_file_path = "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/merged_duffy_psqs.csv"
+    source_file_list = {
+        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data sheet Aging PPG CSR study 12-12-08.xls" => ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'],
+        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data sheet for circadian genetics study.xls" => ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'],
+        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data sheet for Vitamin B12 study.xls" => ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'],
+        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data sheet PER3-PPG CSR.xls" => ["subject_code", "sleep_period", "cumulative_minutes", "q_1", "q_2", "q_3", "q_4", "q_4a", "q_5", "q_6", "q_7", "q_8", "person_date_entered", "notes"],
+        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data YOUNG 20h melatonin study.xls" => ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_2a', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes']
+    }
+
+    psq_merger = ETL::PsqMerger.new nil, source_file_list, destination_file_path
+    psq_merger.merge_duffy_files
+  end
+
+  desc "merge klerman psq files"
+  task :merge_klerman_psq_files => :environment do
+    destination_file_path = "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/merged_klerman_psqs.csv"
+    source_file_list = {
+        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/Klerman PSQ Project (Finished)-ebk.xls" => ['subject_code', 'time_field', 'q_1', 'q_2', 'q_2a', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'q_9', 'q_10']
+    }
+
+    psq_merger = ETL::PsqMerger.new nil, source_file_list, destination_file_path
+    psq_merger.merge_klerman_files
+  end
+=end
 
 
   class PsqMerger
+
+    # Class Methods
 
     def self.float?(str)
       str =~ /^\s*[+-]?((\d+_?)*\d+(\.(\d+_?)*\d+)?|\.(\d+_?)*\d+)(\s*|([eE][+-]?(\d+_?)*\d+)\s*)$/
@@ -131,108 +161,8 @@ module ETL
       @subject_group = subject_group
     end
 
-    def read_single_sheet_file(input_file_path, columns)
 
-      input_xls = Roo::Excel.new(input_file_path)
-
-
-      rows_by_subject = {}
-      # Klerman Specific
-      # 1. Find Subject
-      # If code valid:
-      #   2. Find Subject Range
-      sheet = input_xls.longest_sheet
-
-
-      LOAD_LOG.info "Reading file with columns: #{columns}. Rows #{sheet.first_row} to #{sheet.last_row}"
-
-      (sheet.first_row+1..sheet.last_row).each do |row_num|
-        row = merge_row_values(columns, sheet.row(row_num))
-
-        row_subject = row[columns.index("subject_code")]
-        row_subject = row_subject.upcase if row_subject
-
-        if subject_code_valid? row_subject, @subject_group
-          # LOAD_LOG.info row
-          # LOAD_LOG.info row_subject
-
-          rows_by_subject[row_subject] = [] unless rows_by_subject.has_key? row_subject
-          rows_by_subject[row_subject] << row
-        end
-      end
-
-      MY_LOG.info "Rows for #{input_file_path}: #{rows_by_subject}"
-
-      rows_by_subject
-    end
-
-    def merge_row_values(columns, row)
-      # Merge redundant information
-      my_columns = columns.clone
-
-      #MY_LOG.info "####"
-      #MY_LOG.info my_columns
-      #MY_LOG.info row
-      #MY_LOG.info "##"
-      if my_columns.include?("q_2a")
-        #MY_LOG.info "Q2"
-        row = merge_question_2(my_columns, row)
-        my_columns.delete("q_2a")
-        #MY_LOG.info "##"
-        #MY_LOG.info my_columns
-        #MY_LOG.info row
-      end
-      if my_columns.include?("q_4a")
-        #MY_LOG.info "##"
-        #MY_LOG.info "Q4"
-        row = merge_question_4(my_columns, row)
-        my_columns.delete("q_4a")
-        #MY_LOG.info "##"
-        #MY_LOG.info my_columns
-        #MY_LOG.info row
-      end
-      #MY_LOG.info "####\n"
-
-      row
-    end
-
-    def correct_column_values(columns)
-      if columns.include?("q_2a")
-        columns.delete("q_2a")
-      end
-
-      if columns.include?("q_4a")
-        columns.delete("q_4a")
-      end
-
-      columns
-    end
-
-    def read_multiple_sheet_file(input_file_path, columns)
-      input_xls = Roo::Excel.new(input_file_path)
-
-      LOAD_LOG.info "Reading file with columns: #{columns}"
-
-      rows_by_subject = {}
-
-      # Duffy Specific
-      #
-      input_xls.each_with_pagename do |subject_tab, sheet|
-        subject_code = subject_tab.upcase
-        if subject_code_valid? subject_code, @subject_group
-          rows_by_subject[subject_code] = []
-          (sheet.first_row+1..sheet.last_row).each do |row_num|
-            row = merge_row_values(columns, sheet.row(row_num))
-
-#            row = columns.include?("q_2a") ? merge_question_2(columns, sheet.row(row_num)) : sheet.row(row_num)
-            rows_by_subject[subject_code] << row
-          end
-        end
-      end
-
-      rows_by_subject
-    end
-
+    ## MAIN FUNCTION
     def merge_files
       begin
         # Setup
@@ -256,35 +186,43 @@ module ETL
 
 
         # Iterate Over Subjects
+        # Example Hash:
+        # { source_id: 95375683, column_map: ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'], file_type: :multiple_sheets },
+
         @input_file_list.each do |input_file_hash|
-
-
-
-          # { source_id: 95375683, column_map: ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'], file_type: :multiple_sheets },
           columns = input_file_hash[:column_map]
           input_source = Source.find(input_file_hash[:source_id])
           merged_source.child_sources << input_source
 
-
           LOAD_LOG.info "Loading file: #{input_source.location}"
 
           if input_file_hash[:file_type] == :single_sheet
+            # ** - Klerman
             rows_by_subject = read_single_sheet_file(input_source.location, columns)
           else
+            # ** - Duffy
             rows_by_subject = read_multiple_sheet_file(input_source.location, columns)
           end
 
+          # ** - Delete redundant column names?
           columns = correct_column_values(columns)
 
+          # Info is read, now we iterate over each row
           rows_by_subject.each_pair do |subject_code, rows|
+
             # Initialization
+
+            ## Loads sleep episodes for subject
             sp_events = Event.generate_report("sleep_period_start", subject_code: subject_code)[:result].map{|h| [h['period_number'], h['first_decimal_labtime'], h['second_decimal_labtime'], h['first_labtime_year']]}
+
             added_rows = []
+
             all_equal_sps = true
 
             MY_LOG.info "!!! #{rows.length}"
+
             rows.each do |row|
-              # Map row values to correct spots
+              # ** - Map row values to correct spots
               mapped_row = map_row(columns, row, subject_code, sp_events)
 
 
@@ -307,6 +245,8 @@ module ETL
                 all_equal_sps = (all_equal_sps and (mapped_row[COLUMN_LIST.index("sp_flag")] != "X"))
               end
             end
+
+            # Grouping into categories - REVISE!
             if (sp_events.length - added_rows.length).abs > 0
               MY_LOG.info "#{subject_code} has incorrect number of Post Sleep Questionnaires: expected: #{sp_events.length} found: #{added_rows.length} in #{File.basename(input_source.location)}"
               subject_lists[:missing_sps] << subject_code
@@ -344,6 +284,113 @@ module ETL
     private
 
 
+    ## Klerman-specific
+    def read_single_sheet_file(input_file_path, columns)
+
+      input_xls = Roo::Excel.new(input_file_path)
+
+
+      rows_by_subject = {}
+      # Klerman Specific
+      # 1. Find Subject
+      # If code valid:
+      #   2. Find Subject Range
+      sheet = input_xls.longest_sheet
+
+
+      LOAD_LOG.info "Reading file with columns: #{columns}. Rows #{sheet.first_row} to #{sheet.last_row}"
+
+      (sheet.first_row+1..sheet.last_row).each do |row_num|
+        row = merge_row_values(columns, sheet.row(row_num))
+
+        row_subject = row[columns.index("subject_code")]
+        row_subject = row_subject.upcase if row_subject
+
+        if subject_code_valid? row_subject, @subject_group
+          # LOAD_LOG.info row
+          # LOAD_LOG.info row_subject
+
+          rows_by_subject[row_subject] = [] unless rows_by_subject.has_key? row_subject
+          rows_by_subject[row_subject] << row
+        end
+      end
+
+      MY_LOG.info "Rows for #{input_file_path}: #{rows_by_subject}"
+
+      rows_by_subject
+    end
+
+
+
+    # Duffy Specific
+    def read_multiple_sheet_file(input_file_path, columns)
+      input_xls = Roo::Excel.new(input_file_path)
+
+      LOAD_LOG.info "Reading file with columns: #{columns}"
+
+      rows_by_subject = {}
+
+      # Duffy Specific
+      #
+      input_xls.each_with_pagename do |subject_tab, sheet|
+        subject_code = subject_tab.upcase
+        if subject_code_valid? subject_code, @subject_group
+          rows_by_subject[subject_code] = []
+          (sheet.first_row+1..sheet.last_row).each do |row_num|
+            row = merge_row_values(columns, sheet.row(row_num))
+
+#            row = columns.include?("q_2a") ? merge_question_2(columns, sheet.row(row_num)) : sheet.row(row_num)
+            rows_by_subject[subject_code] << row
+          end
+        end
+      end
+
+      rows_by_subject
+    end
+
+
+    def merge_row_values(columns, row)
+      # Merge redundant information
+      my_columns = columns.clone
+
+      #MY_LOG.info "####"
+      #MY_LOG.info my_columns
+      #MY_LOG.info row
+      #MY_LOG.info "##"
+      if my_columns.include?("q_2a")
+        #MY_LOG.info "Q2"
+        row = merge_question_2(my_columns, row)
+        my_columns.delete("q_2a")
+        #MY_LOG.info "##"
+        #MY_LOG.info my_columns
+        #MY_LOG.info row
+      end
+      if my_columns.include?("q_4a")
+        #MY_LOG.info "##"
+        #MY_LOG.info "Q4"
+        row = merge_question_4(my_columns, row)
+        my_columns.delete("q_4a")
+        #MY_LOG.info "##"
+        #MY_LOG.info my_columns
+        #MY_LOG.info row
+      end
+      #MY_LOG.info "####\n"
+
+      row
+    end
+
+
+    def correct_column_values(columns)
+      if columns.include?("q_2a")
+        columns.delete("q_2a")
+      end
+
+      if columns.include?("q_4a")
+        columns.delete("q_4a")
+      end
+
+      columns
+    end
 
     def merge_question_4(columns, row)
       q_4_index = columns.index("q_4")
