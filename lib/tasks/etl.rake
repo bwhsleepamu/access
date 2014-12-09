@@ -317,7 +317,7 @@ namespace :etl do
 
     desc 'load t drive location'
     task :t_drive_location => :environment do
-      subject_group = SubjectGroup.find_by_name("actually_all_psq")
+      subject_group = SubjectGroup.find_by_name("sazuka_sp1")
       LOAD_LOG.info "Loading T Drive Location for #{subject_group.name}"
       res = ETL::TDriveCrawler.populate_t_drive_location(subject_group, "/T/IPM")
       LOAD_LOG.info "T Drive Location Loader Results:\n#{res.to_s}"
@@ -327,7 +327,7 @@ namespace :etl do
     desc "load SH Files"
     task :sh_files => :environment do
       documentation = Documentation.find(93253658)
-      subject_group = SubjectGroup.find_by_name("temp_new_found_success")
+      subject_group = SubjectGroup.find_by_name("sazuka_sp1")
 
       cr_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/#{subject_group.name}_constant_routines.csv")
       lt_source = Source.find_by_location("/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files/#{subject_group.name}_light_events.csv")
@@ -777,7 +777,7 @@ namespace :etl do
       options = {
         source_dir: '/T/IPM',
         output_dir: '/I/Projects/Database Project/Data Sources/T_DRIVE/S~H Files',
-        subject_group: SubjectGroup.find_by_name("temp_new_found"),
+        subject_group: SubjectGroup.find_by_name("sazuka_sp1"),
         find_missing_t_drive_location: false,
         user_email: "pmankowski@partners.org",
         ignore_duplicates: true
