@@ -12,8 +12,18 @@
     </div>
 
     <div class="form-group">
+      <%= f.label :file_pattern, nil, class: 'control-label' %>
+      <%= f.text_field :file_pattern, class: 'form-control' %>
+    </div>
+
+    <div class='form-group'>
+      <%= f.label :documentation_id, nil, class: 'control-label' %>
+      <%= f.select :documentation_id, [['---', nil]] + Documentation.current.collect{|d| [d.display_name, d.id]}, {}, {rel: :chosen, class: 'form-control',  data: {placeholder: "Select documentation"}} %>
+    </div>
+
+    <div class="form-group">
       <%= f.label :description, nil, class: 'control-label' %>
-      <%= f.text_area :description, rows: 7, class: 'form-control' %>
+      <%= f.text_area :description, rows: 7, class: 'form-control description md' %>
     </div>
 
     <div class="form-actions">

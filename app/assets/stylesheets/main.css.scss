@@ -1,3 +1,9 @@
 .flash-block {
     display: none;
 }
+
+.chosen-container {
+  .chosen-choices li.search-field input[type="text"].default {
+    height: auto;
+  }
+}

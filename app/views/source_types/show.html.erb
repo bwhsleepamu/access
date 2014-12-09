@@ -8,12 +8,43 @@
                    new_path: new_source_type_path
            }
 %>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Main Attributes
+      </div>
 
-<dl class="dl-horizontal">
-  <dt>Name</dt>
-  <dd><%= @source_type.name %></dd>
+      <div class="list-group dl-horizontal">
+        <div class="list-group-item">
+          <h5 class="text-muted">Name</h5>
+          <div><%= @source_type.name %></div>
+        </div>
+        <div class="list-group-item">
+          <h5 class="text-muted">File Pattern</h5>
+          <div><%= @source_type.file_pattern %></div>
+        </div>
+        <div class="list-group-item">
+          <h5 class="text-muted">Supporting Documentation</h5>
+          <div><%= link_to @source_type.documentation.title, @source_type.documentation if @source_type.documentation %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Description
+        <%= link_to "Print", "#", id: "print-link", class: 'print-link pull-right' %>
 
-  <dt>Description</dt>
-  <dd><%= simple_format @source_type.description %></dd>
+      </div>
+      <div class="panel-body scroll">
 
-</dl>
+        <div id="print-area">
+          <%= markdown @source_type.description %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

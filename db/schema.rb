@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140123215719) do
+ActiveRecord::Schema.define(version: 20140501200602) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id",    precision: 38, scale: 0
@@ -297,12 +297,15 @@ ActiveRecord::Schema.define(version: 20140123215719) do
   create_table "source_types", force: true do |t|
     t.string   "name"
     t.text     "description"
-    t.boolean  "deleted",     precision: 1, scale: 0, default: false, null: false
-    t.datetime "created_at",                                          null: false
-    t.datetime "updated_at",                                          null: false
+    t.boolean  "deleted",          precision: 1,  scale: 0, default: false, null: false
+    t.datetime "created_at",                                                null: false
+    t.datetime "updated_at",                                                null: false
+    t.integer  "documentation_id", precision: 38, scale: 0
+    t.string   "file_pattern"
   end
 
   add_index "source_types", ["deleted"], name: "index_source_types_on_deleted"
+  add_index "source_types", ["documentation_id"], name: "i_sou_typ_doc_id"
   add_index "source_types", ["name"], name: "index_source_types_on_name"
 
   create_table "sources", force: true do |t|
@@ -319,9 +322,11 @@ ActiveRecord::Schema.define(version: 20140123215719) do
     t.integer  "subject_id",        precision: 38, scale: 0
     t.text     "column_map"
     t.string   "worksheet_name"
+    t.integer  "documentation_id",  precision: 38, scale: 0
   end
 
   add_index "sources", ["deleted"], name: "index_sources_on_deleted"
+  add_index "sources", ["documentation_id"], name: "i_sources_documentation_id"
   add_index "sources", ["location"], name: "index_sources_on_location"
   add_index "sources", ["parent_id"], name: "index_sources_on_parent_id"
   add_index "sources", ["source_type_id"], name: "i_sources_source_type_id"
@@ -513,6 +518,9 @@ ActiveRecord::Schema.define(version: 20140123215719) do
   add_foreign_key "events", "sources", name: "events_source_id_fk"
   add_foreign_key "events", "subjects", name: "events_subject_id_fk"
 
+  add_foreign_key "source_types", "documentations", name: "sou_typ_doc_id_fk", dependent: :nullify
+
+  add_foreign_key "sources", "documentations", name: "sources_documentation_id_fk", dependent: :nullify
   add_foreign_key "sources", "source_types", name: "sources_source_type_id_fk"
   add_foreign_key "sources", "sources", column: "parent_id", name: "sources_parent_id_fk", dependent: :nullify
   add_foreign_key "sources", "users", name: "sources_user_id_fk"

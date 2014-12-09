@@ -20,5 +20,7 @@
 //= require datatables
 //= require PageDown/index
 //= require chosen.jquery
+//= require jquery.slimscroll
+//= require jquery.PrintArea
 //= require_tree .
 

@@ -9,12 +9,38 @@
     no_results_text: 'No results matched'
     width: '100%'
 
+  ## Markdown Functionality
+  $("form textarea.md").each( (index, textarea) ->
+    panel = $("<did/>", {
+      "class": "wmd-panel"
+    })
+
+    $(textarea).after($("<div/>", {
+      "id": "wmd-preview-"+index
+      "class": "wmd-panel wmd-preview"
+    }))
+    $(textarea).after($("<h5/>", {
+      text: "Preview:"
+    }))
+
+    $(textarea).attr("id", "wmd-input-"+index)
+    $(textarea).addClass("wmd-input-"+index)
+    $(textarea).wrap(panel)
+    $(textarea).before($("<div/>", {
+      "id": "wmd-button-bar-"+index
+    }))
+
+
+    conv = Markdown.getSanitizingConverter();
+    ed = new Markdown.Editor(conv, "-"+index )
+    ed.run();
+  )
 
 # Event Handler Definitions
 
 
 
-@
+#@
 
 
 
@@ -54,29 +80,3 @@ $(document).on('click', ".page a, .first a, .last a, .next a, .prev a", () ->
   false
 )
 
-## Markdown Functionality
-$("form textarea").each( (index, textarea) ->
-  panel = $("<did/>", {
-    "class": "wmd-panel"
-  })
-
-  $(textarea).after($("<div/>", {
-    "id": "wmd-preview-"+index
-    "class": "wmd-panel wmd-preview"
-  }))
-  $(textarea).after($("<h3/>", {
-    text: "Preview:"
-  }))
-
-  $(textarea).attr("id", "wmd-input-"+index)
-  $(textarea).addClass("wmd-input-"+index)
-  $(textarea).wrap(panel)
-  $(textarea).before($("<div/>", {
-    "id": "wmd-button-bar-"+index
-  }))
-
-
-  conv = Markdown.getSanitizingConverter();
-  ed = new Markdown.Editor(conv, "-"+index )
-  ed.run();
-)

@@ -2,7 +2,11 @@
   <thead>
     <tr>
       <th><%= sort_field_helper(params[:order], 'name', 'Name') %></th>
+      <th><%= sort_field_helper(params[:order], 'file_pattern', 'File Pattern') %></th>
       <th><%= sort_field_helper(params[:order], 'description', 'Description') %></th>
+      <th><%= sort_field_helper(params[:order], 'created_at', 'Created') %></th>
+      <th><%= sort_field_helper(params[:order], 'updated_at', 'Updated') %></th>
+
       <th>Actions</th>
     </tr>
   </thead>
@@ -10,12 +14,12 @@
   <% @source_types.each do |source_type| %>
     <tr>
       <td><%= link_to source_type.name, source_type %></td>
+      <td><%= source_type.file_pattern %></td>
       <td><%= source_type.description %></td>
+      <td><%= simple_date(source_type.created_at) %></td>
+      <td><%= simple_date(source_type.updated_at) %></td>
       <td>
-        <div class="btn-group">
-          <%= link_to 'Edit', edit_source_type_path(source_type), class: 'btn btn-mini btn-default' %>
-          <%= link_to 'Delete', source_type, method: :delete, class: 'btn btn-mini btn-danger', data: { confirm: "Are you sure you want to delete Source Type #{source_type.name}?" } %>
-        </div>
+        <%= render partial: 'layouts/index_actions', locals: {object: source_type, edit_path: edit_source_type_path(source_type)} %>
       </td>
     </tr>
   <% end %>

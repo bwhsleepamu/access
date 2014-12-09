@@ -2,11 +2,22 @@ require 'spec_helper'
 
 describe ETL::SleepStageLoader do
   before do
-    test_subject = "3232GX"
+    subjects = []
+    subjects << create(:subject, subject_code: '23D8HS', admit_year: 2003)
+    #subjects << create(:subject, subject_code: '28J8X', admit_year: 2008)
+    #subjects << create(:subject, subject_code: '2632DX', admit_year: 2006)
+    #subjects << create(:subject, subject_code: '3335GX', admit_year: 2013)
 
-    @st = create(:source_type, name: "<SUBJECT_CODE>Slp.01.csv")
+    @sg = create(:subject_group)
+    @sg.subjects = subjects
+
+    @sg.save
+
+
+    @st = create(:source_type, name: "AMU Cleaned Sleep Stage File")
     @d = create(:documentation, title: "Loading of Sleep Stage Information")
-    create(:user, email: "pmankowski@partners.org")
+
+    @u = create(:user, email: "pmankowski@partners.org")
 
     int_type = create(:integer_type)
     num_type = create(:numeric_type)
@@ -16,23 +27,28 @@ describe ETL::SleepStageLoader do
       create(:data_dictionary, title: "sleep_wake_period", data_type: int_type)
     ]
 
-    Event.create
-
     ed = build(:event_dictionary, name: "scored_epoch")
     ed.data_dictionary = data_dictionaries
     ed.save
 
-    parent_path = "/usr/local/htdocs/access/spec/data"
-    @location = "/usr/local/htdocs/access/spec/data"
-
-    @ssl = ETL::SleepStageLoader.new(test_subject, parent_path, @location)
-
+    @root_path = "/usr/local/htdocs/access/spec/data/sleep_stage_loader/AMU"
   end
 
   it "should load events into database" do    
-    res = @ssl.load_subject
-    res.should == true
+    ssl = ETL::SleepStageLoader.new(@root_path, @sg, @st, @d, @u)
 
+    result = ssl.load
+
+    expect(result[:loaded].length).to eq(@sg.subjects.length)
+
+    expect(Event.all.count).to eq(200*@sg.subjects.length)
+
+    @sg.subjects.each do |subject|
+      MY_LOG.info "events: #{subject.events.count}"
+      expect(subject.events.count).to be >= 200
+    end
+
+=begin
     Event.all.count.should == 200
     Event.first.data.length.should == 3
     Event.first.data.first.data_values.length.should == 1
@@ -51,6 +67,7 @@ describe ETL::SleepStageLoader do
     expect(e.source.source_type).to eq(@st)
 
     expect(e.documentation).to eq(@d)
+=end
   end
 
   it "should override any events in the database for the current subject" do

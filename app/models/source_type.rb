@@ -16,6 +16,7 @@ class SourceType < ActiveRecord::Base
   ##
   # Associations
   has_many :sources
+  belongs_to :documentation
 
   ##
   # Attributes
@@ -33,7 +34,7 @@ class SourceType < ActiveRecord::Base
 
   ##
   # Scopes
-  scope :search, lambda { |term| search_scope([:name, :description], term) }
+  scope :search, lambda { |term| search_scope([:name, :file_pattern, :description], term) }
 
   ##
   # Validations

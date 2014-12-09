@@ -72,6 +72,6 @@ class SourceTypesController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def source_type_params
       MY_LOG.info params
-      params.require(:source_type).permit(:name, :description)
+      params.require(:source_type).permit(:name, :file_pattern, :documentation_id, :description)
     end
 end
