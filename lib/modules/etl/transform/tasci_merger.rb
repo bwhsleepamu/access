@@ -125,24 +125,21 @@ module ETL
             # 1      stage 1
             # 2      stage 2
             # 3      stage 3
-            # 4      stage 4
             # 6      MT
             # 7      Undef
             # 5      REM
             # 9      Wake
             line_event = nil
-            if fields[8] == "Awake"
+            if fields[8] == "Wake"
               line_event = 9
             elsif fields[8] == "Undefined"
               line_event = 7
-            elsif fields[8] == "1"
+            elsif fields[8] == "N1"
               line_event = 1
-            elsif fields[8] == "2"
+            elsif fields[8] == "N2"
               line_event = 2
-            elsif fields[8] == "3"
+            elsif fields[8] == "N3"
               line_event = 3
-            elsif fields[8] == "4"
-              line_event = 4
             elsif fields[8] == "REM"
               line_event = 5
             elsif fields[8] == "MVT"
@@ -207,4 +204,3 @@ mapping:
   5      REM
   9      Wake
 =end
-
