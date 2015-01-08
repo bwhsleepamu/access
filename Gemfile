@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.0.3'
+gem 'rails', '~> 4.0.3'
 
 # Use oracle as the database for Active Record
 gem 'ruby-oci8'
@@ -43,9 +43,6 @@ gem 'rubyzip'
 
 # Markdown
 gem 'redcarpet'
-
-# R and Raster Plots
-gem 'rsruby'
 
 # Lingustics Support
 gem "linguistics", "~> 2.0.3"
