@@ -1,21 +1,23 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 4.0.3'
+gem 'rails', '~> 4.2.0'
 
 # Use oracle as the database for Active Record
 gem 'ruby-oci8'
-gem "activerecord-oracle_enhanced-adapter", "~> 1.5.0"
+#gem "activerecord-oracle_enhanced-adapter", "~> 1.5.0"
+
+gem 'activerecord-oracle_enhanced-adapter', :git => 'git://github.com/rsim/oracle-enhanced.git', branch: 'rails42'
 
 # Use SCSS for stylesheets
-gem 'sass-rails', '~> 4.0.0'
+gem 'sass-rails', '~> 5.0.0'
 gem 'less-rails'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 
 # Use CoffeeScript for .js.coffee assets and views
-gem 'coffee-rails', '~> 4.0.0'
+gem 'coffee-rails', '~> 4.1.0'
 
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 gem 'therubyracer', platforms: :ruby
@@ -30,8 +32,8 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 
 # Authentication and Styles
-gem 'contour',        '~> 2.4.0'
-gem 'kaminari',       '~> 0.15.0'
+gem 'contour',        '2.6.0.rc'
+gem 'kaminari' #,       '~> 0.15.0'
 
 # Observers
 gem 'rails-observers'
@@ -45,7 +47,7 @@ gem 'rubyzip'
 gem 'redcarpet'
 
 # Lingustics Support
-gem "linguistics", "~> 2.0.3"
+gem "linguistics"#, "~> 2.0.3"
 
 # Testing
 group :test do

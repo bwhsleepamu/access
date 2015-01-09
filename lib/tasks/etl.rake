@@ -790,17 +790,17 @@ namespace :etl do
 
     desc "merge Duffy psq files"
     task :merge_duffy_psq_files => :environment do
-      destination_file_path = "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/merged_duffy_psqs.csv"
-      source_file_list = {
-        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data sheet Aging PPG CSR study 12-12-08.xls" => ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'],
-        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data sheet for circadian genetics study.xls" => ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'],
-        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data sheet for Vitamin B12 study.xls" => ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'],
-        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data sheet PER3-PPG CSR.xls" => ["subject_code", "sleep_period", "cumulative_minutes", "q_1", "q_2", "q_3", "q_4", "q_4a", "q_5", "q_6", "q_7", "q_8", "person_date_entered", "notes"],
-        "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/PSQ data YOUNG 20h melatonin study.xls" => ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_2a', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes']
-      }
+      destination_file_path = "/home/pwm4/Desktop/merged_duffy_psqs_#{Time.now.strftime('%Y%m%d_%H%M')}.csv"
+      source_file_list = [
+        {location: "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/Origins/Duffy/PSQ data sheet Aging PPG CSR study 12-12-08.xls", columns: ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'], file_type: :multiple_sheets},
+        {location: "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/Origins/Duffy/PSQ data sheet for circadian genetics study.xls", columns: ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'], file_type: :multiple_sheets},
+        {location: "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/Origins/Duffy/PSQ data sheet for Vitamin B12 study.xls", columns: ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'], file_type: :multiple_sheets},
+        {location: "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/Origins/Duffy/PSQ data sheet PER3-PPG CSR.xls", columns: ["subject_code", "sleep_period", "cumulative_minutes", "q_1", "q_2", "q_3", "q_4", "q_4a", "q_5", "q_6", "q_7", "q_8", "person_date_entered", "notes"], file_type: :multiple_sheets},
+        {location: "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/Origins/Duffy/PSQ data YOUNG 20h melatonin study.xls", columns: ['sleep_period', 'cumulative_minutes', 'q_1', 'q_2', 'q_2a', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'notes'], file_type: :multiple_sheets}
+      ]
 
-      psq_merger = ETL::PsqMerger.new nil, source_file_list, destination_file_path
-      psq_merger.merge_duffy_files
+      psq_merger = ETL::PsqMerger.new source_file_list, destination_file_path
+      psq_merger.merge_files
     end
 
     desc "merge klerman psq files"
@@ -810,7 +810,7 @@ namespace :etl do
           "/I/Projects/Database Project/Data Sources/Post Sleep Questionnaires/Klerman PSQ Project (Finished)-ebk.xls" => ['subject_code', 'time_field', 'q_1', 'q_2', 'q_2a', 'q_3', 'q_4', 'q_4a', 'q_5', 'q_6', 'q_7', 'q_8', 'q_9', 'q_10']
       }
 
-      psq_merger = ETL::PsqMerger.new nil, source_file_list, destination_file_path
+      psq_merger = ETL::PsqMerger.new source_file_list, destination_file_path
       psq_merger.merge_klerman_files
     end
   end
