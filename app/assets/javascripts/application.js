@@ -10,17 +10,33 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require turbolinks
+
 //= require jquery
 //= require jquery_ujs
-//= require my-contour
-//= require jquery.dataTables
-//= require TableTools
-//= require ZeroClipboard
-//= require datatables
-//= require PageDown/index
-//= require chosen.jquery
-//= require jquery.slimscroll
-//= require jquery.PrintArea
-//= require_tree .
+//= require bootstrap-sprockets
+//= require turbolinks
 
+// Main JS initializer
+//= require global
+
+// External
+//= require external/jquery.PrintArea
+//= require external/jquery.dataTables.js
+//= require external/TableTools.js
+//= require external/ZeroClipboard.js
+//= require external/datatables.js
+//= require external/PageDown/index
+//= require external/chosen.jquery.js
+//= require external/jquery.slimscroll.js
+//= require external/jquery.PrintArea.js
+
+// Components
+//= require components/main
+
+// Objects
+//= require objects/data_dictionaries
+//= require objects/documentations
+//= require objects/events
+//= require objects/sources
+//= require objects/studies
+//= require objects/subject_groups

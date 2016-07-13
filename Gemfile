@@ -5,82 +5,54 @@ gem 'rails', '~> 4.2.3'
 
 # Use oracle as the database for Active Record
 gem 'ruby-oci8'
-
 gem 'activerecord-oracle_enhanced-adapter', '~> 1.6.0'
 
-# Use SCSS for stylesheets
-gem 'sass-rails', '~> 5.0.0'
-gem 'less-rails'
 
-# Use Uglifier as compressor for JavaScript assets
-gem 'uglifier', '>= 1.3.0'
-
-# Use CoffeeScript for .js.coffee assets and views
-gem 'coffee-rails', '~> 4.1.0'
-
-# See https://github.com/sstephenson/execjs#readme for more supported runtimes
-gem 'therubyracer', platforms: :ruby
-
-# Use jquery as the JavaScript library
-gem 'jquery-rails'
-
-# Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
-gem 'turbolinks'
-
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.0'
-
-# Authentication and Styles
-gem 'contour',        '~> 3.0.0'
-gem 'kaminari' #,       '~> 0.15.0'
-
-# Observers
+# Gems used by project
+gem 'devise',               '~> 4.1.1'
+gem 'omniauth'
+gem 'omniauth-ldap'
+gem 'bootstrap-sass',       '~> 3.3.6'
+gem 'kaminari',             '~> 0.17.0'
+gem 'redcarpet',            '~> 3.3.2'
+gem 'chunky_png',           '~> 1.3.4'
+gem 'haml',                 '~> 4.0.6'
+gem 'figaro',               '~> 1.1.1'
+gem 'differ',               '~> 0.1.2'
+gem 'font-awesome-rails',   '~> 4.6.2'
+gem "linguistics"
 gem 'rails-observers'
-
-# ETL
 gem 'dbf'
 gem 'roo'
 gem 'rubyzip'
 
-# Markdown
-gem 'redcarpet'
+# Rails Defaults
+gem 'coffee-rails',         '~> 4.1.0'
+gem 'sass-rails',           '~> 5.0'
+gem 'uglifier',             '>= 1.3.0'
 
-# Lingustics Support
-gem "linguistics"#, "~> 2.0.3"
+gem 'jbuilder',             '~> 2.0'
+gem 'jquery-rails',         '~> 4.1.0'
+gem 'turbolinks',           '>= 2.2.0'
 
 # Testing
 group :test do
-  gem 'rspec-rails'
-  gem 'capybara'
-  gem 'factory_girl_rails'
-  gem 'database_cleaner'
-  gem 'poltergeist'
-  gem 'simplecov'
+  # Pretty printed test output
+  gem 'minitest'
+  gem 'simplecov',          '~> 0.11.2', require: false
+  gem 'test_after_commit' # TODO: Remove in Rails 5
 end
 
-# Error Display
 group :development do
+  # Access an IRB console on exceptions page and /console in development
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'meta_request'
-  gem 'thin'
+  gem 'web-console', '~> 3.0'
 end
 
+# See https://github.com/sstephenson/execjs#readme for more supported runtimes
+gem 'therubyracer', platforms: :ruby
 
 
-group :doc do
-  # bundle exec rake doc:rails generates the API under doc/api.
-  gem 'sdoc', require: false
-end
 
-# Use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.1.2'
-
-# Use unicorn as the app server
-# gem 'unicorn'
-
-# Use Capistrano for deployment
-# gem 'capistrano', group: :development
-
-# Use debugger
-# gem 'debugger', group: [:development, :test]

@@ -2,7 +2,8 @@ class User < ActiveRecord::Base
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable and :omniauthable
-  devise :database_authenticatable, :timeoutable
+  devise :database_authenticatable, :timeoutable, :registerable
+  devise :omniauthable, :omniauth_providers => [:ldap]
 
   ##
   # Associations
@@ -13,7 +14,7 @@ class User < ActiveRecord::Base
 
   ##
   # Concerns
-  include Contourable, Deletable
+  include Deletable
 
   ##
   # Constants
@@ -67,9 +68,22 @@ class User < ActiveRecord::Base
     unless omniauth['info'].blank?
       self.first_name = omniauth['info']['first_name'] if first_name.blank?
       self.last_name = omniauth['info']['last_name'] if last_name.blank?
+      self.email = omniauth['info']['email'] if email.blank?
     end
-    super
+    self.password = Devise.friendly_token[0,20] if self.password.blank?
+    authentications.build( provider: omniauth['provider'], uid: omniauth['uid'] )
   end
+
+=begin
+
+require 'net/ldap'
+auth = {method: :simple, username: 'Partners\pwm4', password: '1ostatniehaslo'}
+ops = {encryption: {method: :simple_tls, tls_options: OpenSSL::SSL::SSLContext::DEFAULT_PARAMS}, host: "ldap.partners.org", port: 636, base: 'cn=users,dc=partners,dc=org', auth: auth}
+ldap = Net::LDAP.new(ops)
+ldap.bind
+
+
+=end
 
   private
 
