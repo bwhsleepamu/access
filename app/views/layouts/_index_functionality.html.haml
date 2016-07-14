@@ -1,0 +1,19 @@
+.row.index-functionality
+  .col-md-3
+    = form_tag path, method: :get, remote: true, id: "#{object}_search", class: 'form-search form-inline', data: { object: 'form-load' }, role: "search" do
+      = hidden_field_tag :order, params[:order]
+      = hidden_field_tag :per_page, params[:per_page]
+      = hidden_field_tag :one_page, nil
+      .form-group
+        .input-group
+          = text_field_tag 'search', params[:search], class: 'search-query form-control', placeholder: "Search"
+          .input-group-btn
+            = link_to "#", class: 'btn btn-default btn-md' do
+              %span.fa.fa-search
+  .col-md-4.col-md-offset-5
+    %ul.pagination.pull-right
+      %li.disabled
+        %a{:href => "#"} Per Page
+      - [5,10,25,50,:all].each do |count|
+        %li{:class => "#{'active' if false} per_page"}= link_to count, "#", 'data-object' => object, 'data-per-page' => count, 'data-form' => "##{object}_search", id: "count_#{count}"
+#ajax_loader.center= image_tag "ajax-loader.gif"

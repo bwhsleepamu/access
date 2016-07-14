@@ -9,5 +9,14 @@
 }
 
 .body-content {
-  margin: 20px 0;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#ajax_loader img{
+  height: 25px;
+}
+
+#user_email {
+  color: $brand-white;
 }

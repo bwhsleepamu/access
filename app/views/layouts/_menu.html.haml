@@ -12,9 +12,21 @@
         = link_to 'BWH Sleep Access', root_path, class: 'navbar-brand brand'
       .collapse.navbar-collapse.navbar-full-menu
         %ul.nav.navbar-nav
-          %li{ class: "#{ 'active' if params[:controller] == 'subject_groups' }" }
-            = link_to subject_groups_path do
-              Subject Groups
+          %li.dropdown
+            %a.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
+              Study Info
+              %span.caret
+            %ul.dropdown-menu
+              %li
+                = link_to subjects_path do
+                  Studies
+              %li
+                = link_to subjects_path do
+                  Subjects
+              %li
+                = link_to subject_groups_path do
+                  Subject Groups
+
           %li{ class: "#{ 'active' if params[:controller] == 'event_dictionary' }" }
             = link_to event_dictionary_index_path do
               Event Dictionary
@@ -32,9 +44,15 @@
               Source Types
 
         - if current_user
-          %form.navbar-form.navbar-right
-            = current_user.email
-            = link_to 'Logout', destroy_user_session_path, class: 'btn btn-primary'
+          %ul.nav.navbar-nav.navbar-right
+            %li.dropdown
+              %a.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
+                = current_user.email
+                %span.caret
+              %ul.dropdown-menu
+                %li
+                  = link_to 'Logout', destroy_user_session_path
+
         - else
           %form.navbar-form.navbar-right
             = link_to 'Sign up', new_user_registration_path, class: 'btn btn-primary' unless current_page?(new_user_registration_path)

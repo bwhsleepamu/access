@@ -1,0 +1,23 @@
+.sign-up-form {
+  background-color: $brand-white;
+  border: 1px solid $text-color;
+  color: $text-color;
+  margin: 0 auto 20px;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.sign-up-form-title {
+  background-color: $brand-success;
+  color: $brand-white;
+  font-size: 18px;
+  font-weight: bold;
+  margin: -20px -20px 20px;
+  padding: 10px 20px;
+
+  img {
+    height: 35px;
+    margin: -5px -10px;
+
+  }
+}
