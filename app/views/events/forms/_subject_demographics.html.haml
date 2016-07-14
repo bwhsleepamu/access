@@ -1,0 +1,10 @@
+= form_for @subject, url: url, method: method do |f|
+  - if @subject.errors.any?
+    .callout.callout-danger
+      %strong
+        = pluralize @subject.errors.count, 'error'
+        prohibited this project from being saved
+
+      %ul
+        - @subject.errors.full_messages.each do |msg|
+          %li= msg

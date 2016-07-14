@@ -355,7 +355,7 @@ ActiveRecord::Schema.define(version: 20140501200602) do
   add_index "study_nicknames", ["nickname"], name: "i_study_nicknames_nickname"
   add_index "study_nicknames", ["study_id"], name: "i_study_nicknames_study_id"
 
-  create_table "subject_groups", force: true do |t|
+  create_table "'subject'_groups", force: true do |t|
     t.string   "name"
     t.text     "description"
     t.boolean  "deleted",     precision: 1, scale: 0, default: false, null: false

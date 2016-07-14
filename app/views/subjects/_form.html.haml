@@ -1,0 +1,211 @@
+%h2.underline-header= @title
+
+- if @subject.new_record?
+  - url = subjects_path
+  - method = :post
+- else
+  - url = subjects_path(@project)
+  - method = :patch
+
+= form_for @subject, url: url, method: method do |f|
+  - if @subject.errors.any?
+    .callout.callout-danger
+      %strong
+        = pluralize @subject.errors.count, 'error'
+        prohibited this project from being saved
+
+      %ul
+        - @subject.errors.full_messages.each do |msg|
+          %li= msg
+
+  .row
+    .col-md-8
+      .form-group
+        = f.label :subject_code
+        = f.text_field :subject_code, autocomplete: 'off', class: 'form-control'
+    .col-md-4
+      .form-group
+        = f.label :disempanelled, "Status"
+        %br
+        .btn-group{data: {toggle: 'buttons'}}
+          .btn.btn-primary
+            = f.radio_button :disempanelled, false, autocomplete: "off"
+            Completed
+          .btn.btn-primary
+            = f.radio_button :disempanelled, true, autocomplete: "off"
+            Disempanelled
+
+  .form-group
+    = f.label :t_drive_location
+    = f.text_field :t_drive_location, autocomplete: "off", class: "form-control"
+
+  .form-group
+    = f.label :admit_date
+    = f.text_field :admit_date, autocomplete: "off", class: "form-control", type: "date"
+
+  .form-group
+    = f.label :discharge_date
+    = f.text_field :discharge_date, autocomplete: "off", class: "form-control", type: "date"
+
+  .form-group
+    = f.label :notes
+    = f.text_area :notes, rows: 7, class: 'form-control'
+
+  -#
+  -#.form-group
+  -#  = f.label :name, nil, class: 'col-md-2 control-label'
+  -#  .col-md-10
+  -#    = f.text_field :name, autocomplete: 'off', class: 'form-control', data: { object: (@project.new_record? ? 'create-slug' : ''), target: '#project_slug' }
+  -#
+  -#.form-group
+  -#  = f.label :slug, nil, class: 'col-md-2 control-label'
+  -#  .col-md-10
+  -#    = f.text_field :slug, class: 'form-control'
+  -#    .callout.callout-info
+  -#      %strong Naming convention
+  -#      %ul
+  -#        %li
+  -#          Must be a lowercase letter
+  -#          %code a-z
+  -#          followed by lowercase letters
+  -#          = succeed ',' do
+  -#            %code a-z
+  -#          numbers
+  -#          = succeed ',' do
+  -#            %code 0-9
+  -#          or dashes
+  -#          = succeed '.' do
+  -#            %code -
+  -#      %p
+  -#        Ex:
+  -#        %code abc123-trial
+  -#
+  -#.form-group
+  -#  = f.label :description, nil, class: 'col-md-2 control-label'
+  -#  .col-md-10
+  -#    = f.text_area :description, rows: 7, class: 'form-control'
+  -#
+  -#.form-group
+  -#  = f.label :subject_code_name, "Subject Code name", class: 'col-md-2 control-label'
+  -#  .col-md-10
+  -#    = f.text_field :subject_code_name, placeholder: "Subject Code", class: 'form-control'
+  -#    .callout.callout-info
+  -#      %strong What is the Subject Code name?
+  -#      = ENV['website_name']
+  -#      requires a unique string in order to identify subjects. By default the unique string is labeled
+  -#      = succeed ',' do
+  -#        %code Subject Code
+  -#      however you may choose to change it to
+  -#      = succeed ',' do
+  -#        %code Participant ID
+  -#      = succeed ',' do
+  -#        %code Survey Recipient Number
+  -#      or any other suitable nomenclature that fits your particular project.
+  -#
+  -#- if @project.sites.size == 0
+  -#  .form-group
+  -#    = f.label :site_name, nil, class: 'col-md-2 control-label'
+  -#    .col-md-10
+  -#      = f.text_field :site_name, placeholder: 'Default Site', class: 'form-control'
+  -#      .callout.callout-info
+  -#        %strong What is the Site name?
+  -#        = ENV['website_name']
+  -#        requires subjects be grouped by site. This requirement helps enforce
+  -#        unique subject codes within a site and also allows reports to break
+  -#        down subject counts by site. If your project does not have subjects
+  -#        that span multiple sites, you can leave this blank, which will create
+  -#        a single site for your project named
+  -#        = succeed '.' do
+  -#          %code Default Site
+  -#        Each project is required to have at least one site, however if you
+  -#        need more than one, you can add additional sites after the project has
+  -#        been created.
+  -#
+  -#.form-group
+  -#  = f.label :logo, 'Logo (JPG, GIF, PNG)', class: 'col-md-2 control-label'
+  -#  .col-md-10
+  -#    .row
+  -#      .col-md-6
+  -#        = f.file_field :logo, class: 'form-control'
+  -#        = f.hidden_field :logo_cache
+  -#
+  -#      - if @project.logo and @project.logo.size > 0
+  -#        .col-md-6
+  -#          .sheet-container
+  -#            %label.checkbox.checkbox-inline.negation
+  -#              = check_box_tag "project[remove_logo]", '1', false
+  -#              Remove
+  -#              %code= @project.logo.path.split('/').last
+  -#              %tt= number_to_human_size(@project.logo.size)
+  -#
+  -#.form-group
+  -#  .col-md-2
+  -#    %label Email Settings
+  -#  .col-md-10
+  -#    .checkbox
+  -#      %label
+  -#        = f.check_box :disable_all_emails
+  -#        Disable Daily Digest and Sheet Comment Emails
+  -#
+  -#.form-group
+  -#  .col-md-2
+  -#    %label Survey Settings
+  -#  .col-md-10
+  -#    .checkbox
+  -#      %label
+  -#        = f.check_box :collect_email_on_surveys
+  -#        Collect Survey Participants Emails
+  -#
+  -#.form-group
+  -#  .col-md-2
+  -#    %label Hide Values on PDFs
+  -#  .col-md-10
+  -#    .checkbox
+  -#      %label
+  -#        = f.check_box :hide_values_on_pdfs
+  -#        Checking This Will Hide Answer Choice Values on Printed Sheets
+  -#
+  -#.form-group
+  -#  .col-md-2
+  -#    %label Randomizations
+  -#  .col-md-10
+  -#    .checkbox
+  -#      %label
+  -#        = f.check_box :randomizations_enabled
+  -#        Checking This Will Enable Subjects to Be Randomized
+  -#
+  -#.form-group
+  -#  .col-md-2
+  -#    %label Adverse Events
+  -#  .col-md-10
+  -#    .checkbox
+  -#      %label
+  -#        = f.check_box :adverse_events_enabled
+  -#        Checking This Will Enable Adverse Event Reporting
+  -#
+  -#.form-group
+  -#  .col-md-2
+  -#    %label Blinded and Unblinded
+  -#  .col-md-10
+  -#    .checkbox
+  -#      %label
+  -#        = f.check_box :blinding_enabled
+  -#        Checking This Will Enable Blinding of Project and Site Members
+  -#
+  -#.form-group
+  -#  .col-md-2
+  -#    %label Tablet Handoffs
+  -#  .col-md-10
+  -#    .checkbox
+  -#      %label
+  -#        = f.check_box :handoffs_enabled
+  -#        Checking this will enable staff members to launch a flow of surveys that participants can complete on a tablet
+  -#
+  -#.form-group
+  -#  = f.label :auto_lock_sheets, 'Auto-lock Sheets', class: 'col-md-2 control-label'
+  -#  .col-md-10
+  -#    = f.select :auto_lock_sheets, Project::AUTO_LOCK_SHEETS, {}, class: 'form-control'
+
+  .form-group
+    = f.submit nil, class: 'btn btn-primary btn-block'
+    = cancel

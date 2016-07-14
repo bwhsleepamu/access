@@ -12,6 +12,22 @@ class SubjectsController < ApplicationController
     @subjects = subjects_scope.search_by_terms(parse_search_terms(params[:search])).set_order(params[:order], "subject_code asc").page_per(params)
   end
 
+
+  # GET /projects/new
+  def new
+    @subject = Subject.new
+  end
+
+  # POST /projects
+  def create
+    @subject = Subject.new(subject_params)
+    if @subject.save
+      redirect_to @subject, notice: 'Subject was successfully added.'
+    else
+      render :new
+    end
+  end
+
   # POST /subjects
   # POST /subjects.json
   def create_list
@@ -47,5 +63,19 @@ class SubjectsController < ApplicationController
   def subject_list_params
     MY_LOG.info params
     params.require(:subjects).permit(:subject_codes)
+  end
+
+
+  def subject_params
+    params.require(:subject).permit(
+      :name, :slug, :description, :subject_code_name, :disable_all_emails,
+      :collect_email_on_surveys, :hide_values_on_pdfs,
+      :randomizations_enabled, :adverse_events_enabled, :blinding_enabled,
+      :handoffs_enabled, :auto_lock_sheets,
+      # Uploaded Logo
+      :logo, :logo_uploaded_at, :logo_cache, :remove_logo,
+      # Will automatically generate a site if the project has no site
+      :site_name
+    )
   end
 end

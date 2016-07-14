@@ -1,20 +1,16 @@
 - @title = 'Sign in'
+.container.body-content
+  .sign-up-form
+    .sign-up-form-title
+      Sign in
+      = image_tag "Partners_HealthCare_logo.svg.png", align: 'absright', class: 'img-thumbnail img-responsive pull-right'
 
-%p.lead.center Welcome back!
-
-
-
-.sign-up-form
-  .sign-up-form-title
-    Sign in
-    = image_tag "Partners_HealthCare_logo.svg.png", align: 'absright', class: 'img-thumbnail img-responsive pull-right'
-
-  = form_tag '/auth/ldap/callback', noValidate: 'noValidate' do
-    .form-group
-      = label_tag "username", nil, class: 'control-label'
-      = text_field_tag "username", nil, class: 'form-control'
-    .form-group
-      = label_tag "password", nil, class: 'control-label'
-      = password_field_tag 'password', nil, class: 'form-control'
-    .form-group.sign-up-form-button-container
-      = submit_tag 'Sign in', class: 'btn btn-success btn-block'
+    = form_tag '/auth/ldap/callback', noValidate: 'noValidate' do
+      .form-group
+        = label_tag "username", nil, class: 'control-label'
+        = text_field_tag "username", nil, class: 'form-control'
+      .form-group
+        = label_tag "password", nil, class: 'control-label'
+        = password_field_tag 'password', nil, class: 'form-control'
+      .form-group.sign-up-form-button-container
+        = submit_tag 'Sign in', class: 'btn btn-success btn-block'

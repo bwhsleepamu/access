@@ -38,7 +38,7 @@ Rails.application.routes.draw do
   resources :sources
   resources :source_types
   resources :subject_groups
-  resources :subjects, only: [:index] do
+  resources :subjects do
     collection do
       post 'create_list'
       get 'new_list'

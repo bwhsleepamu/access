@@ -354,7 +354,7 @@ class Subject < ActiveRecord::Base
   end
 
   def admit_date
-    Date.new(admit_year, admit_month, admit_day)
+    (admit_year and admit_day and admit_month) ? Date.new(admit_year, admit_month, admit_day) : nil
   end
 
   def admit_date=(date)
@@ -364,7 +364,7 @@ class Subject < ActiveRecord::Base
   end
 
   def discharge_date
-    Date.new(discharge_year, discharge_month, discharge_day)
+    (discharge_year and discharge_month and discharge_day) ? Date.new(discharge_year, discharge_month, discharge_day) : nil
   end
 
   def discharge_date=(date)
