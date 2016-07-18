@@ -1,0 +1,16 @@
+- @title = 'Tasci Merger'
+.page-header
+  %h1.center Merge Tasci Files
+.container.body-content
+  = form_tag merge_tasci_path, class: 'form-horizontal' do
+    .form-group
+      = label_tag :subject_code, nil, class: 'control-label col-md-2'
+      .col-md-2
+        = text_field_tag :subject_code, nil, class: 'form-control', autocomplete: 'off'
+    .form-group
+      = label_tag :tasci_location, "Tasci File Location", class: 'control-label col-md-2'
+      .col-md-10
+        = text_field_tag :tasci_location, nil, class: 'form-control', autocomplete: 'off'
+    .row
+      .col-md-10.col-md-offset-2= submit_tag "Merge Tasci", class: 'btn btn-block btn-success'
+

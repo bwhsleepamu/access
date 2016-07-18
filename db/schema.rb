@@ -362,7 +362,7 @@ ActiveRecord::Schema.define(version: 20140501200602) do
     t.datetime "created_at",                                          null: false
     t.datetime "updated_at",                                          null: false
   end
-
+ta
   add_index "subject_groups", ["name"], name: "index_subject_tags_on_name"
 
   create_table "subjects", force: true do |t|

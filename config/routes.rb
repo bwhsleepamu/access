@@ -25,6 +25,7 @@ Rails.application.routes.draw do
 
   post 'events/report', to: "events#report", as: :report
 
+  get 'events/report', to: "events#report"
   get 'events/:name/report/subject/:subject_code/ignore_paired', to: "events#report", defaults: {ignore_paired: 1}
   get 'events/:name/report/subject/:subject_code', to: "events#report"
   get 'events/:name/report/subject_group/:subject_group_name/ignore_paired', to: "events#report", defaults: {ignore_paired: 1}
@@ -44,6 +45,10 @@ Rails.application.routes.draw do
       get 'new_list'
     end
   end
+
+
+  get 'tasci_merger', to: 'tools#tasci_merger', as: :tasci_merger
+  post 'tasci_merger', to: 'tools#tasci_merger', as: :merge_tasci
 
   root 'documentations#index'
 end
