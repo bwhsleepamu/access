@@ -3,7 +3,7 @@ require 'tempfile'
 require 'tmpdir'
 
 class ToolsController < ApplicationController
-  before_filter :authenticate_user!
+#  before_filter :authenticate_user!
 
 
 

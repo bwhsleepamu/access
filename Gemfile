@@ -7,7 +7,6 @@ gem 'rails', '~> 4.2.3'
 gem 'ruby-oci8'
 gem 'activerecord-oracle_enhanced-adapter', '~> 1.6.0'
 
-
 # Gems used by project
 gem 'devise',               '~> 4.1.1'
 gem 'omniauth'
