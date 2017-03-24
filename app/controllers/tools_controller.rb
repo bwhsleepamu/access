@@ -30,6 +30,8 @@ class ToolsController < ApplicationController
             end
           end
 
+          zipfile.close
+
           zip_data = File.read(zipfile.path)
 
           send_data(zip_data, type: 'application/zip', filename: zip_path)

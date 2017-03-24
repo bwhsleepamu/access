@@ -4,27 +4,30 @@ class Labtime
   attr_accessor :year, :hour, :min, :sec, :time_zone
   DEFAULT_TIME_ZONE = ActiveSupport::TimeZone.new("Eastern Time (US & Canada)")
 
+  # Class Methods
   def self.parse(realtime)
     # Return nil if nil parameter
     return nil if realtime.nil?
 
     # Make sure datetime is an ActiveSupport:TimeWithZone object
-    raise ArgumentError, "realtime class #{realtime.class} is not ActiveSupport::TimeWithZone" unless realtime.is_a?(ActiveSupport::TimeWithZone)
+    unless realtime.is_a?(ActiveSupport::TimeWithZone)
+      raise ArgumentError, "realtime class #{realtime.class} is not ActiveSupport::TimeWithZone" 
+    end
 
-    # year is easy
     year = realtime.year
 
-    # Reference fo labtime is start of year
+    # Use the start of the given year as a reference for finding Labtime
     Time.zone = realtime.time_zone
     reference_time = Time.zone.local(year)
 
-    # find difference between reference and
-    second_difference = realtime.to_i - reference_time.to_i
+    # find difference between the reference time and the time sent to the method
+    difference_in_seconds = realtime.to_i - reference_time.to_i
 
-    # convert second difference to labtime
-    hour = second_difference / 3600
-    min = (second_difference - (hour * 3600)) / 60
-    sec = (second_difference - (hour * 3600) - (min * 60))
+    # convert difference in seconds to labtime
+    hour = difference_in_seconds / 3600
+    min = (difference_in_seconds - (hour * 3600)) / 60
+    sec = (difference_in_seconds - (hour * 3600) - (min * 60))
+
 
     self.new(year, hour, min, sec, realtime.time_zone)
   end
@@ -34,12 +37,14 @@ class Labtime
 
     hour = decimal_labtime.to_i
     remainder = decimal_labtime - hour.to_f
-    min_labtime = 60.0 * remainder
-    min = min_labtime.to_i
-    remainder = min_labtime - min.to_f
+
+    minute_labtime = 6.0 * remainder
+    minute = minute_labtime.to_i
+
+    remainder = minute_labtime - minute.to_f
     sec = (60 * remainder).round.to_i
 
-    self.new(year, hour, min, sec, time_zone)
+    self.new(year, hour, minute, sec, time_zone)
   end
 
   def self.from_seconds(sec_time, year, time_zone = DEFAULT_TIME_ZONE)
@@ -63,6 +68,7 @@ class Labtime
     self.new(time_params[:year], time_params[:hour], time_params[:min], time_params[:sec], time_zone)
   end
 
+  # Constructor
   def initialize(year, hour, min, sec, time_zone = nil)
     @year = year.to_i
     @hour = hour.to_i
@@ -71,11 +77,13 @@ class Labtime
     @time_zone = time_zone || DEFAULT_TIME_ZONE
   end
 
+  # Convert Labtime to real time
   def to_time
     reference_time = time_zone.local(year)
     reference_time + time_in_seconds
   end
 
+  # For Comparable
   def <=>(other)
     to_time <=> other.to_time
   end
