@@ -27,9 +27,11 @@
 - [ ] Download and compile database data for John
 - [ ] Train Scott on use of Access tool for DB data downloads (and possibly revamp tool)
 
-### Sleep Structure Paper
+### Sleep Structure Manuscript
+- [ ] Update figures to match Andrew's comments
 - [ ] Target journal still Sleep?
 - [ ] Set target submission date!
+
 
 ## Shiny Apps and Server Setup
 
@@ -74,3 +76,37 @@ After setting everything up, ran into problems with SSL access to the ruby app. 
 
 4. Windows share mounts: https://wiki.centos.org/TipsAndTricks/WindowsShares
 (These need to be updated periodically)
+
+### Sleep Structure Manuscript
+Andrew thoughs:
+
+### Two sources of novelty
+- Looking at sleep structure Forced Desynchrony protocols
+- Finding wrt. what awakenings do to the structure of the sleep/wake NREM/REM cycle
+  especially figure 8.
+
+### Other Thoughts
+- Another version of of figure 8:
+  circadian phase of
+
+  * instead of all possible bouts, use starting in circadian phases
+
+- Figure 2/3 --> 2a and 2b to include information about FD
+
+- Figure 1 --> supplement to show it looks the same
+- Figure 5 and Figure 6 -> we need only one of them in main paper
+ rest goes to supplemental
+
+- Figure 4 --> can't link to narrative, would need to show it more
+
+- Figure 7 --> use FD results?
+
+
+Figures in:
+- Figure 7 ->
+  boxes around the panels and seperate the panels
+  font bigger on axes
+  label panel (a,b,c,d...)
+
+- Figure 8 -> an alternative version in (restriction of circadian phases to circ day and circ night)
+-
