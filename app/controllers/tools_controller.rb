@@ -5,8 +5,6 @@ require 'tmpdir'
 class ToolsController < ApplicationController
 #  before_filter :authenticate_user!
 
-
-
   def tasci_merger
     if params[:subject_code] and params[:tasci_location]
       zip_path = "TasciMergerOutput_#{params[:subject_code]}.zip"
