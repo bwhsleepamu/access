@@ -4,8 +4,8 @@ source 'https://rubygems.org'
 gem 'rails', '~> 4.2.3'
 
 # Use oracle as the database for Active Record
-#gem 'ruby-oci8'
-#gem 'activerecord-oracle_enhanced-adapter', '~> 1.6.0'
+gem 'ruby-oci8'
+gem 'activerecord-oracle_enhanced-adapter', '~> 1.6.0'
 
 # Gems used by project
 gem 'devise',               '~> 4.1.1'
