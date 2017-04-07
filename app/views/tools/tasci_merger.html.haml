@@ -6,11 +6,11 @@
     .form-group
       = label_tag :subject_code, nil, class: 'control-label col-md-2'
       .col-md-2
-        = text_field_tag :subject_code, nil, class: 'form-control', autocomplete: 'off'
+        = text_field_tag :subject_code, nil, class: 'form-control', autocomplete: 'off', placeholder: '3232GX'
     .form-group
       = label_tag :tasci_location, "Tasci File Location", class: 'control-label col-md-2'
       .col-md-10
-        = text_field_tag :tasci_location, nil, class: 'form-control', autocomplete: 'off'
+        = text_field_tag :tasci_location, nil, class: 'form-control', autocomplete: 'off', placeholder: '/T/IPM/CSR_32d_FD_20h/3232GX/PSG/Scored/TASCI'
     .row
       .col-md-10.col-md-offset-2= submit_tag "Merge Tasci", class: 'btn btn-block btn-success'
 

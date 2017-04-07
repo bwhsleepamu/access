@@ -30,6 +30,7 @@ GEM
       activemodel (= 4.2.8)
       activesupport (= 4.2.8)
       arel (~> 6.0)
+    activerecord-oracle_enhanced-adapter (1.6.7)
     activesupport (4.2.8)
       i18n (~> 0.7)
       minitest (~> 5.1)
@@ -168,6 +169,7 @@ GEM
     roo (2.7.1)
       nokogiri (~> 1)
       rubyzip (~> 1.1, < 2.0.0)
+    ruby-oci8 (2.2.2-x64-mingw32)
     rubyntlm (0.3.4)
     rubyzip (1.2.1)
     sass (3.4.23)
@@ -218,6 +220,7 @@ PLATFORMS
   x64-mingw32
 
 DEPENDENCIES
+  activerecord-oracle_enhanced-adapter (~> 1.6.0)
   better_errors
   binding_of_caller
   bootstrap-sass (~> 3.3.6)
@@ -241,6 +244,7 @@ DEPENDENCIES
   rails-observers
   redcarpet (~> 3.3.2)
   roo
+  ruby-oci8
   rubyzip
   sass-rails (~> 5.0)
   simplecov (~> 0.11.2)
