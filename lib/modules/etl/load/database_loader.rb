@@ -8,6 +8,7 @@ module ETL
     ## Constructor
     def initialize(source_info, object_map, column_map, source, documentation, subject=nil, strict_event_creation = true, log_frequency=1000)
       raise StandardError, "Missing parameters!" unless (source && documentation)
+    #MY_LOG.info column_map
 
       generate_loader_map(object_map, column_map)
       generate_conditions(column_map)
@@ -22,22 +23,30 @@ module ETL
 
     def load_data
       unique_subjects = (@subject ? [@subject.subject_code] : [])
+      #MY_LOG.info "In load_data"
 
       ActiveRecord::Base.transaction do
+        #MY_LOG.info "In load_data transaction"
+        # Process Existing Records that need to be destroyed
+        ## If we need to destroy records, we can either do it once per file, once per row, or once per (find_by) combo (new subject code)
+        # File destroy:
         destroy_existing_events(@loader_map, @subject)
 
         start_time = Time.zone.now
         LOAD_LOG.info "########## Database Loader: Loading Data ##########"
         LOAD_LOG.info "##########  Starting at row #{@first_row}   ##########"
+       #MY_LOG.info "##loader_map:\n#{@loader_map}"
 
         (@first_row..@source_file.last_row).each do |i|
           begin
             row = @source_file.row(i)
             next if skip_row?(row)
+           #MY_LOG.info "ROW: #{row}"
             row_subject = ensure_subject_available
             new_subject_row = false
 
             LOAD_LOG.info "###### LOADING ROW #{i}: #{(Time.zone.now() - start_time)/60} minutes elapsed" if i % log_frequency == @first_row
+            #MY_LOG.info "#{@loader_map}"
 
             group_labels = set_group_labels
 
