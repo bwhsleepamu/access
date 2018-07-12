@@ -3,6 +3,11 @@
 
 namespace :etl do
   namespace :load do
+    desc "Test Task"
+    task :testing_autoload => :environment do
+      p ETL::DatabaseLoader
+    end
+
 
     desc "load sleep stage data into database"
     task :sleep_stage_data => :environment do
@@ -36,11 +41,18 @@ namespace :etl do
     task :subject_information => :environment do
       subject_info_files = [
         {
-          source_path: "/I/Projects/Database Project/Data Sources/Forced Desynchrony Subject Information/DSMDB_FD_Study_Info_2013_12_09.xls",
+          source_path: "/I/Projects/Database Project/Data Sources/Forced Desynchrony Subject Information/DSMDB_FD_Study_Info_HIPAA_2018.07.10.xls",
           subject_type: :forced_desynchrony,
-          source: Source.find_by_id(92806902),
-          documentation: Documentation.find_by_id(10040)
+          source: Source.find_by_id(108778667),
+          documentation: Documentation.find_by_id(108778666)
         }
+
+        # {
+        #   source_path: "/I/Projects/Database Project/Data Sources/Forced Desynchrony Subject Information/DSMDB_FD_Study_Info_2013_12_09.xls",
+        #   subject_type: :forced_desynchrony,
+        #   source: Source.find_by_id(92806902),
+        #   documentation: Documentation.find_by_id(10040)
+        # }
         #{
         #  source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/joshua_gooley_subject_information/subject_information.xls",
         #  subject_type: :light,
@@ -80,7 +92,7 @@ namespace :etl do
       ]
 
       subject_info_files.each do |si_file|
-        #LOAD_LOG.info "LOADING: #{si_file}"
+        LOAD_LOG.info "LOADING: #{si_file}"
         si_loader = ETL::SubjectInformationLoader.new(si_file[:source_path], si_file[:subject_type], si_file[:source], si_file[:documentation])
         si_loader.load
       end
