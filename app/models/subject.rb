@@ -353,24 +353,44 @@ class Subject < ActiveRecord::Base
     r.plot_raster(data)
   end
 
+  # edited:
+  # getting admit month date
   def admit_date
-    (admit_year and admit_day and admit_month) ? Date.new(admit_year, admit_month, admit_day) : nil
+    warn "[DEPRECATION] `admit_date` is deprecated, since the db no longer stores day information.  Please use `admit_month_date` instead."
+    admit_month_date
+  end
+  # edited:
+  def admit_month_date 
+    (study_year and admit_month) ? Date.new(study_year, admit_month) : nil
   end
 
+  # edited: setting admit date
   def admit_date=(date)
-    self[:admit_year] = date.year
+    warn "[DEPRECATION] `admit_date=` is deprecated, since the db no longer stores day information.  Please use `admit_month_date=` instead."
+    admit_month_date = date
+  end
+  # edited
+  def admit_month_date=(date)
+    self[:study_year] = date.year
     self[:admit_month] = date.month
-    self[:admit_day] = date.day
   end
 
+  # added: 
   def discharge_date
-    (discharge_year and discharge_month and discharge_day) ? Date.new(discharge_year, discharge_month, discharge_day) : nil
+    warn "[DEPRECATION] `discharge_date` is deprecated, since the db no longer stores day information.  Please use `discharge_month_date` instead."
+    discharge_month_date
+  end 
+  # edited
+  def discharge_month_date
+    # (study_year and discharge_month and discharge_day) ? Date.new(discharge_year, discharge_month, discharge_day) : nil
+    (study_year and discharge_month) ? Date.new(study_year, discharge_month) : nil
   end
-
-  def discharge_date=(date)
-    self[:discharge_year] = date.year
+  # edited
+  def discharge_month_date=(date)
+    warn "[DEPRECATION] `admit_date=` is deprecated, since the db no longer stores day information.  Please use `admit_month_date=` instead."
+    self[:study_year] = date.year
     self[:discharge_month] = date.month
-    self[:discharge_day] = date.day
+    # self[:discharge_day] = date.day
   end
 
   private
