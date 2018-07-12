@@ -95,12 +95,12 @@ module ETL
         { target: :researcher, field: :full_name, researcher_type: :pi, multiple: true },
         { target: :researcher, field: :full_name, researcher_type: :pl, role: :original },
         { target: :researcher, field: :full_name, researcher_type: :pl, role: :current },
-        { target: :subject, field: :admit_year },
+        { target: :subject, field: :study_year },
         { target: :subject, field: :admit_month },
-        { target: :subject, field: :admit_day },
-        { target: :subject, field: :discharge_year },
+        # { target: :subject, field: :admit_day },
+        # { target: :subject, field: :discharge_year },
         { target: :subject, field: :discharge_month },
-        { target: :subject, field: :discharge_day },
+        # { target: :subject, field: :discharge_day },
         { target: :subject, field: :disempanelled },
         { target: :subject, field: :notes }
       ]
