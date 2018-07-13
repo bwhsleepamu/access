@@ -23,6 +23,7 @@ gem "linguistics"
 gem 'rails-observers'
 gem 'dbf'
 gem 'roo'
+gem 'roo-xls'
 gem 'rubyzip'
 
 # Rails Defaults
