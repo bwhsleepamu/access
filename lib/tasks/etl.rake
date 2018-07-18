@@ -41,10 +41,11 @@ namespace :etl do
     task :subject_information => :environment do
       subject_info_files = [
         {
-          source_path: "/home/pwm4/Desktop/testing_loading.xls",
+          source_path: "/I/Projects/Database Project/Data Sources/Forced Desynchrony Subject Information/DSMDB_FD_Study_Info_HIPAA_2018.07.18.xls",
           subject_type: :forced_desynchrony,
           source: Source.find_by_id(108778667),
           documentation: Documentation.find_by_id(108778666)
+          
         }
 
         # {
