@@ -36,6 +36,7 @@ gem 'jquery-rails',         '~> 4.1.0'
 #gem 'turbolinks',           '>= 2.2.0'
 
 gem 'tasci_merger'
+gem 'awesome_print', '~> 1.8'
 
 # Testing
 group :test do

@@ -39,6 +39,7 @@ GEM
     arel (6.0.4)
     autoprefixer-rails (8.6.5)
       execjs
+    awesome_print (1.8.0)
     bcrypt (3.1.12)
     bcrypt (3.1.12-x64-mingw32)
     better_errors (2.4.0)
@@ -239,6 +240,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-oracle_enhanced-adapter (~> 1.6.0)
+  awesome_print (~> 1.8)
   better_errors
   binding_of_caller
   bootstrap-sass (~> 3.3.6)
