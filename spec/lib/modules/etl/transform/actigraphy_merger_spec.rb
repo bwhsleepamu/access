@@ -2,11 +2,11 @@ require 'spec_helper'
 require 'csv'
 #require 'fakefs/spec_helpers'
 
-
-
 describe ETL::ActigraphyMerger do
   describe "main workflow" do
-    let(:master_path) {"/usr/local/htdocs/access/spec/data/fd_actigraphy_merger.csv"}
+    # change master path
+    let(:master_path) {"/I/Projects/Database Project/Data Sources/Actigraphy/FD-Actigraphy_2015_03_30.csv"}
+    # let(:master_path) {"/usr/local/htdocs/access/spec/data/fd_actigraphy_merger.csv"}
     let(:output_dir) { "/usr/local/htdocs/access/spec/data/merged_actigraphy/fd/" }
 
     before do

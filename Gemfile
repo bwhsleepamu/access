@@ -37,6 +37,7 @@ gem 'jquery-rails',         '~> 4.1.0'
 
 gem 'tasci_merger'
 gem 'awesome_print', '~> 1.8'
+gem 'labtime'
 
 # Testing
 group :test do
