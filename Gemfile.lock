@@ -101,6 +101,10 @@ GEM
     kaminari (0.17.0)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
+    labtime (0.1.1)
+      activesupport (~> 4.2.0)
+      thor
+      tzinfo-data
     libv8 (3.16.14.19)
     linguistics (2.1.0)
       loggability (~> 0.11)
@@ -255,6 +259,7 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jquery-rails (~> 4.1.0)
   kaminari (~> 0.17.0)
+  labtime
   linguistics
   meta_request
   minitest
