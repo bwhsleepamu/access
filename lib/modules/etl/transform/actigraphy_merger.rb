@@ -7,8 +7,10 @@ module ETL
     end
 
     def merge_files
-      subject_list = {:merged => [], :unmerged => []}
+      subject_list = {all: [], merged: [], unmerged: [], untouched: []}
       subject_info = parse_master(@master_file_path)
+
+      subject_list[:all] = @subjects.map(&:subject_code)
 
       subject_info.each do |subject_code, files|
         begin
@@ -20,11 +22,13 @@ module ETL
           output_file = CSV.open("#{@output_directory}/#{subject_code}.csv", "wb")
           output_file << %w(subject_code labtime_decimal labtime_year labtime_hour labtime_min labtime_sec activity_count light_level epoch_length)
 
+          LOAD_LOG.info "\n######## #{subject_code} ########\n"
+
           files.each do |file_info|
             validate_file file_info
             header_data = parse_file_header file_info[:file_path]
 
-            LOAD_LOG.info "\n\n########### #{subject_code} ###########\nWriting file #{file_info[:file_path]}\n"
+            LOAD_LOG.info "Writing file #{file_info[:file_path]}\n"
 
             write_file subject_code, file_info, header_data, output_file
           end
@@ -39,22 +43,33 @@ module ETL
           LOAD_LOG.error "Subject #{subject_code} failed to merge: #{ex.class} | #{ex.message}"
         end
       end
+
+      subject_list[:untouched] = subject_list[:all] - subject_list[:merged] - subject_list[:unmerged]
+
+      LOAD_LOG.info "All (#{subject_list[:all].length}): #{subject_list[:all]}"
+      LOAD_LOG.info "Untouched (#{subject_list[:untouched].length}): #{subject_list[:untouched]}"
       LOAD_LOG.info "Merged (#{subject_list[:merged].length}): #{subject_list[:merged]}"
       LOAD_LOG.info "Unmerged (#{subject_list[:unmerged].length}): #{subject_list[:unmerged]}"
+
 
       subject_list
     end
 
     def check_file_path(subject_code, file_info)
-      parsed_awd_path = /\A\/home\/pwm4\/Windows\/tdrive\/.*\/(\d+[A-Z]+[A-Z0-9]*)\/Actigraphy\/.*(\d+[A-Z]+[A-Z0-9]*)*.\.AWD\z/i.match(file_info[:file_path].strip)
-      parsed_txt_path = /\A\/home\/pwm4\/Windows\/xdrive\/.*\/(\d+[A-Z]+[A-Z0-9]*)\/.*\.txt\z/i.match(file_info[:file_path].strip)
+      parsed_awd_path = /\A\/(X|T)\/.*\/(\d+[A-Z]+[A-Z0-9]*)\/Actigraphy\/.*(\d+[A-Z]+[A-Z0-9]*)*.\.AWD\z/i.match(file_info[:file_path].strip)
+      parsed_txt_path = /\A\/(X|T)\/.*\/(\d+[A-Z]+[A-Z0-9]*)\/.*\.txt\z/i.match(file_info[:file_path].strip)
 
-      raise ValidationError, "Problem with path parsing for #{subject_code}: #{file_info[:file_path]}" if parsed_txt_path.nil? and parsed_awd_path.nil?
-      path_subject_code = parsed_awd_path ? parsed_awd_path[1].capitalize.strip : parsed_txt_path[1].capitalize.strip
+      if parsed_txt_path.nil? and parsed_awd_path.nil?
+        LOAD_LOG.warn "Problem with path parsing for #{subject_code}: #{file_info[:file_path]}"
+      else
+        path_subject_code = parsed_awd_path ? parsed_awd_path[2].capitalize.strip : parsed_txt_path[2].capitalize.strip
 
-      if subject_code.capitalize.strip != path_subject_code
-        raise ValidationError, "\nSubject codes are inconsistent for subject #{subject_code}: #{path_subject_code}"
+        if subject_code.capitalize.strip != path_subject_code
+          raise ValidationError, "\nSubject codes are inconsistent for subject #{subject_code}: #{path_subject_code}"
+        end
       end
+
+
     end
 
 
@@ -114,9 +129,9 @@ module ETL
     def write_from_awd_file(subject_code, file_info, header_data, output_file)
       # Setup location offsets
       file_header_lines = 7
-      start_offset = ((file_info[:start_time] - header_data[:start_time]) / 60.0).round
+      start_offset = (((file_info[:start_time] - header_data[:start_time]) / 60.0)/file_info[:epoch_length]).round
       start_line = start_offset + file_header_lines
-      lines_to_read = (((file_info[:end_time]) - file_info[:start_time]) / 60.0).round + 1
+      lines_to_read = ((((file_info[:end_time]) - file_info[:start_time]) / 60.0)/file_info[:epoch_length]).round + 1
 
       input_file = File.open(file_info[:file_path])
       #MY_LOG.info "Writing content for #{file_info[:file_path]} s_o: #{start_line} ltr: #{lines_to_read} el: #{start_line + lines_to_read} tl: #{header_data[:line_count]}"
@@ -194,52 +209,52 @@ module ETL
         #MY_LOG.info "#{row} #{row.headers}"
         #MY_LOG.info "sc: #{row.field("SUBJECT_CODE")} fp: #{row.field("FILE_PATH")}"
         begin
-          unless @subjects.nil? or @subjects.map(&:subject_code).include? row.field("SUBJECT_CODE")
-            raise ValidationError, "Subject #{row.field("SUBJECT_CODE")} not included in authorized subject list."
-          end
+          if (@subjects.present? and @subjects.map(&:subject_code).include? row.field("SUBJECT_CODE")) or @subjects.nil?
 
-          if row.field("SUBJECT_CODE").blank? or row.field("FILE_PATH").blank? or row.field("START_TIME").blank? or row.field("END_TIME").blank? or row.field("CONDITION").blank? or row.field("EPOCH_LENGTH").blank?
-            raise ValidationError, "Missing fields for row in master file: #{row.field("SUBJECT_CODE")}\n sc: #{row.field("SUBJECT_CODE").blank?} or fp: #{row.field("FILE_PATH").blank?} or st: #{row.field("START_TIME").blank?} or et: #{row.field("END_TIME").blank?} or c: #{row.field("CONDITION").blank?} or el: #{row.field("EPOCH_LENGTH").blank?}"
-          end
-
-          if subject_code != row.field("SUBJECT_CODE")
-            # Starting new subject - validate finished subject, set new subject code
-            begin
-              if subject_code.present? and subject_info.has_key?(subject_code)
-                validate_subject(subject_code, subject_info[subject_code])
-              end
-            rescue Exception => ex
-              LOAD_LOG.error "Subject #{subject_code} failed to merge: #{ex.class} | #{ex.message}"
-              subject_info.delete(subject_code)
-            ensure
-              subject_code = row.field("SUBJECT_CODE")
+            if row.field("SUBJECT_CODE").blank? or row.field("FILE_PATH").blank? or row.field("START_TIME").blank? or row.field("END_TIME").blank? or row.field("CONDITION").blank? or row.field("EPOCH_LENGTH").blank?
+              raise ValidationError, "Missing fields for row in master file: #{row.field("SUBJECT_CODE")}\n sc: #{row.field("SUBJECT_CODE").blank?} or fp: #{row.field("FILE_PATH").blank?} or st: #{row.field("START_TIME").blank?} or et: #{row.field("END_TIME").blank?} or c: #{row.field("CONDITION").blank?} or el: #{row.field("EPOCH_LENGTH").blank?}"
             end
+
+            if subject_code != row.field("SUBJECT_CODE")
+              # Starting new subject - validate finished subject, set new subject code
+              begin
+                if subject_code.present? and subject_info.has_key?(subject_code)
+                  validate_subject(subject_code, subject_info[subject_code])
+                end
+              rescue Exception => ex
+                LOAD_LOG.error "Subject #{subject_code} failed to merge: #{ex.class} | #{ex.message}"
+                subject_info.delete(subject_code)
+              ensure
+                subject_code = row.field("SUBJECT_CODE")
+              end
+            end
+
+            unless subject_info.has_key?(subject_code)
+              subject_info[subject_code] = []
+            end
+
+            file_info = {}
+            file_info[:file_path] = row.field("FILE_PATH")
+            Time.zone = ActiveSupport::TimeZone.new("Eastern Time (US & Canada)")
+            st = Time.strptime(row.field("START_TIME"), "%Y-%m-%d %H:%M:%S")
+            et = Time.strptime(row.field("END_TIME"), "%Y-%m-%d %H:%M:%S")
+            file_info[:start_time] = Time.zone.local(st.year, st.month, st.day, st.hour, st.min, st.sec)
+            file_info[:end_time] = Time.zone.local(et.year, et.month, et.day, et.hour, et.min, et.sec)
+            file_info[:epoch_length] = row.field("EPOCH_LENGTH").to_i
+            file_info[:condition] = row.field("CONDITION")
+            file_info[:notes] = row.field("NOTES")
+
+            utc_diff = file_info[:end_time].utc_offset - file_info[:start_time].utc_offset
+
+            unless utc_diff == 0
+              file_info[:end_time] += utc_diff.seconds
+            end
+
+            check_file_path(subject_code, file_info)
+
+            subject_info[subject_code] << file_info
           end
 
-          unless subject_info.has_key?(subject_code)
-            subject_info[subject_code] = []
-          end
-
-          file_info = {}
-          file_info[:file_path] = row.field("FILE_PATH")
-          Time.zone = ActiveSupport::TimeZone.new("Eastern Time (US & Canada)")
-          st = Time.strptime(row.field("START_TIME"), "%Y-%m-%d %H:%M:%S")
-          et = Time.strptime(row.field("END_TIME"), "%Y-%m-%d %H:%M:%S")
-          file_info[:start_time] = Time.zone.local(st.year, st.month, st.day, st.hour, st.min, st.sec)
-          file_info[:end_time] = Time.zone.local(et.year, et.month, et.day, et.hour, et.min, et.sec)
-          file_info[:epoch_length] = row.field("EPOCH_LENGTH").to_i
-          file_info[:condition] = row.field("CONDITION")
-          file_info[:notes] = row.field("NOTES")
-
-          utc_diff = file_info[:end_time].utc_offset - file_info[:start_time].utc_offset
-
-          unless utc_diff == 0
-            file_info[:end_time] += utc_diff.seconds
-          end
-
-          check_file_path(subject_code, file_info)
-
-          subject_info[subject_code] << file_info
         rescue Exception => ex
           subject_info.delete(row.field("SUBJECT_CODE"))
           LOAD_LOG.error "Row #{row} failed to load for #{row.field("SUBJECT_CODE")}: #{ex.class} | #{ex.message}"

@@ -752,11 +752,12 @@ namespace :etl do
   namespace :transform do
     desc "merge actigraphy"
     task :merge_actigraphy => :environment do
-      subject_group = SubjectGroup.find_by_name("sazuka_actigraphy")
-      subjects = subject_group.subjects#.select{|s| s.subject_code == "3121V"}
+      subjects = SubjectGroup.find_by_name('actigraphy_lu').subjects
+      master_path = "/I/Projects/Database Project/Data Sources/Actigraphy/FD-Actigraphy_2015_03_30.csv"
+      output_dir = "/I/Projects/Database Project/Outputs/Actigraphy/dr_lu"
 
-      al = ETL::ActigraphyMerger.new("/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Actigraphy/LS-Actigraphy_2012.12.17.csv", "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Actigraphy/Merged Files/", subjects)
-      al.merge_files
+      am = ETL::ActigraphyMerger.new(master_path, output_dir, subjects)
+      am.merge_files
     end
 
     desc "merge sh files"
