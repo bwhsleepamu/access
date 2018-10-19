@@ -101,7 +101,7 @@ GEM
       loggability (~> 0.11)
     loggability (0.14.0)
     loofah (2.0.3)
-      nokogiri (>= 1.5.9)
+      nokogiri (>= 1.8.2)
     mail (2.6.4)
       mime-types (>= 1.16, < 4)
     meta_request (0.4.0)
