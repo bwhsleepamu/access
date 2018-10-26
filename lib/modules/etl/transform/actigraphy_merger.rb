@@ -21,7 +21,7 @@ module ETL
 
           output_file = CSV.open("#{@output_directory}/#{subject_code}.csv", "wb")
           output_file << %w(subject_code labtime_decimal labtime_year labtime_hour labtime_min labtime_sec activity_count light_level epoch_length)
-
+          
           LOAD_LOG.info "\n######## #{subject_code} ########\n"
 
           files.each do |file_info|
