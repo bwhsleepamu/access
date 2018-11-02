@@ -24,16 +24,22 @@ module ETL
           
           LOAD_LOG.info "\n######## #{subject_code} ########\n"
 
+          # create an awd file
+          output_file_awd = File.open("#{@output_directory}/#{subject_code}.awd", "wb")
+          # a function to merge awd files
+          merge_awd(output_file_awd)
+
           files.each do |file_info|
             validate_file file_info
             header_data = parse_file_header file_info[:file_path]
 
             LOAD_LOG.info "Writing file #{file_info[:file_path]}\n"
 
-            write_file subject_code, file_info, header_data, output_file
+            write_file subject_code, file_info, header_data, output_file, output_file_awd
+
           end
           output_file.close
-
+          
           subject_list[:merged] << subject_code
 
         rescue Exception => ex
@@ -42,6 +48,8 @@ module ETL
           subject_list[:unmerged] << subject_code
           LOAD_LOG.error "Subject #{subject_code} failed to merge: #{ex.class} | #{ex.message}"
         end
+        #
+        output_file_awd.close
       end
 
       subject_list[:untouched] = subject_list[:all] - subject_list[:merged] - subject_list[:unmerged]
@@ -54,7 +62,13 @@ module ETL
 
       subject_list
     end
-
+    # a function to merge awd files
+    # -1, -1 if there is gap between times in files
+    def merge_awd()
+      
+      
+    end
+    
     def check_file_path(subject_code, file_info)
       parsed_awd_path = /\A\/(X|T)\/.*\/(\d+[A-Z]+[A-Z0-9]*)\/Actigraphy\/.*(\d+[A-Z]+[A-Z0-9]*)*.\.AWD\z/i.match(file_info[:file_path].strip)
       parsed_txt_path = /\A\/(X|T)\/.*\/(\d+[A-Z]+[A-Z0-9]*)\/.*\.txt\z/i.match(file_info[:file_path].strip)
@@ -115,10 +129,11 @@ module ETL
 
       file_data
     end
-
-    def write_file(subject_code, file_info, header_data, output_file)
+# modified:added a new parameter
+    def write_file(subject_code, file_info, header_data, output_file, output_file_awd)
       if header_data[:file_type] == :awd
-        write_from_awd_file subject_code, file_info, header_data, output_file
+        # 
+        write_from_awd_file subject_code, file_info, header_data, output_file, output_file_awd
       elsif header_data[:file_type] == :txt
         write_from_txt_file subject_code, file_info, header_data, output_file
       else
@@ -126,7 +141,8 @@ module ETL
       end
     end
 
-    def write_from_awd_file(subject_code, file_info, header_data, output_file)
+# modified:added a new parameter
+    def write_from_awd_file(subject_code, file_info, header_data, output_file, output_file_awd)
       # Setup location offsets
       file_header_lines = 7
       start_offset = (((file_info[:start_time] - header_data[:start_time]) / 60.0)/file_info[:epoch_length]).round
