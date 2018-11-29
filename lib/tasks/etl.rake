@@ -1,5 +1,6 @@
 # example command:
 # bundle exec rake etl:klerman_light_study_demographics_spreadsheet --trace RAILS_ENV=production
+# bundle exec rake etl:load:subject_information
 
 namespace :etl do
   namespace :load do
@@ -23,11 +24,18 @@ namespace :etl do
     task :subject_information => :environment do
       subject_info_files = [
         {
-          source_path: "/I/Projects/Database Project/Data Sources/Forced Desynchrony Subject Information/DSMDB_FD_Study_Info_2013_12_09.xls",
+          source_path: "/I/Projects/Database Project/Data Sources/Forced Desynchrony Subject Information/DSMDB_FD_Study_Info_HIPAA_2018.11.29.xls",
           subject_type: :forced_desynchrony,
           source: Source.find_by_id(92806902),
           documentation: Documentation.find_by_id(10040)
         }
+        # {
+        #   source_path: "/I/Projects/Database Project/Data Sources/Forced Desynchrony Subject Information/DSMDB_FD_Study_Info_2013_12_09.xls",
+        #   subject_type: :forced_desynchrony,
+        #   source: Source.find_by_id(92806902),
+        #   documentation: Documentation.find_by_id(10040)
+        # }
+
         #{
         #  source_path: "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Light Subject Information/joshua_gooley_subject_information/subject_information.xls",
         #  subject_type: :light,
@@ -113,6 +121,33 @@ namespace :etl do
 
     desc "load actigraphy"
     task :actigraphy => :environment do
+
+#      subjects = ["1425MX72", "1637XX", "1684MX", "1691MX", "1736MX", "1772MX", "1776MX", "1795MX", "1834MX", "1873MX", "1888XX", "1889MX", "18B2XX", "18E3XX", "18E4MX", "1903MX", "1963XX", "19A4W", "2072W1T2", "2082W1T2", "2093HM", "20B1HM", "20C1DX", "2109W", "2111W", "2123W", "2150DX", "2195W", "2196W", "2199HM", "21A4DX", "2210W", "2238DX", "2249HM", "22F2W", "22T1W", "2310HM", "2313W", "24B7GXT3", "25R8GXT2", "26N2GXT2", "2709HX", "2760GXT2", "2768X", "2788X", "27B2X", "27D9GX", "27Q9GX", "2819X", "2823GX", "2844GX", "2890X", "2895X", "28B2X", "28G1HX", "28K5X", "28Q6X", "28Q9HX", "2903X", "29D7X", "29N1HX", "3007HX", "3046HX", "3227GX", "3228GX"]
+      subject_group = SubjectGroup.find_by_name("sazuka_actigraphy")
+      subjects = subject_group.subjects
+
+      successful_subjects = []
+      unsuccessful_subjects = []
+
+      subjects.each do |subject|
+        al = ETL::ActigraphyLoader.new(subject.subject_code, "/home/pwm4/Windows/idrive/Projects/Database Project/Data Sources/Actigraphy/Merged Files", "I:/Projects/Database Project/Data Sources/Actigraphy/Merged Files", true)
+        loaded = al.load_subject
+
+        if loaded
+          successful_subjects << subject.subject_code
+        else
+          unsuccessful_subjects << subject.subject_code
+        end
+      end
+
+      LOAD_LOG.info "\n################################\nFinished Loading actigraphy for all Subjects!\nsuccessful: #{successful_subjects}\nunsuccessful: #{unsuccessful_subjects}\n################################\n\n\n"
+
+    end
+
+
+    # loading performance data (new)
+    desc "load cleaned performance data"
+    task :load_cleaned_performance => :environment do
 
 #      subjects = ["1425MX72", "1637XX", "1684MX", "1691MX", "1736MX", "1772MX", "1776MX", "1795MX", "1834MX", "1873MX", "1888XX", "1889MX", "18B2XX", "18E3XX", "18E4MX", "1903MX", "1963XX", "19A4W", "2072W1T2", "2082W1T2", "2093HM", "20B1HM", "20C1DX", "2109W", "2111W", "2123W", "2150DX", "2195W", "2196W", "2199HM", "21A4DX", "2210W", "2238DX", "2249HM", "22F2W", "22T1W", "2310HM", "2313W", "24B7GXT3", "25R8GXT2", "26N2GXT2", "2709HX", "2760GXT2", "2768X", "2788X", "27B2X", "27D9GX", "27Q9GX", "2819X", "2823GX", "2844GX", "2890X", "2895X", "28B2X", "28G1HX", "28K5X", "28Q6X", "28Q9HX", "2903X", "29D7X", "29N1HX", "3007HX", "3046HX", "3227GX", "3228GX"]
       subject_group = SubjectGroup.find_by_name("sazuka_actigraphy")
