@@ -41,12 +41,19 @@ namespace :etl do
     task :subject_information => :environment do
       subject_info_files = [
         {
-          source_path: "/I/Projects/Database Project/Data Sources/Forced Desynchrony Subject Information/DSMDB_FD_Study_Info_HIPAA_2018.07.18.xls",
+          source_path: "/home/pwm4/Dropbox (Partners HealthCare)/database/subjectinfo/To add 20181214/add_test2.xls",
           subject_type: :forced_desynchrony,
-          source: Source.find_by_id(108778667),
-          documentation: Documentation.find_by_id(108778666)
+          source: Source.find_by_id(108778804),
+          documentation: Documentation.find_by_id(108778803)
           
         }
+        # {
+        #   source_path: "/I/Projects/Database Project/Data Sources/Forced Desynchrony Subject Information/DSMDB_FD_Study_Info_HIPAA_2018.07.18.xls",
+        #   subject_type: :forced_desynchrony,
+        #   source: Source.find_by_id(108778667),
+        #   documentation: Documentation.find_by_id(108778666)
+          
+        # }
 
         # {
         #   source_path: "/I/Projects/Database Project/Data Sources/Forced Desynchrony Subject Information/DSMDB_FD_Study_Info_2013_12_09.xls",
