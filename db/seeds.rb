@@ -59,16 +59,12 @@
 
 #   )
 
-
-
-
 # SubjectsPi.create(
 #     subject_id: 108778806,
 #     researcher_id: 19333280,
 #     created_at: DateTime.now.strftime("%d/%m/%Y"),
 #     updated_at: DateTime.now.strftime("%d/%m/%Y")
 # )
-
 
 # Researcher.create(
 #     first_name: "Andrew",
@@ -78,7 +74,6 @@
 # )
 
 # SubjectsProjectLeader.create(
-
 #     researcher_id: 108778826,
 #     subject_id: 108778806,
 #     role: "current",
@@ -94,3 +89,42 @@
 #     created_at: DateTime.now.strftime("%d/%m/%Y"),
 #     updated_at: DateTime.now.strftime("%d/%m/%Y")
 # )
+#######
+# Subject.create(
+#     subject_code: "3525GX",
+#     study_id: 19333775,
+#     created_at: DateTime.now.strftime("%d/%m/%Y"),
+#     updated_at: DateTime.now.strftime("%d/%m/%Y")
+#     )
+
+# Subject.create(
+#         subject_code: "1814WP1",
+#         study_id: 92815055,
+#         disempanelled: false,
+#         study_year:  1998,
+#         admit_month: 5,   
+#         discharge_month: 6,
+#         notes: "sleep not scored during FD",
+#         created_at: DateTime.now.strftime("%d/%m/%Y"),
+#         updated_at: DateTime.now.strftime("%d/%m/%Y")
+#         )
+
+# SubjectsIrb.create(
+#     subject_id: 108778862,
+#     irb_id: 92815058,
+#     created_at: DateTime.now.strftime("%d/%m/%Y"),
+#     updated_at: DateTime.now.strftime("%d/%m/%Y")
+
+#     )
+
+
+
+# 92815057 - ken wright
+
+SubjectsProjectLeader.create(
+    researcher_id: 92815057,
+    subject_id: 108778862,
+    role: "original",
+    created_at: DateTime.now.strftime("%d/%m/%Y"),
+    updated_at: DateTime.now.strftime("%d/%m/%Y")
+)
